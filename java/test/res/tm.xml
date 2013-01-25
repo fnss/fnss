@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<traffic-matrix type="single" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"> 
+<!-- type can be either single or sequence. If single it only has one time child, otherwise it has many time children-->
+  <time seq="1"> <!-- Seq is the sequence number of the time snapshot of the matrix-->
+	  <property name="volume_unit" type="string">Mbps</property>
+	  <origin id="1" id.type="int">
+	  	<destination id="2" id.type="int">126840.002</destination>
+	  	<destination id="3" id.type="int">126840.002</destination>
+	  </origin> 
+  	  <origin id="LA" id.type="string">
+	  	<destination id="2" id.type="int">126840.002</destination>
+	  	<destination id="NY" id.type="string">126840.002</destination>
+	  </origin> 
+  </time>
+  <time seq="2">
+	  <property name="volume_unit" type="string">Mbps</property>
+	  <origin id="1" id.type="int">
+	  	<destination id="2" id.type="int">122340.002</destination>
+	  	<destination id="3" id.type="int">643440.002</destination>
+	  </origin> 
+  	  <origin id="LA" id.type="string">
+	  	<destination id="2" id.type="int">9876340.002</destination>
+	  	<destination id="NY" id.type="string">232840.002</destination>
+	  </origin> 
+  </time>
+  <time seq="3">
+	  <property name="volume_unit" type="string">Mbps</property>
+	  <origin id="1" id.type="int">
+	  	<destination id="2" id.type="int">122340.002</destination>
+	  	<destination id="3" id.type="int">643440.002</destination>
+	  </origin> 
+  	  <origin id="LA" id.type="string">
+	  	<destination id="2" id.type="int">9876340.002</destination>
+	  	<destination id="NY" id.type="string">232840.002</destination>
+	  </origin> 
+  </time>
+</traffic-matrix>
+  
+

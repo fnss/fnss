@@ -1,0 +1,177 @@
+<topology linkdefault="undirected">
+  <property name="delay_unit" type="string">ms</property>
+  <property name="capacity_unit" type="string">Mbps</property>
+  <property name="buffer_unit" type="string">bytes</property>
+  <property name="type" type="string">er</property>
+  <property name="name" type="string">erdos_renyi_topology(10, 0.5)</property>
+  <node id="0" id.type="int" />
+  <node id="1" id.type="int" />
+  <node id="2" id.type="int">
+    <property name="longitude" type="float">99.76</property>
+    <property name="latitude" type="float">12.56</property>
+    <application name="client" name.type="string">
+      <property name="rate" type="int">100</property>
+      <property name="user-agent" type="string">fnss</property>
+    </application>
+    <application name="server" name.type="string">
+      <property name="active" type="boolean">True</property>
+      <property name="port" type="int">80</property>
+      <property name="user-agent" type="string">fnss</property>
+    </application>
+    <stack name="tcp" name.type="string">
+      <property name="rcvwnd" type="int">1024</property>
+      <property name="protocol" type="string">cubic</property>
+    </stack>
+  </node>
+  <node id="3" id.type="int" />
+  <node id="4" id.type="int">
+    <application name="client" name.type="string">
+      <property name="rate" type="int">100</property>
+      <property name="user-agent" type="string">fnss</property>
+    </application>
+    <stack name="tcp" name.type="string">
+      <property name="rcvwnd" type="int">1024</property>
+      <property name="protocol" type="string">cubic</property>
+    </stack>
+  </node>
+  <node id="5" id.type="int" />
+  <node id="6" id.type="int">
+    <stack name="tcp" name.type="string">
+      <property name="rcvwnd" type="int">1024</property>
+      <property name="protocol" type="string">cubic</property>
+    </stack>
+  </node>
+  <node id="7" id.type="int" />
+  <node id="8" id.type="int" />
+  <node id="9" id.type="int" />
+  <link>
+    <from type="int">0</from>
+    <to type="int">9</to>
+    <property name="delay" type="int">2</property>
+    <property name="capacity" type="int">10</property>
+    <property name="weight" type="float">4.0</property>
+    <property name="buffer" type="float">20</property>
+  </link>
+  <link>
+    <from type="int">0</from>
+    <to type="int">3</to>
+    <property name="delay" type="int">2</property>
+    <property name="capacity" type="float">100.87</property>
+    <property name="weight" type="float">4.0</property>
+    <property name="buffer" type="int">20</property>
+  </link>
+  <link>
+    <from type="int">1</from>
+    <to type="int">8</to>
+    <property name="delay" type="int">2</property>
+    <property name="capacity" type="int">40</property>
+    <property name="weight" type="float">1.0</property>
+  </link>
+  <link>
+    <from type="int">1</from>
+    <to type="int">3</to>
+    <property name="delay" type="int">2</property>
+    <property name="capacity" type="int">10</property>
+    <property name="weight" type="float">4.0</property>
+  </link>
+  <link>
+    <from type="int">1</from>
+    <to type="int">5</to>
+    <property name="type" type="string">backbone</property>
+    <property name="delay" type="int">2</property>
+    <property name="capacity" type="float">20.77</property>
+    <property name="weight" type="float">2.0</property>
+    <property name="buffer" type="float">30</property>
+  </link>
+  <link>
+    <from type="int">1</from>
+    <to type="int">7</to>
+    <property name="delay" type="int">2</property>
+    <property name="capacity" type="int">20</property>
+    <property name="weight" type="float">2.0</property>
+  </link>
+  <link>
+    <from type="int">2</from>
+    <to type="int">9</to>
+    <property name="delay" type="int">2</property>
+    <property name="capacity" type="int">20</property>
+    <property name="weight" type="float">2.0</property>
+  </link>
+  <link>
+    <from type="int">2</from>
+    <to type="int">3</to>
+    <property name="delay" type="int">2</property>
+    <property name="capacity" type="int">20</property>
+    <property name="weight" type="float">2.0</property>
+  </link>
+  <link>
+    <from type="int">2</from>
+    <to type="int">4</to>
+    <property name="delay" type="int">2</property>
+    <property name="capacity" type="int">10</property>
+    <property name="weight" type="float">4.0</property>
+  </link>
+  <link>
+    <from type="int">2</from>
+    <to type="int">6</to>
+    <property name="delay" type="int">2</property>
+    <property name="capacity" type="int">40</property>
+    <property name="weight" type="float">1.0</property>
+  </link>
+  <link>
+    <from type="int">3</from>
+    <to type="int">5</to>
+    <property name="delay" type="int">2</property>
+    <property name="capacity" type="int">10</property>
+    <property name="weight" type="float">4.0</property>
+  </link>
+  <link>
+    <from type="int">3</from>
+    <to type="int">7</to>
+    <property name="delay" type="int">2</property>
+    <property name="capacity" type="int">20</property>
+    <property name="weight" type="float">2.0</property>
+  </link>
+  <link>
+    <from type="int">3</from>
+    <to type="int">8</to>
+    <property name="delay" type="int">2</property>
+    <property name="capacity" type="int">10</property>
+    <property name="weight" type="float">4.0</property>
+  </link>
+  <link>
+    <from type="int">4</from>
+    <to type="int">9</to>
+    <property name="delay" type="int">2</property>
+    <property name="capacity" type="int">10</property>
+    <property name="weight" type="float">4.0</property>
+  </link>
+  <link>
+    <from type="int">4</from>
+    <to type="int">7</to>
+    <property name="delay" type="int">2</property>
+    <property name="capacity" type="int">20</property>
+    <property name="weight" type="float">2.0</property>
+  </link>
+  <link>
+    <from type="int">6</from>
+    <to type="int">9</to>
+    <property name="delay" type="int">2</property>
+    <property name="capacity" type="int">40</property>
+    <property name="weight" type="float">1.0</property>
+  </link>
+  <link>
+    <from type="int">7</from>
+    <to type="int">8</to>
+    <property name="delay" type="int">2</property>
+    <property name="capacity" type="int">20</property>
+    <property name="weight" type="float">2.0</property>
+  </link>
+  <link>
+    <from type="int">7</from>
+    <to type="int">9</to>
+    <property name="delay" type="int">2</property>
+    <property name="capacity" type="int">40</property>
+    <property name="weight" type="float">1.0</property>
+  </link>
+</topology>

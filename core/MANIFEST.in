@@ -1,0 +1,22 @@
+include LICENSE*
+include README*
+
+# Code for including tests (excluded resources folder)
+recursive-include test test*
+
+# Include all examples
+recursive-include examples *.py
+
+# Include all HTML documentation
+recursive-include doc/html *
+prune doc/html/.doctrees
+exclude doc/html/.buildinfo
+
+# Redundant code but specify just in case of changes to default Distutils behaviour
+global-exclude *~
+global-exclude *.pyc
+global-exclude __pycache__
+global-exclude .svn
+global-exclude .git*
+global-exclude .*project
+

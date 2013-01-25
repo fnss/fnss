@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<event-schedule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<property name="t_unit" type="string">ms</property>
+<property name="t_start" type="int">1000</property>
+<property name="t_end" type="int">60000</property>
+<event time="1908">
+	<property name="node" type="int">12</property>
+	<property name="content_id" type="int">145</property>
+</event>
+<event time="2308">
+	<property name="node" type="int">12</property>
+	<property name="content_id" type="int">145</property>
+</event>
+<event time="5503">
+	<property name="node" type="int">12</property>
+	<property name="content_id" type="int">145</property>
+</event>
+</event-schedule>
+
