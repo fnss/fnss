@@ -43,6 +43,19 @@ public class PropertyContainer implements Cloneable {
 	}
 
 	/**
+	 * Return <code>true</code> if this object has a property with the given
+	 * name, <code>false</code> otherwise
+	 * 
+	 * @param name The name of the property
+	 * 
+	 * @return <code>true</code> if this object has a property with the given
+	 * name, <code>false</code> otherwise
+	 */
+	public boolean hasProperty(String name) {
+		return properties.containsKey(name);
+	}
+
+	/**
 	 * Remove a specific property
 	 * 
 	 * @param name The name of the property to remove

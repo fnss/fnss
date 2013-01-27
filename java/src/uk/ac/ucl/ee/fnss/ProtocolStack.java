@@ -8,9 +8,7 @@ package uk.ac.ucl.ee.fnss;
  * @author Lorenzo Saino
  *
  */
-public class ProtocolStack extends PropertyContainer implements Cloneable {
-
-	private String name = null;
+public class ProtocolStack extends NamedPropertyContainer implements Cloneable {
 
 	/**
 	 * Constructor
@@ -18,27 +16,9 @@ public class ProtocolStack extends PropertyContainer implements Cloneable {
 	 * @param name the name of the protocol stack
 	 */
 	public ProtocolStack(String name) {
-		this.name = name;
-	}
-	
-	/**
-	 * Return the name of the protocol stack
-	 * 
-	 * @return the name of the stack
-	 */
-	public String getName() {
-		return name;
+		super(name);
 	}
 
-	/**
-	 * Set the name of the protocol stack
-	 * 
-	 * @param name the name to set
-	 */
-	public void setName(String name) {
-		this.name = name;
-	}
-	
 	/**
 	 * Return a copy of this object
 	 * 
@@ -48,4 +28,5 @@ public class ProtocolStack extends PropertyContainer implements Cloneable {
 	public ProtocolStack clone() {
 		return (ProtocolStack) super.clone();
 	}
+	
 }

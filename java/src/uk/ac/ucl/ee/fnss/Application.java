@@ -8,9 +8,7 @@ package uk.ac.ucl.ee.fnss;
  * @author Lorenzo Saino
  *
  */
-public class Application extends PropertyContainer implements Cloneable {
-
-	private String name = null;
+public class Application extends NamedPropertyContainer implements Cloneable {
 
 	/**
 	 * Constructor
@@ -18,25 +16,7 @@ public class Application extends PropertyContainer implements Cloneable {
 	 * @param name the name of the application
 	 */
 	public Application(String name) {
-		this.name = name;
-	}
-
-	/**
-	 * Return the name of the application
-	 * 
-	 * @return the name of the application
-	 */
-	public String getName() {
-		return name;
-	}
-
-	/**
-	 * Set the name of the application
-	 * 
-	 * @param name the name to set
-	 */
-	public void setName(String name) {
-		this.name = name;
+		super(name);
 	}
 
 	/**
@@ -48,5 +28,4 @@ public class Application extends PropertyContainer implements Cloneable {
 	public Application clone() {
 		return (Application) super.clone();
 	}
-
 }
