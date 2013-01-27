@@ -8,6 +8,10 @@ __pycache__
 .*
 !.gitignore
 
+# Ignore aggregated built files
+doc
+dist
+
 # Ignore core built files
 core/dist
 core/build
@@ -21,6 +25,13 @@ java/doc
 java/bin
 
 # Ignore C++ built files
-cpp/lib
+cpp/bin
 cpp/doc
 cpp/dist
+cpp/examples/bin
+
+# Ignore ns2 built files
+ns2/dist
+
+# Ignore ns3 built files
+ns3/dist
