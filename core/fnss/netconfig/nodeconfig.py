@@ -108,14 +108,14 @@ def add_application(topology, node, name, properties):
 def get_application_names(topology, node):
     """
     Return a list of names of applications deployed on a node
-    
+
     Parameters
     ----------
     topology : Topology
         The topology
     node : any hashable type
         The ID of the node
-    
+
     Returns
     -------
     application_names : list
@@ -129,7 +129,7 @@ def get_application_properties(topology, node, name):
     """
     Return a dictionary containing all the properties of an application
     deployed on a node
-    
+
     Parameters
     ----------
     topology : Topology
