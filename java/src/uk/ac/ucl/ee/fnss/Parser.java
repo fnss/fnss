@@ -231,20 +231,25 @@ public class Parser {
 		}
 		List<Element> trafficMatrices = rootNode.getChildren("time");
 		for (Element tmElement: trafficMatrices) {
-			TrafficMatrix trafficMatrix = new TrafficMatrix();
+			String volumeUnit = null;
 			List<Element> tmProperties = tmElement.getChildren("property");
 			for (Element tmPropertyElement: tmProperties) {
 				name = tmPropertyElement.getAttributeValue("name");
 				type = tmPropertyElement.getAttributeValue("type");
 				value = tmPropertyElement.getTextTrim();
 				if (name.equals("volume_unit")) {
-					trafficMatrix.setVolumeUnit(value);
+					volumeUnit = value;
 				} else {
 					// If format is extended and new properties are added
 					// put here the code to handle them
 					continue;
 				}
 			}
+			if(volumeUnit == null) {
+				throw new JDOMException("The traffic matrix does not have " +
+										 "a volume_unit attribute");
+			}
+			TrafficMatrix trafficMatrix = new TrafficMatrix(volumeUnit);
 			List<Element> origins = tmElement.getChildren("origin");
 			for (Element originElement: origins) {
 				String o = originElement.getAttributeValue("id");

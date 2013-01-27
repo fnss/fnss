@@ -21,11 +21,6 @@ public class TrafficMatrix implements Iterable<Pair<String, String>> {
 
 	/**
 	 * Constructor
-	 */
-	public TrafficMatrix() { }
-
-	/**
-	 * Constructor
 	 * 
 	 * @param volumeUnit the unit of traffic volumes
 	 */
@@ -62,6 +57,10 @@ public class TrafficMatrix implements Iterable<Pair<String, String>> {
 	 * @param volumeUnit the volume unit to set
 	 */
 	public void setVolumeUnit(String volumeUnit) {
+		if (!Units.isValidCapacityUnit(volumeUnit)) {
+			throw new IllegalArgumentException(
+					"The value of the volumeUnit parameter is not valid");
+		}
 		this.volumeUnit = volumeUnit;
 	}
 	

@@ -28,7 +28,7 @@ public class TrafficMatrixTest {
 
 	@Test
 	public void testGetOriginsDestinations() {
-		TrafficMatrix tm = new TrafficMatrix();
+		TrafficMatrix tm = new TrafficMatrix(Units.CAPACITY_GIGABIT_PER_SEC);
 		tm.addFlow("a", "b", 1);
 		tm.addFlow("a", "c", 1);
 		tm.addFlow("b", "c", 1);
@@ -42,7 +42,7 @@ public class TrafficMatrixTest {
 	
 	@Test
 	public void testAddRemoveFlows() {
-		TrafficMatrix tm = new TrafficMatrix();
+		TrafficMatrix tm = new TrafficMatrix(Units.CAPACITY_GIGABIT_PER_SEC);
 		tm.addFlow("a", "b", 1);
 		tm.addFlow("b", "a", 4);
 		tm.addFlow("a", "c", 2);
@@ -57,7 +57,7 @@ public class TrafficMatrixTest {
 	
 	@Test
 	public void testGetODPairs() {
-		TrafficMatrix tm = new TrafficMatrix();
+		TrafficMatrix tm = new TrafficMatrix(Units.CAPACITY_GIGABIT_PER_SEC);
 		tm.addFlow("a", "b", 1);
 		tm.addFlow("b", "a", 4);
 		tm.addFlow("a", "c", 2);
