@@ -85,4 +85,4 @@ To build the documentation from sources, you also need the following Python pack
  * [numpydoc](http://pypi.python.org/pypi/numpydoc) (version 0.4 or later)
  
 ## License
-The FNSS core library is released under the terms of the [BSD License](http://en.wikipedia.org/wiki/BSD_licenses). See [LICENSE.txt](LICENSE.txt)
+The FNSS core library is released under the terms of the [BSD License](http://en.wikipedia.org/wiki/BSD_licenses). See LICENSE.txt.

@@ -18,4 +18,4 @@ where `topology.xml` is the XML file of the topology and `output.tcl` is the nam
 * FNSS core library
 
 ## License
-The FNSS ns-2 adapter is released under the terms of the [GNU GPLv2 license](http://www.gnu.org/licenses/gpl-2.0.html)
+The FNSS ns-2 adapter is released under the terms of the [GNU GPLv2 license](http://www.gnu.org/licenses/gpl-2.0.html). See LICENSE.txt.
