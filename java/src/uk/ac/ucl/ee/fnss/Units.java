@@ -26,6 +26,9 @@ public class Units {
 	public static final String TIME_SECONDS = "sec";
 	public static final String TIME_MINUTES = "min";
 	
+	public static final String DISTANCE_METERS = "m";
+	public static final String DISTANCE_KILOMETERS = "km";
+	
 	public static final String BUFFER_SIZE_BYTES = "bytes";
 	public static final String BUFFER_SIZE_PACKETS = "packets";
 	
@@ -34,6 +37,8 @@ public class Units {
 	private static Map<String, Integer> delayUnitMap = 
 			new HashMap<String, Integer>();
 	private static Map<String, Integer> capacityUnitMap = 
+			new HashMap<String, Integer>();
+	private static Map<String, Integer> distanceUnitMap = 
 			new HashMap<String, Integer>();
 	
 	static {
@@ -51,6 +56,9 @@ public class Units {
 		capacityUnitMap.put(CAPACITY_KILOBIT_PER_SEC, 1000);
 		capacityUnitMap.put(CAPACITY_MEGABIT_PER_SEC, 1000000);
 		capacityUnitMap.put(CAPACITY_GIGABIT_PER_SEC, 1000000000);
+
+		distanceUnitMap.put(DISTANCE_METERS, 1);
+		distanceUnitMap.put(DISTANCE_KILOMETERS, 1000);
 	}
 	
 	// override scope of constructor to prevent instantiation
@@ -90,12 +98,25 @@ public class Units {
 	 * Valid time units are "bps" (bit per seconds), "Kbps" (Kbit per second),
 	 * "Mbps" (Megabit per second), "Gbps" (Gigabit per seconds)
 	 * 
-	 * @param capacityUnit the delay unit to be tested.
+	 * @param capacityUnit the capacity unit to be tested.
 	 * @return <code>true</code> if the unit is valid, <code>false</code>
 	 * otherwise
 	 */
 	public static boolean isValidCapacityUnit(String capacityUnit) {
 		return capacityUnitMap.get(capacityUnit) == null ? false : true;
+	}
+	
+	/**
+	 * Verify if the provided capacity unit is valid or not.
+	 * 
+	 * Valid distance units are "m" (meters) and "Km" (kilometers)
+	 * 
+	 * @param distanceUnit the distance unit to be tested.
+	 * @return <code>true</code> if the unit is valid, <code>false</code>
+	 * otherwise
+	 */
+	public static boolean isValidDistanceUnit(String distanceUnit) {
+		return distanceUnitMap.get(distanceUnit) == null ? false : true;
 	}
 
 	/**
@@ -184,4 +205,27 @@ public class Units {
 		return value * conversionFactor;
 	}
 
+	/**
+	 * Convert a distance value from a time unit to another
+	 * 
+	 * @param value The capacity value to convert
+	 * @param distanceUnit the original distance unit
+	 * @param targetDistanceUnit the target distance unit
+	 * 
+	 * @return the distance value expressed in the target unit
+	 */
+	public static float convertDistanceValue(float value,
+			String distanceUnit, String targetDistanceUnit) {
+		if (distanceUnitMap.get(distanceUnit) == null) {
+			throw new IllegalArgumentException(
+					"The distanceUnit parameter is invalid");
+		}
+		if (distanceUnitMap.get(targetDistanceUnit) == null) {
+			throw new IllegalArgumentException(
+					"The targetDistanceUnit parameter is invalid");
+		}
+		float conversionFactor = distanceUnitMap.get(distanceUnit)
+				/ (float) distanceUnitMap.get(targetDistanceUnit);
+		return value * conversionFactor;
+	}
 }
