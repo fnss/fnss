@@ -1,6 +1,10 @@
 package uk.ac.ucl.ee.fnss;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -12,8 +16,9 @@ import java.util.Set;
 public class Topology extends PropertyContainer implements Cloneable {
 
 	private Map<String, Node> nodes = new Hashtable<String, Node>();
-	private Map<Pair<String, String>, Edge> edges = 
-			new Hashtable<Pair<String, String>, Edge>();
+
+	private Map<String, Map<String, Edge>> adjacencyMatrix = 
+			new Hashtable<String, Map<String, Edge>>();
 	
 	private boolean isDirected = false;
 	
@@ -105,6 +110,10 @@ public class Topology extends PropertyContainer implements Cloneable {
 	 * @return the distance unit
 	 */
 	public String getDistanceUnit() {
+		if (!Units.isValidDistanceUnit(distanceUnit)) {
+			throw new IllegalArgumentException(
+					"The value of the distanceUnit parameter is not valid");
+		}
 		return distanceUnit;
 	}
 
@@ -184,6 +193,15 @@ public class Topology extends PropertyContainer implements Cloneable {
 		return nodes.keySet();
 	}
 
+
+	/**
+	 * Return the number of nodes in the topology
+	 * 
+	 * @return the number of nodes
+	 */
+	public int numberOfNodes() {
+		return nodes.size();
+	}
 	/**
 	 * Add an edge to the topology. If the nodes connected by the edge are not
 	 * present, they are created.
@@ -200,11 +218,17 @@ public class Topology extends PropertyContainer implements Cloneable {
 		if (!nodes.containsKey(v)) {
 			nodes.put(v, new Node());
 		}
-		edges.put(new Pair<String, String>(u, v), edge);
+		if(!adjacencyMatrix.containsKey(u)){
+			adjacencyMatrix.put(u, new HashMap<String, Edge>());
+		}
+		adjacencyMatrix.get(u).put(v, edge);
 		// if the graph is undirected, we add an edge also in the other
 		// direction but the Edge object to which they point is the same
 		if (!isDirected) {
-			edges.put(new Pair<String, String>(v, u), edge);
+			if(!adjacencyMatrix.containsKey(v)){
+				adjacencyMatrix.put(v, new HashMap<String, Edge>());
+			}
+			adjacencyMatrix.get(v).put(u, edge);
 		}
 	}
 
@@ -218,9 +242,9 @@ public class Topology extends PropertyContainer implements Cloneable {
 	 */
 	public Edge removeEdge(String u, String v) {
 		if (!isDirected) {
-			edges.remove(new Pair<String, String>(v, u));
+			adjacencyMatrix.get(v).remove(u);
 		}
-		return edges.remove(new Pair<String, String>(u, v));
+		return adjacencyMatrix.get(u).remove(v);
 	}
 	
 	/**
@@ -232,7 +256,10 @@ public class Topology extends PropertyContainer implements Cloneable {
 	 * returned
 	 */
 	public Edge getEdge(String u, String v) {
-		return edges.get(new Pair<String, String>(u, v));
+		if (!adjacencyMatrix.containsKey(u)) {
+			return null;
+		}
+		return adjacencyMatrix.get(u).get(v);
 	}
 
 	/**
@@ -243,7 +270,7 @@ public class Topology extends PropertyContainer implements Cloneable {
 	 * returned
 	 */
 	public Edge getEdge(Pair<String, String> endpoints) {
-		return edges.get(endpoints);
+		return getEdge(endpoints.getU(), endpoints.getV());
 	}
 
 	/**
@@ -255,16 +282,17 @@ public class Topology extends PropertyContainer implements Cloneable {
 	 * @see #getEdge(String, String)
 	 */
 	public Set<Pair<String, String>> getAllEdges() {
-		return edges.keySet();
-	}
-
-	/**
-	 * Return the number of nodes in the topology
-	 * 
-	 * @return the number of nodes
-	 */
-	public int numberOfNodes() {
-		return nodes.size();
+		Set<Pair<String, String>> edges = new HashSet<Pair<String, String>>();
+		List<String> seen = new ArrayList<String>();
+		for (String u : adjacencyMatrix.keySet()) {
+			seen.add(u);
+			for (String v : adjacencyMatrix.get(u).keySet()) {
+				if(!seen.contains(v) || isDirected) {
+					edges.add(new Pair<String, String>(u, v));
+				}
+			}
+		}
+		return edges;
 	}
 
 	/**
@@ -273,7 +301,11 @@ public class Topology extends PropertyContainer implements Cloneable {
 	 * @return the number of edges
 	 */
 	public int numberOfEdges() {
-		return isDirected ? edges.size() : edges.size()/2;
+		int numberOfEdges = 0;
+		for (Map<String, Edge> row : adjacencyMatrix.values()) {
+			numberOfEdges += row.size();
+		}
+		return isDirected ? numberOfEdges : numberOfEdges/2;
 	}
 
 	/**
@@ -284,12 +316,28 @@ public class Topology extends PropertyContainer implements Cloneable {
 	@Override
 	public Topology clone() {
 		Topology clone = (Topology) super.clone();
+		
+		Map<String, Node> clonedNodes = new Hashtable<String, Node>();
 		for (String key : nodes.keySet()) {
-			nodes.put(key, nodes.get(key).clone());
+			clonedNodes.put(key, nodes.get(key).clone());
 		}
-		for (Pair<String, String> key : edges.keySet()) {
-			edges.put(key, edges.get(key).clone());
+		nodes = clonedNodes;
+		
+		Map<String, Map<String, Edge>> clonedAdjacencyMatrix = 
+				new Hashtable<String, Map<String, Edge>>();
+		List<String> seen = new ArrayList<String>();
+		for (String u : adjacencyMatrix.keySet()) {
+			clonedAdjacencyMatrix.put(u, new HashMap<String, Edge>());
+			seen.add(u);
+			for (String v : adjacencyMatrix.get(u).keySet()) {
+				if (seen.contains(v) && !isDirected) {
+					clonedAdjacencyMatrix.get(u).put(v, clonedAdjacencyMatrix.get(v).get(u));
+				} else {
+					clonedAdjacencyMatrix.get(u).put(v, adjacencyMatrix.get(u).get(v).clone());
+				}
+			}
 		}
+		adjacencyMatrix = clonedAdjacencyMatrix;
 		return clone;
 	}
 

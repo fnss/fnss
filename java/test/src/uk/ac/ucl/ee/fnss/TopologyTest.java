@@ -2,6 +2,8 @@ package uk.ac.ucl.ee.fnss;
 
 import static org.junit.Assert.*;
 
+import java.util.Set;
+
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -96,13 +98,46 @@ public class TopologyTest {
 	public void testRemoveEdgeUndirected() {
 		Topology topology = new Topology(false);
 		topology.addEdge("a", "b", new Edge());
-		topology.addEdge("b", "a", new Edge());
 		topology.removeEdge("a", "b");
 		assertNull(topology.getEdge("b", "a"));
 		assertNull(topology.getEdge("a", "b"));
 		assertNotNull(topology.getNode("a"));
 		assertNotNull(topology.getNode("b"));
 	}
+	
+	@Test
+	public void testGetAllEdgesUndirected() {
+		Topology topology = new Topology(false);
+		topology.addEdge("a", "b", new Edge());
+		topology.addEdge("b", "c", new Edge());
+		topology.addEdge("a", "c", new Edge());
+		Set<Pair<String, String>> edges = topology.getAllEdges();
+		assertEquals(3, topology.numberOfEdges());
+		assertEquals(3, edges.size());
+		assertTrue(edges.contains(new Pair<String, String>("a", "b")) ^ 
+				edges.contains(new Pair<String, String>("b", "a")));
+		assertTrue(edges.contains(new Pair<String, String>("b", "c")) ^ 
+				edges.contains(new Pair<String, String>("c", "b")));
+		assertTrue(edges.contains(new Pair<String, String>("a", "c")) ^ 
+				edges.contains(new Pair<String, String>("c", "a")));
+	}
+	
+	@Test
+	public void testGetAllEdgesDirected() {
+		Topology topology = new Topology(true);
+		topology.addEdge("a", "b", new Edge());
+		topology.addEdge("b", "c", new Edge());
+		topology.addEdge("a", "c", new Edge());
+		topology.addEdge("c", "a", new Edge());
+		Set<Pair<String, String>> edges = topology.getAllEdges();
+		assertEquals(4, topology.numberOfEdges());
+		assertEquals(4, edges.size());
+		assertTrue(edges.contains(new Pair<String, String>("a", "b")));
+		assertTrue(edges.contains(new Pair<String, String>("b", "c")));
+		assertTrue(edges.contains(new Pair<String, String>("a", "c")));
+		assertTrue(edges.contains(new Pair<String, String>("c", "a")));
+	}
+	
 	
 	@Test
 	public void testEdgeCopy() {
@@ -144,6 +179,8 @@ public class TopologyTest {
 		Node node2 = node1.clone();
 		node2.setProperty("name", "value2");
 		assertEquals("value1", node1.getProperty("name"));
+		node1.setProperty("name", "value3");
+		assertEquals("value2", node2.getProperty("name"));
 	}
 
 	@Test
@@ -158,6 +195,22 @@ public class TopologyTest {
 		assertEquals("value1", topology.getNode("node1").getProperty("name"));
 	}
 	
+	@Test
+	public void testGetAllNodes() {
+		Topology topology = new Topology();
+		topology.addNode("a", new Node());
+		topology.addEdge("b", "c", new Edge());
+		topology.addNode("d", new Node());
+		topology.addEdge("d", "e", new Edge());
+		assertEquals(5, topology.numberOfNodes());
+		assertEquals(5, topology.getAllNodes().size());
+		Set<String> nodes = topology.getAllNodes();
+		assertTrue(nodes.contains("a"));
+		assertTrue(nodes.contains("b"));
+		assertTrue(nodes.contains("c"));
+		assertTrue(nodes.contains("d"));
+		assertTrue(nodes.contains("e"));
+	}
 	
 	@Test
 	public void testNumberOfNodes() {
@@ -195,5 +248,52 @@ public class TopologyTest {
 		topology.addEdge("b", "c", new Edge());
 		topology.addEdge("b", "a", new Edge());
 		assertEquals(3, topology.numberOfEdges());
+	}
+	
+	@Test
+	public void testUndirectedTopologyCopy() {
+		Topology topology = new Topology(false);
+		Node node1 = new Node();
+		node1.setProperty("name", "value1");
+		Edge edge1 = new Edge();
+		edge1.setProperty("name", "value1");
+		edge1.setCapacity(1);
+		Edge edge2 = new Edge();
+		edge2.setProperty("name", "value2");
+		topology.addNode("a", node1);
+		topology.addEdge("a", "b", edge1);
+		topology.addEdge("b", "c", edge2);
+		Topology topology2 = topology.clone();
+		topology.getNode("a").setProperty("name", "value3");
+		topology.getEdge("a", "b").setProperty("name", "value3");
+		assertEquals("value1", topology2.getNode("a").getProperty("name"));
+		assertEquals("value3", topology.getEdge("b", "a").getProperty("name"));
+		assertEquals("value1", topology2.getEdge("a", "b").getProperty("name"));
+		assertEquals("value1", topology2.getEdge("b", "a").getProperty("name"));
+		topology2.getEdge("a", "b").setCapacity(2);
+		assertEquals(1, topology.getEdge("a", "b").getCapacity(), 0.1);
+		assertEquals(2, topology2.getEdge("b", "a").getCapacity(), 0.1);
+	}
+	
+	@Test
+	public void testDirectedTopologyCopy() {
+		Topology topology = new Topology(true);
+		Edge edge1 = new Edge();
+		edge1.setProperty("name", "value1");
+		edge1.setCapacity(1);
+		Edge edge2 = new Edge();
+		edge2.setProperty("name", "value2");
+		edge2.setCapacity(2);
+		topology.addEdge("a", "b", edge1);
+		topology.addEdge("b", "a", edge2);
+		Topology topology2 = topology.clone();
+		topology.getEdge("a", "b").setProperty("name", "value3");
+		assertEquals("value1", topology2.getEdge("a", "b").getProperty("name"));
+		assertEquals("value2", topology2.getEdge("b", "a").getProperty("name"));
+		topology2.getEdge("a", "b").setCapacity(3);
+		topology2.getEdge("b", "a").setCapacity(4);
+		assertEquals(1, topology.getEdge("a", "b").getCapacity(), 0.1);
+		assertEquals(2, topology.getEdge("b", "a").getCapacity(), 0.1);
+		assertEquals(3, topology2.getEdge("a", "b").getCapacity(), 0.1);
 	}
 }
