@@ -9,8 +9,8 @@ __pycache__
 !.gitignore
 
 # Ignore aggregated built files
-doc
-dist
+/doc
+/dist
 
 # Ignore core built files
 core/dist
