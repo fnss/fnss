@@ -389,9 +389,11 @@ def parse_topology_zoo(path):
     """
     Parse a topology from the Topology Zoo dataset.
     
-    Note: if the topology to be parsed contains multilinks, i.e. multiple links
-    between the same pair or nodes, the parsing may fail or not parse only one
-    link.
+    Note: the parsing of multigraphs is currently not supported. If the
+    topology to be parsed contains bundled links, i.e. multiple links between
+    the same pair or nodes, the parsing may fail or parse only one link of a
+    bundle. Even if the parsing is successful, the use of some algorithms for
+    topology configuration may fail or have unexpected results.
     
     Parameters
     ----------
@@ -419,9 +421,9 @@ def parse_topology_zoo(path):
         topo_zoo_graph = nx.read_graphml(path)
     else:
         raise ValueError('Invalid input file format. It must either be a GML '\
-                         'or GraohML file (with extensions .gml or .graphml)')
-    topology = Topology() if topo_zoo_graph.is_undirected() \
-               else DirectedTopology()
+                         'or GraphML file (with extensions .gml or .graphml)')
+    topology = DirectedTopology() if topo_zoo_graph.is_directed() \
+               else Topology()
     
     for tv in topo_zoo_graph.nodes():
         v = try_convert_int(tv)

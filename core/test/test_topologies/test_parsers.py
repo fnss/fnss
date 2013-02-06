@@ -4,6 +4,7 @@ import unittest
 import networkx as nx
 from nose.tools import *
 from fnss.topologies.parsers import *
+from fnss.topologies.topology import Topology
 
 RES_DIR = environ['test.res.dir'] if 'test.res.dir' in environ else None
 
@@ -47,6 +48,14 @@ class Test(unittest.TestCase):
         topology = parse_inet(inet_file)
         assert_equal(3500, topology.number_of_nodes())
         assert_equal(6146, topology.number_of_edges())
+        
+    @unittest.skipIf(RES_DIR is None, "Resources folder not present")
+    def test_parse_topology_zoo(self):
+        topozoo_file = path.join(RES_DIR,'topozoo-arnes.graphml')
+        topology = parse_topology_zoo(topozoo_file)
+        assert_equal(type(topology), Topology)
+        assert_equal(34, topology.number_of_nodes())
+        assert_equal(46, topology.number_of_edges())
     
     
         
