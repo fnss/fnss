@@ -1,5 +1,7 @@
 SHELL = /bin/sh
 
+VERSION = 0.1.0
+
 CORE_DIR = core
 CPP_DIR  = cpp
 JAVA_DIR = java
@@ -8,6 +10,8 @@ NS3_DIR  = ns3
 
 DOC_DIR = doc
 DIST_DIR = dist
+
+ARCHIVE_NAME = fnss-$(VERSION)
 
 .PHONY: clean doc dist
 
@@ -24,7 +28,6 @@ doc: dist docclean
 	cp -r $(JAVA_DIR)/doc/* $(DOC_DIR)/java
 	cp -r $(CPP_DIR)/doc/html/* $(DOC_DIR)/cpp
 
-
 # Collect all distribution files
 dist:
 	cd $(JAVA_DIR); ant
@@ -40,6 +43,8 @@ dist:
 	cp -r $(JAVA_DIR)/dist/* $(DIST_DIR)/java
 	cp -r $(CPP_DIR)/dist/* $(DIST_DIR)/cpp
 	cp -r $(NS2_DIR)/dist/* $(DIST_DIR)/ns2
+	zip --exclude=$(DOC_DIR)/\* --exclude $(DIST_DIR)/\* --exclude ".*" -r $(DIST_DIR)/$(ARCHIVE_NAME).zip *
+	tar --exclude=$(DOC_DIR) --exclude=$(DIST_DIR) --exclude=".*" -czf $(DIST_DIR)/$(ARCHIVE_NAME).tar.gz *
 
 
 # Clean centralized dist directory
