@@ -69,7 +69,7 @@ Alternatively, you can use the make script provided:
 `make test`
 
 ## Requirements
-To run the core library of FNSS you need to have [Python](http://www.python.org/) (version 2.6 or later).
+To run the core library of FNSS you need to have [Python](http://www.python.org/) (version 2.7 or later).
 In addition you also need the following Python packages.
 
  * [numpy](http://www.numpy.org/) (version 1.6 or later)

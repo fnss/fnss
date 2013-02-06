@@ -22,7 +22,7 @@ Installing from source
 
 You can install from source by downloading a source archive file
 (tar.gz or zip) or by checking out the source files from the
-Git source code repository.
+`GitHub repository <http://www.github.com/fnss/fnss>`_.
 
 Source archive file
 -------------------
@@ -78,7 +78,7 @@ Requirements
 Python
 ------
 
-To use NetworkX you need Python version 2.6 or later.
+To use NetworkX you need Python version 2.7 or later.
 
 
 Required packages

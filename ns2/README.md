@@ -14,7 +14,7 @@ where `topology.xml` is the XML file of the topology and `output.tcl` is the nam
    application or protocol stack.
 
 ## Requirements
-* Python (version 2.6 or later)
+* Python (version 2.7 or later)
 * FNSS core library
 
 ## License
