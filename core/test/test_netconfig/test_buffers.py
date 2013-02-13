@@ -1,5 +1,12 @@
-import unittest
-from nose.tools import *
+import sys
+if sys.version_info[:2] >= (2, 7):
+    import unittest
+else:
+    try:
+        import unittest2 as unittest
+    except ImportError:
+        raise ImportError("The unittest2 package is needed to run the tests.") 
+del sys
 from fnss.netconfig.buffers import *
 from fnss.topologies.topology import Topology, DirectedTopology
 from fnss.topologies.randmodels import erdos_renyi_topology
@@ -35,7 +42,7 @@ class Test(unittest.TestCase):
     
     def test_buffer_sizes_bw_delay_prod(self):
         set_buffer_sizes_bw_delay_prod(self.G)
-        assert_true(all([self.G.edge[u][v]['buffer'] is not None 
+        self.assertTrue(all([self.G.edge[u][v]['buffer'] is not None 
                          for (u, v) in self.G.edges()]))
 
     def test_buffer_sizes_bw_delay_prod_unused_links(self):
@@ -46,7 +53,7 @@ class Test(unittest.TestCase):
         set_capacities_constant(topo, 10)
         set_delays_constant(topo, 2)
         set_buffer_sizes_bw_delay_prod(topo)
-        assert_true(all([topo.edge[u][v]['buffer'] is not None 
+        self.assertTrue(all([topo.edge[u][v]['buffer'] is not None 
                          for (u, v) in topo.edges()]))
 
     def test_buffer_sizes_bw_delay_prod_unused_links_no_return_path(self):
@@ -56,7 +63,7 @@ class Test(unittest.TestCase):
         topo.add_edge(3, 2, {'weight': 1})
         set_capacities_constant(topo, 10)
         set_delays_constant(topo, 2)
-        assert_raises(ValueError, set_buffer_sizes_bw_delay_prod, topo)
+        self.assertRaises(ValueError, set_buffer_sizes_bw_delay_prod, topo)
 
 
     def test_buffer_sizes_bw_delay_prod_no_return_path(self):
@@ -66,19 +73,19 @@ class Test(unittest.TestCase):
         topo.add_edge(3, 2, {'weight': 1})
         set_capacities_constant(topo, 10)
         set_delays_constant(topo, 2)
-        assert_raises(ValueError, set_buffer_sizes_bw_delay_prod, topo)
+        self.assertRaises(ValueError, set_buffer_sizes_bw_delay_prod, topo)
 
     def test_buffers_size_link_bandwidth(self):
         set_buffer_sizes_link_bandwidth(self.G)
-        assert_true(all([self.G.edge[u][v]['buffer'] is not None 
+        self.assertTrue(all([self.G.edge[u][v]['buffer'] is not None 
                          for (u, v) in self.G.edges()]))
 
     def test_buffers_size_constant(self):
         set_buffer_sizes_constant(self.G, 65000, buffer_unit='bytes')
-        assert_true(all([self.G.edge[u][v]['buffer'] == 65000 
+        self.assertTrue(all([self.G.edge[u][v]['buffer'] == 65000 
                          for (u, v) in self.G.edges()]))
         
     def test_get_buffer_sizes(self):
         set_buffer_sizes_constant(self.G, 65000, buffer_unit='bytes')
         buffers = get_buffer_sizes(self.G)
-        assert_true(all([buffers[(u, v)] == 65000 for (u, v) in buffers]))
+        self.assertTrue(all([buffers[(u, v)] == 65000 for (u, v) in buffers]))

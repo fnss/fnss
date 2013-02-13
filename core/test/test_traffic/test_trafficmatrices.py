@@ -1,5 +1,12 @@
-from nose.tools import *
-import unittest
+import sys
+if sys.version_info[:2] >= (2, 7):
+    import unittest
+else:
+    try:
+        import unittest2 as unittest
+    except ImportError:
+        raise ImportError("The unittest2 package is needed to run the tests.") 
+del sys
 from os import environ, path
 from fnss.traffic.trafficmatrices import *
 from fnss import erdos_renyi_topology, set_capacities_random, set_capacities_constant, ring_topology
@@ -37,16 +44,16 @@ class Test(unittest.TestCase):
         tm.add_flow(3, 'Four', 4000)
         tm[(4, 5)] = 3000
         tm[('Orig', 'Dest')] = 3000
-        assert_equal(tm[(1, 3)], 1500)
-        assert_equal(tm.flow[1][3], 1500)
-        assert_equal(tm.flows()[(1, 3)], 1500)
-        assert_equal(5, len(tm))
+        self.assertEqual(tm[(1, 3)], 1500)
+        self.assertEqual(tm.flow[1][3], 1500)
+        self.assertEqual(tm.flows()[(1, 3)], 1500)
+        self.assertEqual(5, len(tm))
         flow = tm.pop_flow(1, 2)
-        assert_equal(1000, flow)
+        self.assertEqual(1000, flow)
         del tm[(1, 3)]
-        assert_equal(3, len(tm))
-        assert_false(1 in tm.flow)
-        assert_false((1, 3) in tm)
+        self.assertEqual(3, len(tm))
+        self.assertFalse(1 in tm.flow)
+        self.assertFalse((1, 3) in tm)
 
 
     def test_traffic_matrix_sequence_class(self):
@@ -66,13 +73,13 @@ class Test(unittest.TestCase):
         tms.append(tm1)
         tms.append(tm2)
         tms.append(tm3)
-        assert_equal(1000, tms[0][(1, 2)])
-        assert_equal(1000, tms[0].flow[1][2])
-        assert_equal(1000, tms.get(0)[(1, 2)])
-        assert_equal(1000, tms.get(0).flows()[(1, 2)])
-        assert_equal(3, len(tms))
+        self.assertEqual(1000, tms[0][(1, 2)])
+        self.assertEqual(1000, tms[0].flow[1][2])
+        self.assertEqual(1000, tms.get(0)[(1, 2)])
+        self.assertEqual(1000, tms.get(0).flows()[(1, 2)])
+        self.assertEqual(3, len(tms))
         del tms[0]
-        assert_equal(2, len(tms))
+        self.assertEqual(2, len(tms))
         
         
     def test_link_loads(self):
@@ -85,35 +92,35 @@ class Test(unittest.TestCase):
         tm.add_flow(1, 4, 70)
         tm.add_flow(4, 2, 50)
         load = link_loads(topo, tm)
-        assert_almost_equal(0.6, load[(0, 1)])
-        assert_almost_equal(1.0, load[(1, 0)])
-        assert_almost_equal(0.4, load[(1, 2)])
-        assert_almost_equal(0.0, load[(2, 1)])
-        assert_almost_equal(0.7, load[(0, 4)])
-        assert_almost_equal(0.5, load[(4, 3)])
+        self.assertAlmostEqual(0.6, load[(0, 1)])
+        self.assertAlmostEqual(1.0, load[(1, 0)])
+        self.assertAlmostEqual(0.4, load[(1, 2)])
+        self.assertAlmostEqual(0.0, load[(2, 1)])
+        self.assertAlmostEqual(0.7, load[(0, 4)])
+        self.assertAlmostEqual(0.5, load[(4, 3)])
 
         
     def test_static_traffic_matrix(self):
         tm = static_traffic_matrix(self.G, 10, 8, max_u=0.9)
-        assert_almost_equal(0.9, max(link_loads(self.G, tm).values()))
-        assert_less_equal(0, min(link_loads(self.G, tm).values()))
+        self.assertAlmostEqual(0.9, max(link_loads(self.G, tm).values()))
+        self.assertLessEqual(0, min(link_loads(self.G, tm).values()))
 
 
     def test_stationary_traffic_matrix(self):
         tms = stationary_traffic_matrix(self.G, mean=10, stddev=3.5, gamma=5, 
                                         log_psi=-0.3, n=5, max_u=0.9)
-        assert_equal(5, len(tms))
-        assert_almost_equal(0.9, max([max(link_loads(self.G, tm).values()) for tm in tms]))
-        assert_less_equal(0, min([min(link_loads(self.G, tm).values()) for tm in tms]))
+        self.assertEqual(5, len(tms))
+        self.assertAlmostEqual(0.9, max([max(link_loads(self.G, tm).values()) for tm in tms]))
+        self.assertLessEqual(0, min([min(link_loads(self.G, tm).values()) for tm in tms]))
 
 
     def test_sin_cyclostationary_traffic_matrix(self):
         tms = sin_cyclostationary_traffic_matrix(self.G, 10, 0.2, gamma=0.3, 
                                                 log_psi=-0.3, delta=0.2, 
                                                 n=24, periods=2, max_u=0.9)
-        assert_equal(48, len(tms))
-        assert_almost_equal(0.9, max([max(link_loads(self.G, tm).values()) for tm in tms]))
-        assert_less_equal(0, min([min(link_loads(self.G, tm).values()) for tm in tms]))
+        self.assertEqual(48, len(tms))
+        self.assertAlmostEqual(0.9, max([max(link_loads(self.G, tm).values()) for tm in tms]))
+        self.assertLessEqual(0, min([min(link_loads(self.G, tm).values()) for tm in tms]))
     
     
     @unittest.skipIf(TMP_DIR is None, "Temp folder not present")
@@ -123,7 +130,7 @@ class Test(unittest.TestCase):
         write_traffic_matrix(tm, tmp_tm_file)
         read_tm = read_traffic_matrix(tmp_tm_file)
         u, v = tm.od_pairs()[2]
-        assert_almost_equal(tm[(u, v)], read_tm[(u, v)])
+        self.assertAlmostEqual(tm[(u, v)], read_tm[(u, v)])
 
     
     @unittest.skipIf(TMP_DIR is None, "Temp folder not present")
@@ -134,6 +141,6 @@ class Test(unittest.TestCase):
         write_traffic_matrix(tms, tmp_tms_file)
         read_tms = read_traffic_matrix(tmp_tms_file)
         u, v = tms[3].od_pairs()[2]
-        assert_almost_equal(tms[3][(u, v)], read_tms[3][(u, v)])
+        self.assertAlmostEqual(tms[3][(u, v)], read_tms[3][(u, v)])
 
 

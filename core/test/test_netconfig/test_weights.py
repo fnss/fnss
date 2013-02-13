@@ -1,5 +1,12 @@
-import unittest
-from nose.tools import *
+import sys
+if sys.version_info[:2] >= (2, 7):
+    import unittest
+else:
+    try:
+        import unittest2 as unittest
+    except ImportError:
+        raise ImportError("The unittest2 package is needed to run the tests.") 
+del sys
 from fnss.topologies.randmodels import erdos_renyi_topology
 from fnss.netconfig.capacities import set_capacities_random_uniform
 from fnss.netconfig.delays import set_delays_constant
@@ -32,15 +39,15 @@ class Test(unittest.TestCase):
         pass
     
     def test_weights_constant(self):
-        assert_true(all([self.G.edge[u][v]['weight'] in [2, 5] 
+        self.assertTrue(all([self.G.edge[u][v]['weight'] in [2, 5] 
                          for (u, v) in self.G.edges()]))
 
     def test_weights_inverse_capacity(self):
         set_weights_inverse_capacity(self.G)
-        assert_true(all([self.G.edge[u][v]['weight'] in [1, 2] 
+        self.assertTrue(all([self.G.edge[u][v]['weight'] in [1, 2] 
                          for (u, v) in self.G.edges()]))
         
     def test_weights_delays(self):
         set_weights_delays(self.G)
-        assert_true(all([self.G.edge[u][v]['weight'] in [1, 4] 
+        self.assertTrue(all([self.G.edge[u][v]['weight'] in [1, 4] 
                          for (u, v) in self.G.edges()]))

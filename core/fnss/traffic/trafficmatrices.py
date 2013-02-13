@@ -12,7 +12,6 @@ XML files with provided functions.
 """
 import networkx as nx
 import xml.etree.ElementTree as ET
-from collections import Counter
 from multiprocessing import cpu_count, Pool
 from math import exp, sin, pi, log, sqrt
 #from random import lognormvariate, normalvariate
@@ -129,8 +128,8 @@ class TrafficMatrix(object):
         flows : dict
             A dictionary of all traffic volumes keyed by OD pair 
         """
-        return {(o, d): self.flow[o][d] for o in self.flow 
-                for d in self.flow[o] if o != d}
+        return dict([((o, d), self.flow[o][d]) for o in self.flow
+                     for d in self.flow[o] if o != d])
         
     def od_pairs(self):
         """
@@ -505,8 +504,8 @@ def stationary_traffic_matrix(topology, mean, stddev, gamma, log_psi, n,
     volume_unit = static_tm.attrib['volume_unit']
     mean_dict = static_tm.flows()
     psi = exp(log_psi)
-    std_dict = {(o, d) : (m/psi)**(1.0/gamma) 
-                for (o, d), m in mean_dict.items()}
+    std_dict = dict([((o, d), (m/psi)**(1.0/gamma))
+                     for (o, d), m in mean_dict.items()])
     flows = {}
     for o, d in mean_dict:
         # Implementation without Numpy:
@@ -627,8 +626,8 @@ def sin_cyclostationary_traffic_matrix(topology, mean, stddev, gamma, log_psi,
     volume_unit = static_tm.attrib['volume_unit']
     mean_dict = static_tm.flows()
     psi = exp(log_psi)
-    std_dict = {(o, d) : (m/psi)**(1.0/gamma) 
-                for (o, d), m in mean_dict.items()}
+    std_dict = dict([((o, d), (m/psi)**(1.0/gamma))
+                     for (o, d), m in mean_dict.items()])
     od_pairs = static_tm.od_pairs()
     for _ in range(periods):
         for i in range(n):
@@ -680,15 +679,22 @@ def __ranking_metrics_heuristic(topology, od_pairs=None):
     
     fan_in, fan_out = fan_in_out_capacities(topology)
     degree = topology.degree()
-    min_capacity = {(u, v): min(fan_out[u], fan_in[v]) for u, v in od_pairs}
-    min_degree = {(u, v): min(degree[u], degree[v]) for u, v in od_pairs}
+    min_capacity = dict([((u, v), min(fan_out[u], fan_in[v]))
+                         for u, v in od_pairs])
+    min_degree = dict([((u, v), min(degree[u], degree[v]))
+                       for u, v in od_pairs])
     
     # NFUR calculation is expensive, so before calculating it, the code
     # checks if it is really needed, i.e. if there are ties after capacity
     # and degree sorting
     cap_deg_pairs = [(min_capacity[(u, v)], min_degree[(u, v)]) 
                      for u, v in od_pairs]
-    nfur_required = any([val > 1 for val in Counter(cap_deg_pairs).values()])
+    try:
+        # The import will fail for Python < 2.7
+        from collections import Counter
+        nfur_required = any([val > 1 for val in Counter(cap_deg_pairs).values()])
+    except ImportError:
+        nfur_required = True
     if not nfur_required:
         # Sort all OD_pairs
         return sorted(od_pairs, key=lambda od_pair: (min_capacity[od_pair], 
@@ -707,7 +713,8 @@ def __ranking_metrics_heuristic(topology, od_pairs=None):
     # in reverse order the max of NFURs. Since all NFURs are >=0, 
     # using the opposite yields the same results as the inverse, but there
     # is no risk of incurring in divisions by 0.
-    max_inv_nfur = {(u, v): - max(nfur[u], nfur[v]) for u, v in od_pairs}
+    max_inv_nfur = dict([((u, v), - max(nfur[u], nfur[v]))
+                         for u, v in od_pairs])
         
     # Sort all OD_pairs
     return sorted(od_pairs, key=lambda od_pair: (min_capacity[od_pair], 
@@ -771,7 +778,8 @@ def __calc_nfur(topology, fast, parallelize=True):
     args = [(__nfur_func, (topology, chunk, betw)) for chunk in edges_chunks]
     result = pool.map(__map_func, args)
     # reduce operation
-    return {v: max([result[i][v] for i in range(len(result))]) for v in betw}
+    return dict([(v, max([result[i][v] for i in range(len(result))]))
+                 for v in betw])
 
 
 def __map_func(x):
@@ -954,12 +962,11 @@ def link_loads(topology, traffic_matrix, routing_matrix=None):
         for hop in range(len(path) - 1):
             topology.edge[path[hop]][path[hop + 1]]['load'] += \
                         traffic_matrix.flow[o][d]
-    return {(u, v): norm_factor * 
-            float(topology.edge[u][v]['load']) \
-                        / float(topology.edge[u][v]['capacity']) 
-            for u, v in topology.edges()}
+    return dict([((u, v), norm_factor * 
+                  float(topology.edge[u][v]['load']) \
+                  / float(topology.edge[u][v]['capacity']))
+                 for u, v in topology.edges()])
     
-
 
 def read_traffic_matrix(path, encoding='utf-8'):
     """

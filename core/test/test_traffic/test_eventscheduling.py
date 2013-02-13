@@ -1,7 +1,14 @@
-import unittest
+import sys
+if sys.version_info[:2] >= (2, 7):
+    import unittest
+else:
+    try:
+        import unittest2 as unittest
+    except ImportError:
+        raise ImportError("The unittest2 package is needed to run the tests.") 
+del sys
 from os import environ, path
 from fnss.traffic.eventscheduling import *
-from nose.tools import *
 from random import random
 
 TMP_DIR = environ['test.tmp.dir'] if 'test.tmp.dir' in environ else None
@@ -33,11 +40,11 @@ class Test(unittest.TestCase):
         es = EventSchedule()
         es.add(8, {'add_order': 1}, absolute_time=True)
         es.add(5, {'add_order': 2}, absolute_time=True)
-        assert_equal(2, es.number_of_events())
-        assert_equal(5, es[0][0])
-        assert_equal({'add_order': 2}, es[0][1])
-        assert_equal(8, es[1][0])
-        assert_equal({'add_order': 1}, es[1][1])
+        self.assertEqual(2, es.number_of_events())
+        self.assertEqual(5, es[0][0])
+        self.assertEqual({'add_order': 2}, es[0][1])
+        self.assertEqual(8, es[1][0])
+        self.assertEqual({'add_order': 1}, es[1][1])
         
     
     def test_event_schedule_pop(self):
@@ -46,11 +53,11 @@ class Test(unittest.TestCase):
         es.add(5, {'add_order': 2}, absolute_time=True)
         t0, e0 = es.pop(0)
         t1, e1 = es.pop(0)
-        assert_equal(5, t0)
-        assert_equal(8, t1)
-        assert_equal({'add_order': 2}, e0)
-        assert_equal({'add_order': 1}, e1)
-        assert_equal(0, es.number_of_events())
+        self.assertEqual(5, t0)
+        self.assertEqual(8, t1)
+        self.assertEqual({'add_order': 2}, e0)
+        self.assertEqual({'add_order': 1}, e1)
+        self.assertEqual(0, es.number_of_events())
     
     
     def test_event_schedule_events_between(self):
@@ -62,11 +69,11 @@ class Test(unittest.TestCase):
         es.add(6, {'event_order': 4}, absolute_time=True)
         es.add(8, {'event_order': 6}, absolute_time=True)
         events = es.events_between(5, 7)
-        assert_equal(2, events.number_of_events())
-        assert_equal(5, events[0][0])
-        assert_equal({'event_order': 3}, events[0][1])
-        assert_equal(6, events[1][0])
-        assert_equal({'event_order': 4}, events[1][1])
+        self.assertEqual(2, events.number_of_events())
+        self.assertEqual(5, events[0][0])
+        self.assertEqual({'event_order': 3}, events[0][1])
+        self.assertEqual(6, events[1][0])
+        self.assertEqual({'event_order': 4}, events[1][1])
 
 
     def test_event_schedule_merge_with(self):
@@ -77,12 +84,12 @@ class Test(unittest.TestCase):
         es2.add(4000, {'event_order': 2}, absolute_time=True)
         es2.add(7000, {'event_order': 5}, absolute_time=True)
         es1.merge_with(es2)
-        assert_equal(4, len(es1))
-        assert_equal('s', es1.attrib['t_unit'])
-        assert_equal(3, es1[0][0])
-        assert_equal(4, es1[1][0])
-        assert_equal(5, es1[2][0])
-        assert_equal(7, es1[3][0])
+        self.assertEqual(4, len(es1))
+        self.assertEqual('s', es1.attrib['t_unit'])
+        self.assertEqual(3, es1[0][0])
+        self.assertEqual(4, es1[1][0])
+        self.assertEqual(5, es1[2][0])
+        self.assertEqual(7, es1[3][0])
 
 
     def test_event_schedule_operators(self):
@@ -93,14 +100,14 @@ class Test(unittest.TestCase):
         es.add(7, {'event_order': 5}, absolute_time=True)
         es.add(6, {'event_order': 4}, absolute_time=True)
         es.add(8, {'event_order': 6}, absolute_time=True)
-        assert_equal(6, len(es))
-        assert_equal(2, len(es[3:5]))
+        self.assertEqual(6, len(es))
+        self.assertEqual(2, len(es[3:5]))
         del es[0]
-        assert_equal(5, len(es))
+        self.assertEqual(5, len(es))
         for ev in es:
             t, _ = ev
-            assert_greater_equal(t, es.attrib['t_start'])
-            assert_less_equal(t, es.attrib['t_end'])
+            self.assertGreaterEqual(t, es.attrib['t_start'])
+            self.assertLessEqual(t, es.attrib['t_end'])
             
     
     def test_deterministic_process_event_schedule(self):
@@ -108,12 +115,12 @@ class Test(unittest.TestCase):
         schedule = deterministic_process_event_schedule(20, 0, 80001, 'ms', 
                                                         self.event_gen, 
                                                         0.5, action=action)
-        assert_is_not_none(schedule)
-        assert_equal(4000, len(schedule))
+        self.assertIsNotNone(schedule)
+        self.assertEqual(4000, len(schedule))
         for time, event in schedule: 
-            assert_true(event['action'] in action)
-            assert_true(time >= 0)
-            assert_true(time <= 80001)
+            self.assertTrue(event['action'] in action)
+            self.assertTrue(time >= 0)
+            self.assertTrue(time <= 80001)
     
     
     def test_poisson_process_event_schedule(self):
@@ -121,11 +128,11 @@ class Test(unittest.TestCase):
         schedule = poisson_process_event_schedule(15, 0, 8000, 'ms', 
                                                   self.event_gen,
                                                   0.5, action=action)
-        assert_is_not_none(schedule)
+        self.assertIsNotNone(schedule)
         for time, event in schedule: 
-            assert_true(event['action'] in action)
-            assert_true(time >= 0)
-            assert_true(time <= 8000)
+            self.assertTrue(event['action'] in action)
+            self.assertTrue(time >= 0)
+            self.assertTrue(time <= 8000)
             
     @unittest.skipIf(TMP_DIR is None, "Temp folder not present")
     def test_read_write_event_schedule(self):
@@ -137,10 +144,10 @@ class Test(unittest.TestCase):
         tmp_es_file = path.join(TMP_DIR, 'event-schedule.xml')
         write_event_schedule(schedule, tmp_es_file)
         read_schedule = read_event_schedule(tmp_es_file)
-        assert_equal(len(schedule), len(read_schedule))
+        self.assertEqual(len(schedule), len(read_schedule))
         read_time, read_event = read_schedule[2]
-        assert_equal(time, read_time)
-        assert_equal(event, read_event)
+        self.assertEqual(time, read_time)
+        self.assertEqual(event, read_event)
         
     @unittest.skipIf(TMP_DIR is None, "Temp folder not present")
     def test_read_write_event_schedule_special_type(self):
@@ -152,12 +159,12 @@ class Test(unittest.TestCase):
         tmp_es_file = path.join(TMP_DIR, 'event-schedule-special.xml')
         write_event_schedule(schedule, tmp_es_file)
         read_schedule = read_event_schedule(tmp_es_file)
-        assert_equal(len(schedule), len(read_schedule))
+        self.assertEqual(len(schedule), len(read_schedule))
         _, read_event = read_schedule[0]
-        assert_equal(event, read_event)
-        assert_equal(tuple, type(read_event['tuple_param']))
-        assert_equal(list, type(read_event['list_param']))
-        assert_equal(dict, type(read_event['dict_param']))
-        assert_equal(event['dict_param'], read_event['dict_param'])    
-        assert_equal(event['list_param'], read_event['list_param'])  
-        assert_equal(event['tuple_param'], read_event['tuple_param'])  
+        self.assertEqual(event, read_event)
+        self.assertEqual(tuple, type(read_event['tuple_param']))
+        self.assertEqual(list, type(read_event['list_param']))
+        self.assertEqual(dict, type(read_event['dict_param']))
+        self.assertEqual(event['dict_param'], read_event['dict_param'])    
+        self.assertEqual(event['list_param'], read_event['list_param'])  
+        self.assertEqual(event['tuple_param'], read_event['tuple_param'])  

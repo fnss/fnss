@@ -1,5 +1,12 @@
-import unittest
-from nose.tools import *
+import sys
+if sys.version_info[:2] >= (2, 7):
+    import unittest
+else:
+    try:
+        import unittest2 as unittest
+    except ImportError:
+        raise ImportError("The unittest2 package is needed to run the tests.") 
+del sys
 from fnss.netconfig.nodeconfig import *
 from fnss.topologies.simplemodels import full_mesh_topology
 
@@ -29,49 +36,49 @@ class Test(unittest.TestCase):
 
     def test_add_get_remove_stack(self):
         for v in self.topo.nodes():
-            assert_is_none(get_stack(self.topo, v))
+            self.assertIsNone(get_stack(self.topo, v))
         add_stack(self.topo, 12, self.stack_1_name, self.stack_1_props)
-        assert_equal(2, len(get_stack(self.topo, 12)))
-        assert_is_none(get_stack(self.topo, 3))
-        assert_equal(self.stack_1_name, get_stack(self.topo, 12)[0])
-        assert_equal(self.stack_1_props, get_stack(self.topo, 12)[1])
+        self.assertEqual(2, len(get_stack(self.topo, 12)))
+        self.assertIsNone(get_stack(self.topo, 3))
+        self.assertEqual(self.stack_1_name, get_stack(self.topo, 12)[0])
+        self.assertEqual(self.stack_1_props, get_stack(self.topo, 12)[1])
         add_stack(self.topo, 12, self.stack_1_name, self.stack_2_props)
-        assert_equal(self.stack_1_name, get_stack(self.topo, 12)[0])
-        assert_equal(self.stack_2_props, get_stack(self.topo, 12)[1])
+        self.assertEqual(self.stack_1_name, get_stack(self.topo, 12)[0])
+        self.assertEqual(self.stack_2_props, get_stack(self.topo, 12)[1])
         add_stack(self.topo, 12, self.stack_2_name, self.stack_2_props)
-        assert_equal(self.stack_2_name, get_stack(self.topo, 12)[0])
-        assert_equal(self.stack_2_props, get_stack(self.topo, 12)[1])
+        self.assertEqual(self.stack_2_name, get_stack(self.topo, 12)[0])
+        self.assertEqual(self.stack_2_props, get_stack(self.topo, 12)[1])
         remove_stack(self.topo, 12)
-        assert_is_none(get_stack(self.topo, 12))
+        self.assertIsNone(get_stack(self.topo, 12))
         
     def test_clear_stacks(self):
         for v in self.topo.nodes():
             add_stack(self.topo, v, self.stack_1_name, self.stack_1_props)
         clear_stacks(self.topo)
         for v in self.topo.nodes():
-            assert_is_none(get_stack(self.topo, v))
+            self.assertIsNone(get_stack(self.topo, v))
     
     def test_add_get_remoe_applications(self):
         for v in self.topo.nodes():
-            assert_equal([], get_application_names(self.topo, v))
+            self.assertEqual([], get_application_names(self.topo, v))
         add_application(self.topo, 10, self.app_1_name, self.app_1_props)
-        assert_equal([self.app_1_name], get_application_names(self.topo, 10))
-        assert_equal(self.app_1_props, get_application_properties(self.topo, 10, self.app_1_name))
+        self.assertEqual([self.app_1_name], get_application_names(self.topo, 10))
+        self.assertEqual(self.app_1_props, get_application_properties(self.topo, 10, self.app_1_name))
         add_application(self.topo, 10, self.app_1_name, self.app_2_props)
-        assert_equal([self.app_1_name], get_application_names(self.topo, 10))
-        assert_equal(self.app_2_props, get_application_properties(self.topo, 10, self.app_1_name))
+        self.assertEqual([self.app_1_name], get_application_names(self.topo, 10))
+        self.assertEqual(self.app_2_props, get_application_properties(self.topo, 10, self.app_1_name))
         add_application(self.topo, 10, self.app_2_name, self.app_2_props)
-        assert_equal([self.app_1_name, self.app_2_name], get_application_names(self.topo, 10))
-        assert_equal(self.app_2_props, get_application_properties(self.topo, 10, self.app_1_name))
-        assert_equal(self.app_2_props, get_application_properties(self.topo, 10, self.app_2_name))
+        self.assertEqual([self.app_1_name, self.app_2_name], get_application_names(self.topo, 10))
+        self.assertEqual(self.app_2_props, get_application_properties(self.topo, 10, self.app_1_name))
+        self.assertEqual(self.app_2_props, get_application_properties(self.topo, 10, self.app_2_name))
         remove_application(self.topo, 10, self.app_2_name)
-        assert_equal([self.app_1_name], get_application_names(self.topo, 10))
+        self.assertEqual([self.app_1_name], get_application_names(self.topo, 10))
         remove_application(self.topo, 10, self.app_1_name)
-        assert_equal([], get_application_names(self.topo, 10))
+        self.assertEqual([], get_application_names(self.topo, 10))
         add_application(self.topo, 10, self.app_1_name, self.app_1_props)
         add_application(self.topo, 10, self.app_2_name, self.app_1_props)
         remove_application(self.topo, 10)
-        assert_equal([], get_application_names(self.topo, 10))
+        self.assertEqual([], get_application_names(self.topo, 10))
         
     def test_clear_applications(self):
         for v in self.topo.nodes():
@@ -79,4 +86,4 @@ class Test(unittest.TestCase):
             add_application(self.topo, v, self.app_2_name, self.app_2_props)
         clear_applications(self.topo)
         for v in self.topo.nodes():
-            assert_equal([], get_application_names(self.topo, v))
+            self.assertEqual([], get_application_names(self.topo, v))
