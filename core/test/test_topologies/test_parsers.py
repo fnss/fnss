@@ -64,6 +64,33 @@ class Test(unittest.TestCase):
         self.assertFalse(topology.is_multigraph())
         self.assertEqual(34, topology.number_of_nodes())
         self.assertEqual(46, topology.number_of_edges())
-    
-    
         
+    @unittest.skipIf(RES_DIR is None, "Resources folder not present")
+    def test_parse_brite_as(self):
+        brite_file = path.join(RES_DIR,'brite-as.brite')
+        topology = parse_brite(brite_file, directed=False)
+        self.assertEqual(type(topology), Topology)
+        self.assertEqual(1000, topology.number_of_nodes())
+        self.assertEqual(2000, topology.number_of_edges())
+        #851    570    980    2    2    851    AS_NODE
+        self.assertTrue(851 in topology.nodes())
+        self.assertEqual(570, topology.node[851]['longitude'])
+        self.assertEqual(980, topology.node[851]['latitude'])
+        self.assertEqual('AS_NODE', topology.node[851]['type'])
+        # 1478    716    230    212.11553455605272    0.7075412636166207    0.0011145252848059164    716    230    E_AS    U
+        #assert_true((716, 230) in topology.edges())
+        self.assertEquals(1478, topology.edge[716][230]['id'])
+        self.assertAlmostEquals(212.11553455605272, topology.edge[716][230]['length'], 0.01)
+
+
+    @unittest.skipIf(RES_DIR is None, "Resources folder not present")
+    def test_parse_brite_router(self):
+        pass
+    
+    @unittest.skipIf(RES_DIR is None, "Resources folder not present")
+    def test_parse_brite_bottomup(self):
+        pass
+
+    @unittest.skipIf(RES_DIR is None, "Resources folder not present")
+    def test_parse_brite_topdown(self):
+        pass
