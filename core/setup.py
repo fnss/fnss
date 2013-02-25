@@ -25,7 +25,7 @@ if __name__ == "__main__":
             'fnss.traffic'
         ],
         scripts=[
-            'bin/fnss-print-debug.py'
+            'bin/fnss-troubleshoot'
         ],
         url=release.url,
         download_url=release.download_url,

@@ -11,9 +11,13 @@ packages = ['fnss',
             'nose',
             'sphinx',
             'numpydoc',
+            'unittest2',
+            'argparse'
             ]
 
+    
 if __name__ == "__main__":
+    print('[FNSS TROUBLESHOOTING INFORMATION]')
     sysname, nodename, release, version, machine = os.uname()
     py_version = sys.version
     print('[INFO] OS sysname: %s' % sysname)
@@ -21,7 +25,6 @@ if __name__ == "__main__":
     print('[INFO] OS version: %s' % version)
     print('[INFO] Machine: %s' % machine)
     print('[INFO] Python version: %s' % py_version.replace('\n', ''))
-
     # see what packages and versions are installed    
     for package in packages:
         try:
