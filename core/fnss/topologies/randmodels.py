@@ -371,10 +371,10 @@ def extended_barabasi_albert_topology(n, m, m0, p, q, seed=None):
         
         if r <= p:
             # add m new links with probability p
-            nr_nodes = G.number_of_nodes()
-            nr_edges = G.number_of_edges()
-            max_nr_edges = (nr_nodes * (nr_nodes - 1)) / 2
-            if nr_edges + m > max_nr_edges: # cannot add m links
+            n_nodes = G.number_of_nodes()
+            n_edges = G.number_of_edges()
+            max_n_edges = (n_nodes * (n_nodes - 1)) / 2
+            if n_edges + m > max_n_edges: # cannot add m links
                 continue # rewire or add nodes 
             new_links = 0
             while new_links < m:
@@ -468,11 +468,13 @@ def glp_topology(n, m, m0, p, beta, seed=None):
 
     def add_m_links(G, pi):
         """Add m links between existing nodes to the graph"""
-        nr_nodes = G.number_of_nodes()
-        nr_edges = G.number_of_edges()
-        max_nr_edges = (nr_nodes * (nr_nodes - 1)) / 2
-        if nr_edges + m > max_nr_edges: # cannot add m links
+        n_nodes = G.number_of_nodes()
+        n_edges = G.number_of_edges()
+        max_n_edges = (n_nodes * (n_nodes - 1)) / 2
+        if n_edges + m > max_n_edges: # cannot add m links
             add_node(G, pi) # add a new node instead
+            if n_nodes == n: # topology complete
+                return
         new_links = 0
         while new_links < m:
             u = random_from_pdf(pi)
