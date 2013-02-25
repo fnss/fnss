@@ -127,21 +127,16 @@ def _xml_type(val):
     type : str
         The type of the value to insert in the XML file
     """
-    if type(val) is str:
-        return 'string'
-    elif type(val) is int:
-        return 'int'
-    elif type(val) is bool:
-        return 'boolean'
-    elif type(val) is float:
-        return 'float'
-    elif type(val) is tuple:
-        return 'tuple'
-    elif type(val) is dict:
-        return 'dict'
-    elif type(val) is list:
-        return 'list'
-    else:
+    try:
+        return {str:   'string',
+                int:   'int',
+                bool:  'boolean',
+                float: 'float',
+                dict:  'dict',
+                list:  'list',
+                tuple: 'tuple'
+        }[type(val)]
+    except KeyError:
         return 'string'
 
 
