@@ -15,7 +15,7 @@ __all__ = ['Topology',
            ]
 
 
-class BaseTopology():
+class BaseTopology(object):
     """
     Base class for generic topology. Provides utility methods for listing nodes
     and edge properties. 
