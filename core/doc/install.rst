@@ -88,26 +88,18 @@ Required packages
 The following packages are needed by FNSS to provide core functions.
 
 
-NetworkX
-^^^^^^^^
+NetworkX (version >= 1.6)
+^^^^^^^^^^^^^^^^^^^^^^^^^
 
 NetworkX is a Python package for the creation, manipulation, and study of the structure, dynamics, and functions of complex networks.
 
-  - Download: http://networkx.lanl.gov
+  - Download: http://networkx.github.com
 
 
-NumPy
-^^^^^
+NumPy (version >= 1.4)
+^^^^^^^^^^^^^^^^^^^^^^
 
 Provides matrix representation of graphs and is used in some graph algorithms for high-performance matrix computations.
-
-  - Download: http://scipy.org/Download
-
-
-SciPy
-^^^^^
-
-Provides sparse matrix representation of graphs and many numerical scientific tools.
 
   - Download: http://scipy.org/Download
 

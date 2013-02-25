@@ -29,6 +29,7 @@ install: clean
 clean:
 	find . -name "*__pycache__" | xargs rm -rf
 	find . -name "*.pyc" | xargs rm -rf
+	rm -rf fnss.egg-info
 	rm -rf $(DIST_DIR)
 	rm -rf $(DOC_DIR)/html
 	rm -rf $(DOC_DIR)/_build

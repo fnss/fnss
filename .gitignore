@@ -15,6 +15,7 @@ __pycache__
 # Ignore core built files
 core/dist
 core/build
+core/fnss.egg-info
 core/MANIFEST
 core/doc/html
 core/doc/build
