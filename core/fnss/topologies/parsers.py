@@ -36,6 +36,9 @@ def parse_rocketfuel_isp_map(path):
     
     Notes
     -----
+    The returned topology is always directed. If an undirected topology is
+    desired, convert it using the DirectedTopology.to_undirected() method.
+    
     Each node of the returned graph has the following attributes:
      * **type**: string
      * **location**: string (optional)
@@ -424,7 +427,6 @@ def parse_topology_zoo(path):
                          'or GraphML file (with extensions .gml or .graphml)')
     topology = DirectedTopology() if topo_zoo_graph.is_directed() \
                else Topology()
-    
     for tv in topo_zoo_graph.nodes():
         v = try_convert_int(tv)
         topology.add_node(v)
@@ -447,7 +449,6 @@ def parse_topology_zoo(path):
                 'Longitude' in topo_zoo_graph.node[tv] and \
                 'Latitude' in topo_zoo_graph.node[tu] and \
                 'Longitude' in topo_zoo_graph.node[tu]:
-            
             y_v = topo_zoo_graph.node[tv]['Latitude'] 
             x_v = topo_zoo_graph.node[tv]['Longitude'] 
             y_u = topo_zoo_graph.node[tu]['Latitude']  

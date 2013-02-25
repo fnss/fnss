@@ -9,7 +9,6 @@ else:
     except ImportError:
         raise ImportError("The unittest2 package is needed to run the tests.") 
 del sys
-import networkx as nx
 from fnss.topologies.parsers import *
 from fnss.topologies.topology import Topology
 
@@ -23,6 +22,22 @@ class Test(unittest.TestCase):
 
     def tearDown(self):
         pass
+
+
+    @unittest.skipIf(RES_DIR is None, "Resources folder not present")
+    def test_parse_abilene(self):
+        abilene_file = path.join(RES_DIR, 'abilene-topo.txt')
+        topology = parse_abilene(abilene_file)
+        self.assertEquals(12, topology.number_of_nodes())
+        self.assertEquals(30, topology.number_of_edges())
+
+
+    @unittest.skipIf(RES_DIR is None, "Resources folder not present")
+    def test_parse_rockefuel_isp_map(self):
+        rocketfuel_file = path.join(RES_DIR, 'rocketfuel-2914.cch')
+        topology = parse_rocketfuel_isp_map(rocketfuel_file)
+        self.assertEquals(10961, topology.number_of_nodes())
+        self.assertEquals(26070, topology.number_of_edges())
 
 
     @unittest.skipIf(RES_DIR is None, "Resources folder not present")
