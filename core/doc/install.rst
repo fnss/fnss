@@ -78,7 +78,8 @@ Requirements
 Python
 ------
 
-To use NetworkX you need Python version 2.7 or later.
+To use NetworkX you need Python version 2.6 or later (2.7 or later recommended).
+FNSS fully supports Python 3
 
 
 Required packages

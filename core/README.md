@@ -69,16 +69,17 @@ Alternatively, you can use the make script provided:
 `make test`
 
 ## Requirements
-To run the core library of FNSS you need to have [Python](http://www.python.org/) (version 2.7 or later).
+To run the core library of FNSS you need to have [Python](http://www.python.org/) (version 2.6 or later, 2.7 or later recommended).
 In addition you also need the following Python packages.
 
- * [numpy](http://www.numpy.org/) (version 1.6 or later)
- * [networkx](http://networkx.github.gov) (version 1.7 or later)
- 
+ * [numpy](http://www.numpy.org/) (version 1.4 or later)
+ * [networkx](http://networkx.github.gov) (version 1.6 or later)
+
 To run the tests, you also need the following Python packages:
 
- * [nose](https://nose.readthedocs.org/en/latest/) (version 1.1 or later)
- 
+ * [nose](https://nose.readthedocs.org/en/latest/) (version 1.1 or later) 
+ * [unittest2](https://pypi.python.org/pypi/unittest2) (version 0.4 or later) only if you use Python 2.6
+
 To build the documentation from sources, you also need the following Python packages:
 
  * [sphinx](http://sphinx-doc.org/) (version 1.1 or later)
