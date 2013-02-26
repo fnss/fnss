@@ -70,7 +70,8 @@ class Test(unittest.TestCase):
         topology = parse_inet(inet_file)
         self.assertEqual(3500, topology.number_of_nodes())
         self.assertEqual(6146, topology.number_of_edges())
-        
+
+
     @unittest.skipIf(RES_DIR is None, "Resources folder not present")
     def test_parse_topology_zoo(self):
         topozoo_file = path.join(RES_DIR,'topozoo-arnes.graphml')
@@ -79,7 +80,30 @@ class Test(unittest.TestCase):
         self.assertFalse(topology.is_multigraph())
         self.assertEqual(34, topology.number_of_nodes())
         self.assertEqual(46, topology.number_of_edges())
-        
+        self.assertEqual(1000000000.0, topology.edge[4][15]['capacity'])
+        self.assertEquals('bps', topology.graph['capacity_unit'])
+
+    
+    @unittest.skipIf(RES_DIR is None, "Resources folder not present")
+    def test_parse_topology_zoo_multigraph(self):
+        topozoo_file = path.join(RES_DIR,'topozoo-garr.graphml')
+        topology = parse_topology_zoo(topozoo_file)
+        self.assertEqual(type(topology), Topology)
+        self.assertFalse(topology.is_multigraph())
+        self.assertEqual(61, topology.number_of_nodes())
+        self.assertEqual(75, topology.number_of_edges())
+        self.assertEquals('bps', topology.graph['capacity_unit'])
+        self.assertEquals(2000000000, topology.edge[37][58]['capacity'])
+        bundled_links = [(43, 18), (49, 32), (41, 18),   (4, 7),
+                          (6, 55),  (9, 58), (58, 37), (10, 55),
+                         (14, 57), (14, 35), (18, 41), (18, 43),
+                         (31, 33), (31, 34), (32, 49), (37, 58)]
+        for u, v in topology.edges():
+            print(u, v)
+            self.assertEquals((u, v) in bundled_links,
+                              topology.edge[u][v]['bundle'])
+
+
     @unittest.skipIf(RES_DIR is None, "Resources folder not present")
     def test_parse_brite_as(self):
         brite_file = path.join(RES_DIR,'brite-as.brite')
@@ -95,16 +119,19 @@ class Test(unittest.TestCase):
         # 1478    716    230    212.11553455605272    0.7075412636166207    0.0011145252848059164    716    230    E_AS    U
         #assert_true((716, 230) in topology.edges())
         self.assertEquals(1478, topology.edge[716][230]['id'])
-        self.assertAlmostEquals(212.11553455605272, topology.edge[716][230]['length'], 0.01)
+        self.assertAlmostEquals(212.11553455605272,
+                                topology.edge[716][230]['length'], 0.01)
 
 
     @unittest.skipIf(RES_DIR is None, "Resources folder not present")
     def test_parse_brite_router(self):
         pass
-    
+
+
     @unittest.skipIf(RES_DIR is None, "Resources folder not present")
     def test_parse_brite_bottomup(self):
         pass
+
 
     @unittest.skipIf(RES_DIR is None, "Resources folder not present")
     def test_parse_brite_topdown(self):
