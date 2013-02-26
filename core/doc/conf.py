@@ -62,7 +62,7 @@ author = fnss.release.author
 
 # General information about the project.
 project = u'FNSS'
-copyright = u'2012, %s' % author
+copyright = u'2012-2013, %s' % author
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
