@@ -85,6 +85,23 @@ def random_from_pdf(pdf):
             return key
 
 
+def map_func(x):
+    """
+    Execute a function with given arguments, both of them passed as an argument
+    
+    This function is used to execute map operations on a function taking an
+    arbitrary number of arguments
+    
+    Parameters
+    ----------
+    x : tuple (func, args)
+        A tuple where the first argument is the function to execute and the
+        second argument is a tuple of arguments
+    """
+    func, args = x
+    return func(*args)
+
+
 def _xml_cast_type(type_attrib, val):
     """
     Cast a value read to an XML to an appropriate Python type

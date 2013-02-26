@@ -105,6 +105,20 @@ class Test(unittest.TestCase):
         self.assertAlmostEqual(0.9, max(link_loads(self.G, tm).values()))
         self.assertLessEqual(0, min(link_loads(self.G, tm).values()))
 
+    def test_static_traffic_matrix_partial_od_pairs(self):
+        origin_nodes = [1,2,3]
+        destination_nodes=[3,4,5]
+        od_pairs = [(o, d) for o in origin_nodes for d in destination_nodes if o != d]
+        tm = static_traffic_matrix(self.G, 10, 8,
+                                   origin_nodes=origin_nodes,
+                                   destination_nodes=destination_nodes, 
+                                   max_u=0.9)
+        tm_od_pairs = tm.od_pairs()
+        self.assertEqual(len(od_pairs), len(tm_od_pairs))
+        for od in od_pairs:
+            self.assertTrue(od in tm_od_pairs)
+        self.assertAlmostEqual(0.9, max(link_loads(self.G, tm).values()))
+        self.assertLessEqual(0, min(link_loads(self.G, tm).values()))
 
     def test_stationary_traffic_matrix(self):
         tms = stationary_traffic_matrix(self.G, mean=10, stddev=3.5, gamma=5, 

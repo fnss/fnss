@@ -18,7 +18,7 @@ from math import exp, sin, pi, log, sqrt
 from numpy.random import lognormal, normal
 from numpy import isinf
 from fnss.util import capacity_units, time_units, split_list, \
-                      _xml_type, _xml_indent, _xml_cast_type
+                      _xml_type, _xml_indent, _xml_cast_type, map_func
 from fnss.topologies.topology import fan_in_out_capacities, \
                                      od_pairs_from_topology
 
@@ -394,8 +394,7 @@ def static_traffic_matrix(topology, mean, stddev, max_u=0.9,
                   else topology.nodes()
         destinations = destination_nodes if destination_nodes is not None \
                        else topology.nodes()
-        od_pairs = [(o, d) for o in origins for d in destinations]
-        
+        od_pairs = [(o, d) for o in origins for d in destinations if o != d]
     nr_pairs = len(od_pairs)
     volumes = sorted(lognormal(mu, sigma, size=nr_pairs))
     #volumes = sorted([lognormvariate(mu, sigma) for _ in range(nr_pairs)])
@@ -406,7 +405,20 @@ def static_traffic_matrix(topology, mean, stddev, max_u=0.9,
     # check if the matrix matches and scale if needed
     assignments = dict(zip(sorted_od_pairs, volumes))
     if max_u is not None:
-        shortest_path = nx.all_pairs_dijkstra_path(topology, weight='weight')
+        if origin_nodes is not None:
+            shortest_path = dict([
+                    (node, nx.single_source_dijkstra_path(topology,
+                                                          node, 
+                                                          weight='weight'))
+                    for node in origin_nodes])
+            # remove OD pairs not connected
+            for o in shortest_path:
+                for d in destinations:
+                    if o != d and d not in shortest_path[o]:
+                        od_pairs.remove((o, d))
+        else:
+            shortest_path = nx.all_pairs_dijkstra_path(topology, 
+                                                       weight='weight')
         for u, v in topology.edges():
             topology.edge[u][v]['load'] = 0.0
         # Find max u
@@ -520,10 +532,18 @@ def stationary_traffic_matrix(topology, mean, stddev, gamma, log_psi, n,
             traffic_marix.add_flow(o, d, flows[(o, d)][i])
         tm_sequence.append(traffic_marix)
     if max_u is not None:
-        routing_matrix = nx.all_pairs_dijkstra_path(topology, weight='weight')
+        if origin_nodes is not None:
+            shortest_path = dict([
+                    (node, nx.single_source_dijkstra_path(topology,
+                                                          node, 
+                                                          weight='weight'))
+                    for node in origin_nodes])
+        else:
+            shortest_path = nx.all_pairs_dijkstra_path(topology, 
+                                                       weight='weight')
         current_max_u = max([max(link_loads(topology, 
                                             tm_sequence.get(i),
-                                            routing_matrix
+                                            shortest_path
                                             ).values()) 
                              for i in range(n)])
         norm_factor = max_u/current_max_u
@@ -633,7 +653,7 @@ def sin_cyclostationary_traffic_matrix(topology, mean, stddev, gamma, log_psi,
         for i in range(n):
             tm = TrafficMatrix(volume_unit=volume_unit)
             for o, d in od_pairs:
-                volume = static_tm[(o, d)] * (1 + delta*sin((2*pi*i)/n)) 
+                volume = static_tm[(o, d)] * (1 + delta * sin((2*pi*i)/n)) 
                 # Implementation without Numpy
                 # volume = max([0, normalvariate(volume, std_dict[(o, d)])])
                 volume = max([0, normal(volume, std_dict[(o, d)])])
@@ -641,10 +661,18 @@ def sin_cyclostationary_traffic_matrix(topology, mean, stddev, gamma, log_psi,
             tm_sequence.append(tm)
     
     if max_u is not None:
-        routing_matrix = nx.all_pairs_dijkstra_path(topology, weight='weight')
+        if origin_nodes is not None:
+            shortest_path = dict([
+                    (node, nx.single_source_dijkstra_path(topology,
+                                                          node, 
+                                                          weight='weight'))
+                    for node in origin_nodes])
+        else:
+            shortest_path = nx.all_pairs_dijkstra_path(topology, 
+                                                       weight='weight')
         current_max_u = max([max(link_loads(topology, 
                                             tm_sequence.get(i),
-                                            routing_matrix
+                                            shortest_path
                                             ).values()) 
                              for i in range(n*periods)])
         norm_factor = max_u/current_max_u
@@ -692,7 +720,8 @@ def __ranking_metrics_heuristic(topology, od_pairs=None):
     try:
         # The import will fail for Python < 2.7
         from collections import Counter
-        nfur_required = any([val > 1 for val in Counter(cap_deg_pairs).values()])
+        nfur_required = any([val > 1for val in
+                             Counter(cap_deg_pairs).values()])
     except ImportError:
         nfur_required = True
     if not nfur_required:
@@ -715,7 +744,6 @@ def __ranking_metrics_heuristic(topology, od_pairs=None):
     # is no risk of incurring in divisions by 0.
     max_inv_nfur = dict([((u, v), - max(nfur[u], nfur[v]))
                          for u, v in od_pairs])
-        
     # Sort all OD_pairs
     return sorted(od_pairs, key=lambda od_pair: (min_capacity[od_pair], 
                                                  min_degree[od_pair], 
@@ -760,8 +788,7 @@ def __calc_nfur(topology, fast, parallelize=True):
                                      weight='weight')
     if fast:
         return betw
-    edges = topology.to_undirected().edges() if topology.is_directed() else \
-            topology.edges()
+    edges = topology.edges()
     if not parallelize:
         # execute the NFUR calculation in one single process
         # Recommended only if the size of the topology is so small that the
@@ -776,27 +803,10 @@ def __calc_nfur(topology, fast, parallelize=True):
     # map operation
     edges_chunks = split_list(edges, len(edges)//processes)
     args = [(__nfur_func, (topology, chunk, betw)) for chunk in edges_chunks]
-    result = pool.map(__map_func, args)
+    result = pool.map(map_func, args)
     # reduce operation
     return dict([(v, max([result[i][v] for i in range(len(result))]))
                  for v in betw])
-
-
-def __map_func(x):
-    """
-    Execute a function with given arguments, both of them passed as an argument
-    
-    This function is used to execute map operations on a function taking an
-    arbitrary number of arguments
-    
-    Parameters
-    ----------
-    x : tuple (func, args)
-        A tuple where the first argument is the function to execute and the
-        second argument is a tuple of arguments
-    """
-    func, args = x
-    return func(*args)
 
 
 def __nfur_func(topology, edges, betweenness):
@@ -819,8 +829,7 @@ def __nfur_func(topology, edges, betweenness):
         edges 
     """
     nfur = betweenness.copy()
-    topology = topology.copy() if topology.is_directed() \
-                           else topology.to_directed()
+    topology = topology.copy()
     for u, v in edges:
         edge_attr = topology.edge[u][v]
         topology.remove_edge(u, v)
