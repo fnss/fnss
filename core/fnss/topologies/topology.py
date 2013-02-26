@@ -417,21 +417,20 @@ class DirectedTopology(nx.DiGraph, BaseTopology):
 def od_pairs_from_topology(topology):
     """
     Calculate all possible origin-destination pairs of graph topology. 
-    It is different to calculate all possible nodes pairs in that this
-    function excludes all pairs of nodes not connected by any path. 
+    This function does not simply calculate all possible pairs of topology
+    nodes. Instead, it only returns pairs of nodes connected by at least
+    a path. 
 
     Parameters
     ----------
-    topology : Topology
-        The topology should be directed. If not, this function will convert the 
-        graph to a directed one and calculate pairs on this graph.
+    topology : Topology or DirectedTopology
+        The topology whose OD pairs are calculated
 
     Returns
     -------
     od_pair : list
         List containing all origin destination tuples.
-        Value of the maximum flow, i.e., net outflow from the source.
-
+    
     Examples
     --------
     >>> import fnss
@@ -439,9 +438,12 @@ def od_pairs_from_topology(topology):
     >>> fnss.od_pairs_from_topology(topology)
     [(0, 1), (0, 2), (1, 0), (1, 2), (2, 0), (2, 1)]
     """
-    routes = nx.all_pairs_dijkstra_path(topology, weight='weight')
-    return [(o, d) for o in routes for d in routes[o] if o != d]
-
+    if topology.is_directed():
+        routes = nx.all_pairs_shortest_path_length(topology)
+        return [(o, d) for o in routes for d in routes[o] if o != d]
+    else:
+        conn_components = nx.connected_components(topology)
+        return [(o, d) for G in conn_components for o in G for d in G if o !=d]
 
 def fan_in_out_capacities(topology):
     """
@@ -499,7 +501,7 @@ def read_topology(path, encoding='utf-8'):
         The path of the topology XML file to parse
     encoding : str, optional
         The encoding of the file
-        
+    
     Returns
     -------
     topology: Topology or DirectedTopology

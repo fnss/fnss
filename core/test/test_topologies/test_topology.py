@@ -55,15 +55,23 @@ class Test(unittest.TestCase):
         dir_topology.add_edge(1, 0)
         dir_topology.add_edge(1, 2)
         dir_topology.add_edge(3, 2)
-        odp = od_pairs_from_topology(dir_topology)
-        self.assertEquals([(0, 1), (0, 2), (1, 0), (1, 2), (3, 2)], odp)
+        dir_topology.add_edge(8, 9)
+        expected_od_pairs = [(0, 1), (0, 2), (1, 0), (1, 2), (3, 2), (8, 9)]
+        od_pairs = od_pairs_from_topology(dir_topology)
+        self.assertEquals(len(expected_od_pairs), len(od_pairs))
+        for od in expected_od_pairs:
+            self.assertTrue(od in od_pairs)
 
 
     def test_od_pairs_from_topology_undirected(self):
         topology = ring_topology(3)
-        topology.add_node(12) # isolated node: no flows from/to this node 
-        odp = od_pairs_from_topology(topology)
-        self.assertEquals([(0, 1), (0, 2), (1, 0), (1, 2), (2, 0), (2, 1)], odp)
+        topology.add_path([7, 8, 9]) # isolated node: no flows from/to this node 
+        od_pairs = od_pairs_from_topology(topology)
+        expected_od_pairs = [(0, 1), (0, 2), (1, 0), (1, 2), (2, 0), (2, 1),
+                             (7, 8), (7, 9), (8, 7), (8, 9), (9, 7), (9, 8)]
+        self.assertEquals(len(expected_od_pairs), len(od_pairs))
+        for od in expected_od_pairs:
+            self.assertTrue(od in od_pairs)
 
 
     def test_fan_in_out_capacities_directed(self):
