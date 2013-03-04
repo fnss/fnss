@@ -35,7 +35,6 @@ class Test(unittest.TestCase):
         event_props['action'] = action[0] if r > threshold else action[1]
         return event_props
 
-
     def test_event_schedule_add(self):
         es = EventSchedule()
         es.add(8, {'add_order': 1}, absolute_time=True)
@@ -76,14 +75,14 @@ class Test(unittest.TestCase):
         self.assertEqual({'event_order': 4}, events[1][1])
 
 
-    def test_event_schedule_merge_with(self):
+    def test_event_schedule_add_schedule(self):
         es1 = EventSchedule(t_unit='s')
         es1.add(3, {'event_order': 1}, absolute_time=True)
         es1.add(5, {'event_order': 3}, absolute_time=True)
         es2 = EventSchedule(t_unit='ms')
         es2.add(4000, {'event_order': 2}, absolute_time=True)
         es2.add(7000, {'event_order': 5}, absolute_time=True)
-        es1.merge_with(es2)
+        es1.add_schedule(es2)
         self.assertEqual(4, len(es1))
         self.assertEqual('s', es1.attrib['t_unit'])
         self.assertEqual(3, es1[0][0])
@@ -91,6 +90,20 @@ class Test(unittest.TestCase):
         self.assertEqual(5, es1[2][0])
         self.assertEqual(7, es1[3][0])
 
+    def test_event_schedule_add_operator(self):
+        es1 = EventSchedule(t_unit='s')
+        es1.add(3, {'event_order': 1}, absolute_time=True)
+        es1.add(5, {'event_order': 3}, absolute_time=True)
+        es2 = EventSchedule(t_unit='ms')
+        es2.add(4000, {'event_order': 2}, absolute_time=True)
+        es2.add(7000, {'event_order': 5}, absolute_time=True)
+        es3 = es1 + es2
+        self.assertEqual(4, len(es3))
+        self.assertEqual('s', es3.attrib['t_unit'])
+        self.assertEqual(3, es3[0][0])
+        self.assertEqual(4, es3[1][0])
+        self.assertEqual(5, es3[2][0])
+        self.assertEqual(7, es3[3][0])
 
     def test_event_schedule_operators(self):
         es = EventSchedule()

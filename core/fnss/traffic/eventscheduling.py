@@ -10,6 +10,7 @@ functions.
 import xml.etree.ElementTree as ET 
 from random import expovariate
 from bisect import insort
+from copy import copy
 from fnss.util import _xml_type, _xml_indent, _xml_cast_type, time_units
 
 __all__ = ['EventSchedule',
@@ -79,6 +80,39 @@ class EventSchedule(object):
         """
         self.event.pop(key)   
        
+    def __add__(self, other):
+        """
+        Merge two events schedules.
+        
+        This method takes all the events of the schedule passed as argument,
+        add them to the event schedule it belongs to and returned the merged
+        schedule. The events of the schedule after the merging are still
+        chronologically sorted.
+        
+        Parameters
+        ----------
+        other : EventSchedule
+            The event schedule whose events are added to this one.
+        """
+        this = copy(self)
+        return this.add_schedule(other) # merge with shallow copy
+    
+    def __radd__(self, other):
+        """
+        Merge two events schedules.
+        
+        This method takes all the events of the schedule passed as argument,
+        add them to the event schedule it belongs to and returned the merged
+        schedule. The events of the schedule after the merging are still
+        chronologically sorted.
+        
+        Parameters
+        ----------
+        other : EventSchedule
+            The event schedule whose events are added to this one.
+        """
+        return self.__add__(other)
+    
     def add(self, time, event, absolute_time=False):
         """
         Adds an event to the schedule. 
@@ -132,9 +166,9 @@ class EventSchedule(object):
         """
         return len(self.event)
 
-    def merge_with(self, event_schedule):
+    def add_schedule(self, event_schedule):
         """
-        Merge two events schedules.
+        Merge with another event schedule.
         
         This method takes all the events of the schedule passed as argument
         and add them to the event schedule it belongs to. The events of the
