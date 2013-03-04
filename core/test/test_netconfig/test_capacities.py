@@ -59,7 +59,7 @@ class Test(unittest.TestCase):
         set_capacities_communicability_gravity(self.G, self.capacities)
         self.assertTrue(all([self.G.edge[u][v]['capacity'] in self.capacities 
                          for (u, v) in self.G.edges()]))
-            
+        
     def test_capacities_degree_gravity(self):
         set_capacities_degree_gravity(self.G, self.capacities)
         self.assertTrue(all([self.G.edge[u][v]['capacity'] in self.capacities 

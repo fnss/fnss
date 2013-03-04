@@ -8,12 +8,12 @@ JAVA_DIR = java
 NS2_DIR  = ns2
 NS3_DIR  = ns3
 
-DOC_DIR = doc
+DOC_DIR  = doc
 DIST_DIR = dist
 
 ARCHIVE_NAME = fnss-$(VERSION)
 
-.PHONY: clean doc dist
+.PHONY: clean doc dist docclean distclean
 
 # Build all components
 all: doc dist

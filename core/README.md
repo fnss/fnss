@@ -11,7 +11,7 @@ These features include the ability to:
 The core library can be used in conjunction with the FNSS Java and C++ API or the ns-2 and ns-3 adapters import topologies, traffic matrices and event schedules in the desired target simulator. 
 
 ## Project directory structure
-The files of the FNSS core library are organized in the following folders.
+The files of the FNSS core library are organized in the following directories.
 
 * bin: verious scripts to be run from the command shell
 * dist: folder where the built packages are saved

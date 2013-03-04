@@ -14,7 +14,7 @@ test:
 	cd $(TEST_DIR); python3 test.py
 
 # Build HTML documentation
-doc: clean
+doc: docclean
 	cd $(DOC_DIR); sphinx-build . html/
 
 # Create distribution package
@@ -25,11 +25,18 @@ dist: clean doc
 install: clean
 	python setup.py install
 
-# Delete temp and build files
-clean:
-	find . -name "*__pycache__" | xargs rm -rf
-	find . -name "*.pyc" | xargs rm -rf
-	rm -rf fnss.egg-info
-	rm -rf $(DIST_DIR)
+# Clean documentation
+docclean:
 	rm -rf $(DOC_DIR)/html
 	rm -rf $(DOC_DIR)/_build
+
+# Clean dist files
+distclean:
+	rm -rf fnss.egg-info
+	rm -rf $(DIST_DIR)
+
+# Delete temp and build files
+clean: docclean distclean
+	find . -name "*__pycache__" | xargs rm -rf
+	find . -name "*.pyc" | xargs rm -rf
+
