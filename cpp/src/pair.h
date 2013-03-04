@@ -15,25 +15,25 @@ namespace fnss {
 template <class T1, class T2> class Pair {
 public:
 	Pair(bool commutative = false) :
-		stlPair(), first(stlPair.first), second(stlPair.second) {
+		first(stlPair.first), second(stlPair.second), stlPair() {
 
 		this->commutative = commutative;
 	}
 
 	Pair(const T1 &first, const T2 &second, bool commutative = false) :
-		stlPair(first, second), first(stlPair.first), second(stlPair.second) {
+		first(stlPair.first), second(stlPair.second), stlPair(first, second) {
 
 		this->commutative = commutative;
 	}
 
 	Pair(const std::pair <T1, T2> &p, bool commutative = false) :
-		stlPair(p), first(stlPair.first), second(stlPair.second) {
+		first(stlPair.first), second(stlPair.second), stlPair(p) {
 
 		this->commutative = commutative;
 	}
 
 	Pair(const Pair<T1, T2> &other) :
-		stlPair(other.stlPair), first(stlPair.first), second(stlPair.second) {
+		first(stlPair.first), second(stlPair.second), stlPair(other.stlPair) {
 
 		this->commutative = other.commutative;
 	}
@@ -55,6 +55,8 @@ public:
 
 	Pair& operator=(const Pair &other) {
 		this->stlPair = other.stlPair;
+
+		return *this;
 	}
 
 	bool operator==(const Pair &other) const {

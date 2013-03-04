@@ -210,6 +210,8 @@ TrafficMatrixSequence Parser::parseTrafficMatrixSequence(const std::string &file
 
 		curNode = curNode->next_sibling("time");
 	}
+
+	return tms;
 }
 
 PropertyContainer Parser::parseProperties(rapidxml::xml_node<>* node) {

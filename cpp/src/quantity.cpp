@@ -71,6 +71,8 @@ Quantity& Quantity::operator=(const Quantity &other) {
 										other.getMeasurementUnit().getBaseUnit());
 	this->value = other.value;
 	this->unit = other.unit;
+
+	return *this;
 }
 
 bool Quantity::operator<(const Quantity &other) const {
