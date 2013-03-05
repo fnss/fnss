@@ -36,3 +36,4 @@ ns2/dist
 
 # Ignore ns3 built files
 ns3/dist
+ns3/doc

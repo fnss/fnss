@@ -1,0 +1,33 @@
+<topology linkdefault="undirected">
+  <property name="delay_unit" type="string">ms</property>
+  <property name="capacity_unit" type="string">Mbps</property>
+  <property name="buffer_unit" type="string">packets</property>
+  <node id="Node 1" id.type="string" >
+    <application name="ns3::UdpEchoClient" name.type="string">
+      <property name="StartTime" type="string">1 s</property>
+      <property name="StopTime" type="string">10 s</property>
+      <property name="RemoteAddress" type="string">03-04-0a:00:00:06</property>
+      <property name="RemotePort" type="string">2000</property>
+    </application>
+  </node>
+  <node id="Node 2" id.type="string" />
+  <node id="Node 3" id.type="string" >
+    <application name="ns3::UdpEchoServer" name.type="string">
+      <property name="StartTime" type="string">1 s</property>
+      <property name="StopTime" type="string">10 s</property>
+      <property name="Port" type="string">2000</property>
+    </application>
+  </node>
+  <link>
+    <from type="string">Node 1</from>
+    <to type="string">Node 2</to>
+    <property name="delay" type="int">2</property>
+    <property name="capacity" type="int">10</property>
+  </link>
+  <link>
+    <from type="string">Node 2</from>
+    <to type="string">Node 3</to>
+    <property name="delay" type="int">2</property>
+    <property name="capacity" type="int">10</property>
+  </link>
+</topology>

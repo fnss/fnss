@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<event-schedule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<property name="t_unit" type="string">s</property>
+<property name="t_start" type="int">1000</property>
+<property name="t_end" type="int">60000</property>
+<event time="2.5">
+	<property name="event_type" type="string">ns3::FNSSEvent</property>
+	<property name="event_id" type="string">Event 1</property>
+</event>
+<event time="3">
+	<property name="event_type" type="string">ns3::FNSSEvent</property>
+	<property name="event_id" type="string">Another event</property>
+</event>
+<event time="7.1">
+	<property name="event_type" type="string">ns3::FNSSEvent</property>
+	<property name="event_id" type="string">Last event</property>
+</event>
+</event-schedule>
+

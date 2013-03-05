@@ -34,6 +34,7 @@ dist:
 	cd $(CORE_DIR); make dist
 	cd $(CPP_DIR); make dist
 	cd $(NS2_DIR); make dist
+	cd $(NS3_DIR); make dist
 	mkdir -p $(DIST_DIR)
 	mkdir -p $(DIST_DIR)/core
 	mkdir -p $(DIST_DIR)/java
@@ -61,4 +62,5 @@ clean: distclean docclean
 	cd $(CORE_DIR); make clean
 	cd $(CPP_DIR); make clean
 	cd $(NS2_DIR); make clean
+	cd $(NS3_DIR); make clean
 
