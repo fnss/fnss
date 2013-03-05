@@ -23,10 +23,10 @@ If you use FNSS for your paper, please cite the following publication:
 
     Lorenzo Saino, Cosmin Cocora and George Pavlou, 
     `"A Toolchain for Symplifying Network Simulation Setup"
-    <http://www.ee.ucl.ac.uk/~lsaino/papers/fnss.pdf>`_,
+    <http://fnss.github.com/publications/fnss-simutools13.pdf>`_,
     in `Proceedings of the 6th International ICST Conference on Simulation Tools and Techniques
     <http://www.simutools.org/2013>`_, 
-    (Cannes, France), Mar 2013
+    (Cannes, France), March 2013
 
 The BibTeX entry is::
 
@@ -41,7 +41,6 @@ The BibTeX entry is::
          publisher = {ICST (Institute for Computer Sciences, Social-Informatics and Telecommunications Engineering)},
          address = {ICST, Brussels, Belgium, Belgium},
     } 
-
 
 Contents
 ========
