@@ -75,6 +75,16 @@ class Test(unittest.TestCase):
         self.assertTrue(all(self.G.edge[u][v]['capacity'] in self.capacities 
                          for (u, v) in self.G.edges_iter()))
 
+    def test_capacities_random(self):
+        self.assertRaises(ValueError, set_capacities_random,
+                          self.G, {10: 0.3, 20: 0.5})
+        self.assertRaises(ValueError, set_capacities_random,
+                          self.G, {10: 0.3, 20: 0.8})
+        set_capacities_random(self.G, {10: 0.3, 20: 0.7})
+        self.assertTrue(all(self.G.edge[u][v]['capacity'] in (10, 20) 
+                         for (u, v) in self.G.edges_iter()))
+        
+        
     def test_capacities_random_uniform(self):
         set_capacities_random_uniform(self.G, self.capacities)
         self.assertTrue(all(self.G.edge[u][v]['capacity'] in self.capacities 
@@ -97,3 +107,22 @@ class Test(unittest.TestCase):
         set_capacities_random_zipf(self.G, self.capacities, alpha=1.2)
         self.assertTrue(all(self.G.edge[u][v]['capacity'] in self.capacities 
                          for (u, v) in self.G.edges_iter()))
+    
+    def test_capacities_random_zipf_mandlebrot(self):
+        self.assertRaises(ValueError, set_capacities_random_zipf_mandelbrot, 
+                      self.G, self.capacities, alpha=0)
+        self.assertRaises(ValueError, set_capacities_random_zipf_mandelbrot, 
+                      self.G, self.capacities, alpha=-0.2)
+        self.assertRaises(ValueError, set_capacities_random_zipf_mandelbrot, 
+                      self.G, self.capacities, alpha=0.2, q=-0.3)
+        # test with alpha=0.8 and q=2.5
+        set_capacities_random_zipf_mandelbrot(self.G, self.capacities,
+                                              alpha=0.8, q=2.5)
+        self.assertTrue(all(self.G.edge[u][v]['capacity'] in self.capacities 
+                        for (u, v) in self.G.edges_iter()))
+        clear_capacities(self.G)
+        # test with alpha=1.2 and q=0.4
+        set_capacities_random_zipf_mandelbrot(self.G, self.capacities,
+                                              alpha=1.2, q=0.4)
+        self.assertTrue(all(self.G.edge[u][v]['capacity'] in self.capacities 
+                        for (u, v) in self.G.edges_iter()))

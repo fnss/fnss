@@ -5,7 +5,7 @@ Run unit tests
 from os import path, getcwd, environ, mkdir
 from shutil import rmtree
 
-def run(verbosity=1, doctest=False):
+def run(verbosity=1, doctest=False, coverage=False):
     """Run tests.
 
     Parameters
@@ -39,7 +39,8 @@ def run(verbosity=1, doctest=False):
             '-exe']
     if doctest:
         argv.extend(['--with-doctest','--doctest-extension=txt'])
-    
+    if coverage:
+        argv.extend(['--with-coverage', '--cover-package=fnss'])
     # Prepare tests
     if path.exists(tmp_dir):
         rmtree(tmp_dir)

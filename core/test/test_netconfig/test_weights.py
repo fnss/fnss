@@ -7,10 +7,12 @@ else:
     except ImportError:
         raise ImportError("The unittest2 package is needed to run the tests.") 
 del sys
+import networkx as nx
 from fnss.topologies.randmodels import erdos_renyi_topology
 from fnss.netconfig.capacities import set_capacities_random_uniform
 from fnss.netconfig.delays import set_delays_constant
 from fnss.netconfig.weights import *
+from fnss.topologies.simplemodels import star_topology
 
 class Test(unittest.TestCase):
 
@@ -26,6 +28,7 @@ class Test(unittest.TestCase):
         set_capacities_random_uniform(cls.G, cls.capacities)
         set_delays_constant(cls.G, 3, 'ms', odd_links)
         set_delays_constant(cls.G, 12, 'ms', even_links)
+    
     @classmethod
     def tearDownClass(cls):
         pass
@@ -51,3 +54,10 @@ class Test(unittest.TestCase):
         set_weights_delays(self.G)
         self.assertTrue(all(self.G.edge[u][v]['weight'] in [1, 4] 
                          for (u, v) in self.G.edges_iter()))
+        
+    def test_clear_weights(self):
+        G = star_topology(12)
+        set_weights_constant(G, 1, None)
+        self.assertEqual(G.number_of_edges(), len(nx.get_edge_attributes(G, 'weight')))
+        clear_weights(G)
+        self.assertEqual(0, len(nx.get_edge_attributes(G, 'weight')))

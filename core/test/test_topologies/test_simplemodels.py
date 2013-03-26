@@ -7,6 +7,7 @@ else:
     except ImportError:
         raise ImportError("The unittest2 package is needed to run the tests.") 
 del sys
+import networkx as nx
 from fnss.topologies.simplemodels import *
 
 
@@ -20,6 +21,50 @@ class Test(unittest.TestCase):
         pass
 
 
+    def test_line_topology(self):
+        def test_line_connectivity(n):
+            G = line_topology(n)
+            self.assertEquals(n, G.number_of_nodes())
+            self.assertEquals(n-1, G.number_of_edges())
+            for i in range(n):
+                if i <= n-2: self.assertTrue(G.has_edge(i, i + 1))
+                if i >= 1:   self.assertTrue(G.has_edge(i, i - 1))
+        self.assertRaises(ValueError, line_topology, 0)
+        self.assertRaises(ValueError, line_topology, -1)
+        test_line_connectivity(8)
+        test_line_connectivity(11)
+
+    def test_k_ary_tree_topology(self):
+        def test_K_ary_tree_connectivity(k, h):
+            expected_degree = {'root': k, 'intermediate': k+1, 'leaf': 1}
+            G = k_ary_tree_topology(k, h)
+            self.assertEquals(sum(k**d for d in range(h+1)), 
+                              G.number_of_nodes())
+            self.assertEquals(sum(k**d for d in range(1, h+1)), 
+                              G.number_of_edges())
+            degree = G.degree()
+            for v in G.nodes_iter():
+                v_type = G.node[v]['type']
+                v_depth = G.node[v]['depth']
+                self.assertEqual(expected_degree[v_type], degree[v])
+                neighbors = G.neighbors(v)
+                for u in neighbors:
+                    u_depth = G.node[u]['depth']
+                    if u < v:
+                        self.assertEqual(u_depth, v_depth - 1)
+                    elif u > v:
+                        self.assertEqual(u_depth, v_depth + 1)
+                    else: # u == v
+                        self.fail("Node %s has a self-loop" % str(v))
+        self.assertRaises(ValueError, k_ary_tree_topology, 0, 3)
+        self.assertRaises(ValueError, k_ary_tree_topology, 3, 0)
+        self.assertRaises(ValueError, k_ary_tree_topology, -1, 3)
+        self.assertRaises(ValueError, k_ary_tree_topology, 3, -1)
+        test_K_ary_tree_connectivity(3, 5)
+        test_K_ary_tree_connectivity(5, 3)
+        test_K_ary_tree_connectivity(2, 1)
+        
+        
     def test_ring_topology(self):
         def test_ring_connectivity(n):
             G = ring_topology(n)
@@ -60,7 +105,6 @@ class Test(unittest.TestCase):
                 for j in range(n):
                     if i != j:
                         self.assertTrue(G.has_edge(i, j))
-                    
         self.assertRaises(ValueError, full_mesh_topology, 0)
         self.assertRaises(ValueError, full_mesh_topology, -1)
         self.assertRaises(TypeError, full_mesh_topology, 'String')

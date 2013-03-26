@@ -26,10 +26,17 @@ class Test(unittest.TestCase):
 
     @unittest.skipIf(RES_DIR is None, "Resources folder not present")
     def test_parse_abilene(self):
-        abilene_file = path.join(RES_DIR, 'abilene-topo.txt')
-        topology = parse_abilene(abilene_file)
+        abilene_topo_file = path.join(RES_DIR, 'abilene-topo.txt')
+        abilene_links_file = path.join(RES_DIR, 'abilene-links.txt')
+        topology = parse_abilene(abilene_topo_file)
         self.assertEquals(12, topology.number_of_nodes())
         self.assertEquals(30, topology.number_of_edges())
+        topology = parse_abilene(abilene_topo_file, abilene_links_file)
+        self.assertEquals(12, topology.number_of_nodes())
+        self.assertEquals(30, topology.number_of_edges())
+        self.assertTrue(all('link_index' in topology.edge[u][v]
+                            and 'link_type' in topology.edge[u][v])
+                        for u, v in topology.edges_iter())
 
 
     @unittest.skipIf(RES_DIR is None, "Resources folder not present")

@@ -24,7 +24,9 @@ class Test(unittest.TestCase):
 
     def test_erdos_renyi_topology(self):
         topology = erdos_renyi_topology(1000, 0.2)
-        self.assertEqual(1000, topology.number_of_nodes())
+        topology_fast = erdos_renyi_topology(1000, 0.2, fast=True)
+        for t in (topology, topology_fast):
+            self.assertEqual(1000, t.number_of_nodes())
         self.assertRaises(ValueError, erdos_renyi_topology, -1, 0.2)
         self.assertRaises(ValueError, erdos_renyi_topology, 40, 1.2)
         self.assertRaises(ValueError, erdos_renyi_topology, 50, -0.2)
@@ -46,6 +48,8 @@ class Test(unittest.TestCase):
         self.assertRaises(ValueError, waxman_2_topology, 10, 0.4, 0)
         self.assertRaises(ValueError, waxman_2_topology, 10, 0.5, 0.3, (1.2, -2, 1, 2))
         self.assertRaises(ValueError, waxman_2_topology, 10, 0.5, 0.3, (-1, 3, 1, 2))
+        self.assertRaises(ValueError, waxman_2_topology, 10, 0.5, 0.3, (-1, -2, 1, 2, 5))
+        self.assertRaises(ValueError, waxman_2_topology, 10, 0.5, 0.3, (-1, -2, 1))
         topology = waxman_2_topology(200, alpha=0.5, beta=0.6, domain=(-1, -2, 1, 2))
         self.assertEqual(200, topology.number_of_nodes())
         # test all nodes have longitude and latitude attribute
@@ -67,20 +71,28 @@ class Test(unittest.TestCase):
         self.assertRaises(ValueError, barabasi_albert_topology, 50, 40, 20)
         self.assertRaises(ValueError, barabasi_albert_topology, 10, 40, 20)
         self.assertRaises(ValueError, barabasi_albert_topology, 50, -1, 20)
-        topology = barabasi_albert_topology(20, 11, 16)
-        self.assertEqual(20, topology.number_of_nodes())
+        self.assertRaises(ValueError, barabasi_albert_topology, 10, 11, 16)
+        topology = barabasi_albert_topology(100, 11, 16)
+        self.assertEqual(100, topology.number_of_nodes())
         
     def test_extended_barabasi_albert_topology(self):
         self.assertRaises(ValueError, extended_barabasi_albert_topology, 0, 20, 30, 0.2, 0.3)
         self.assertRaises(ValueError, extended_barabasi_albert_topology, 60, 30, 20, 0.2, 0.3)
         self.assertRaises(ValueError, extended_barabasi_albert_topology, 60, 20, 30, 0.6, 0.7)
-        topology = extended_barabasi_albert_topology(20, 11, 16, 0.2, 0.3)
-        self.assertEqual(20, topology.number_of_nodes())
+        self.assertRaises(ValueError, extended_barabasi_albert_topology, 20, 11, 16, 1.2, 0.3)
+        self.assertRaises(ValueError, extended_barabasi_albert_topology, 20, 11, 16, 0.3, 1.2)
+        self.assertRaises(ValueError, extended_barabasi_albert_topology, 20, 11, 16, -0.2, 0.3)
+        self.assertRaises(ValueError, extended_barabasi_albert_topology, 20, 11, 16, 0.3, -0.2)
+        self.assertRaises(ValueError, extended_barabasi_albert_topology, 16, 11, 20, 0.2, 0.3)
+        topology = extended_barabasi_albert_topology(100, 11, 16, 0.2, 0.3)
+        self.assertEqual(100, topology.number_of_nodes())
     
     def test_glp_topology(self):
         self.assertRaises(ValueError, glp_topology, 0, 20, 30, 0.4, -0.5)
         self.assertRaises(ValueError, glp_topology, 100, 30, 20, 0.4, -0.5)
         self.assertRaises(ValueError, glp_topology, 0, 30, 20, -1, -0.5)
         self.assertRaises(ValueError, glp_topology, 0, 30, 20, 0.2, -2)
+        self.assertRaises(ValueError, glp_topology, 20, 11, 16, -0.5, 0.5)
+        self.assertRaises(ValueError, glp_topology, 20, 11, 16, 1.5, 0.5)
         topology = glp_topology(20, 11, 16, 0.5, 0.5)
         self.assertEqual(20, topology.number_of_nodes())

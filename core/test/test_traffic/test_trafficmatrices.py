@@ -9,7 +9,8 @@ else:
 del sys
 from os import environ, path
 from fnss.traffic.trafficmatrices import *
-from fnss import erdos_renyi_topology, set_capacities_random, set_capacities_constant, ring_topology
+from fnss import erdos_renyi_topology, set_capacities_random, \
+set_capacities_constant, ring_topology, DirectedTopology
 
 
 TMP_DIR = environ['test.tmp.dir'] if 'test.tmp.dir' in environ else None
@@ -157,4 +158,23 @@ class Test(unittest.TestCase):
         u, v = tms[3].od_pairs()[2]
         self.assertAlmostEqual(tms[3][(u, v)], read_tms[3][(u, v)])
 
+
+    def test_validate_traffic_matrix(self):
+        topology = DirectedTopology()
+        topology.add_path([1, 2, 3])
+        topology.add_path([3, 2, 1])
+        topology.add_edge(3, 4)
+        set_capacities_constant(topology, 1, 'Mbps')
+        flows_valid_load = {1: {3: 0.4}, 2: {4: 0.3}}
+        flows_invalid_load = {1: {3: 0.4}, 2: {4: 0.7}}
+        flows_invalid_routes = {4: {1: 0.4}}
+        flows_invalid_pairs =  {5: {2: 0.1}}
+        self.assertTrue(validate_traffic_matrix(topology, TrafficMatrix('Mbps', flows_valid_load), validate_load=False))
+        self.assertTrue(validate_traffic_matrix(topology, TrafficMatrix('Mbps', flows_valid_load), validate_load=True))
+        self.assertTrue(validate_traffic_matrix(topology, TrafficMatrix('Mbps', flows_invalid_load), validate_load=False))
+        self.assertFalse(validate_traffic_matrix(topology, TrafficMatrix('Mbps', flows_invalid_load), validate_load=True))
+        self.assertFalse(validate_traffic_matrix(topology, TrafficMatrix('Mbps', flows_invalid_routes), validate_load=False))
+        self.assertFalse(validate_traffic_matrix(topology, TrafficMatrix('Mbps', flows_invalid_routes), validate_load=True))
+        self.assertFalse(validate_traffic_matrix(topology, TrafficMatrix('Mbps', flows_invalid_pairs), validate_load=False))
+        self.assertFalse(validate_traffic_matrix(topology, TrafficMatrix('Mbps', flows_invalid_pairs), validate_load=True))
 
