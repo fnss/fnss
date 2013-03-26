@@ -37,8 +37,8 @@ doc: Doxyfile
 # Build packages for distribution
 dist: distclean
 	mkdir -p $(DIST_DIR)
-	zip --exclude ".*" -r $(DIST_DIR)/$(ARCHIVE_NAME).zip *
-	tar --exclude=".*" -czf $(DIST_DIR)/$(ARCHIVE_NAME).tar.gz *
+	zip --exclude ".*" --exclude $(DIST_DIR)/\* -r $(DIST_DIR)/$(ARCHIVE_NAME).zip *
+	tar --exclude=".*" --exclude=$(DIST_DIR) -czf $(DIST_DIR)/$(ARCHIVE_NAME).tar.gz *
 
 # Clean distribution packages
 distclean:
