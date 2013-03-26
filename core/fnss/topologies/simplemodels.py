@@ -5,12 +5,13 @@ import networkx as nx
 from fnss.topologies.topology import Topology
 
 
-__all__ = ['ring_topology',
-           'line_topology',
-           'star_topology',
-           'full_mesh_topology',
-           'k_ary_tree_topology',
-           'dumbbell_topology',
+__all__ = [
+    'ring_topology',
+    'line_topology',
+    'star_topology',
+    'full_mesh_topology',
+    'k_ary_tree_topology',
+    'dumbbell_topology',
            ]
 
 

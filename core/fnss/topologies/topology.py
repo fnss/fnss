@@ -6,12 +6,13 @@ import networkx as nx
 from fnss.util import _xml_type, _xml_cast_type, _xml_indent
 
 
-__all__ = ['Topology', 
-           'DirectedTopology',
-           'od_pairs_from_topology',
-           'fan_in_out_capacities',
-           'read_topology',
-           'write_topology'
+__all__ = [
+    'Topology', 
+    'DirectedTopology',
+    'od_pairs_from_topology',
+    'fan_in_out_capacities',
+    'read_topology',
+    'write_topology'
            ]
 
 

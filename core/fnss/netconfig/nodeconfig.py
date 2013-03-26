@@ -3,15 +3,16 @@ Provides functions to deploy and configure protocol stacks and applications on
 network nodes
 """
 
-__all__ = ['add_stack',
-           'get_stack',
-           'remove_stack',
-           'clear_stacks',
-           'add_application',
-           'get_application_names',
-           'get_application_properties',
-           'remove_application',
-           'clear_applications',
+__all__ = [
+    'add_stack',
+    'get_stack',
+    'remove_stack',
+    'clear_stacks',
+    'add_application',
+    'get_application_names',
+    'get_application_properties',
+    'remove_application',
+    'clear_applications',
            ]
 
 

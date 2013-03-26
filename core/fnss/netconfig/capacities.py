@@ -9,21 +9,22 @@ from numpy import cumprod
 from fnss.util import random_from_pdf, capacity_units
 
 
-__all__ = ['set_capacities_constant',
-           'set_capacities_random',
-           'set_capacities_random_uniform',
-           'set_capacities_random_power_law',
-           'set_capacities_random_zipf',
-           'set_capacities_random_zipf_mandelbrot',
-           'set_capacities_degree_gravity',
-           'set_capacities_betweenness_gravity',
-           'set_capacities_eigenvector_gravity',
-           'set_capacities_communicability_gravity',
-           'set_capacities_pagerank_gravity',
-           'set_capacities_edge_betweenness',
-           'set_capacities_edge_communicability',
-           'get_capacities',
-           'clear_capacities'
+__all__ = [
+    'set_capacities_constant',
+    'set_capacities_random',
+    'set_capacities_random_uniform',
+    'set_capacities_random_power_law',
+    'set_capacities_random_zipf',
+    'set_capacities_random_zipf_mandelbrot',
+    'set_capacities_degree_gravity',
+    'set_capacities_betweenness_gravity',
+    'set_capacities_eigenvector_gravity',
+    'set_capacities_communicability_gravity',
+    'set_capacities_pagerank_gravity',
+    'set_capacities_edge_betweenness',
+    'set_capacities_edge_communicability',
+    'get_capacities',
+    'clear_capacities'
            ]
 
 def set_capacities_constant(topology, capacity, capacity_unit='Mbps', 

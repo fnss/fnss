@@ -3,11 +3,13 @@ Provides functions to assign and manipulate link weights to a network topology.
 """
 import networkx as nx
 
-__all__ = ['set_weights_inverse_capacity',
-           'set_weights_constant', 
-           'set_weights_delays',
-           'get_weights',
-           'clear_weights']
+__all__ = [
+    'set_weights_inverse_capacity',
+    'set_weights_constant', 
+    'set_weights_delays',
+    'get_weights',
+    'clear_weights'
+           ]
 
 
 def set_weights_inverse_capacity(topology):

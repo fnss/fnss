@@ -13,11 +13,12 @@ from bisect import insort
 from copy import copy
 from fnss.util import _xml_type, _xml_indent, _xml_cast_type, time_units
 
-__all__ = ['EventSchedule',
-           'deterministic_process_event_schedule',
-           'poisson_process_event_schedule',
-           'write_event_schedule',
-           'read_event_schedule'
+__all__ = [
+    'EventSchedule',
+    'deterministic_process_event_schedule',
+    'poisson_process_event_schedule',
+    'write_event_schedule',
+    'read_event_schedule'
            ]
 
 class EventSchedule(object):

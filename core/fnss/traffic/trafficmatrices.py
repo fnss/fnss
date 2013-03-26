@@ -23,15 +23,16 @@ from fnss.topologies.topology import fan_in_out_capacities, \
                                      od_pairs_from_topology
 
 
-__all__ = ['TrafficMatrix',
-           'TrafficMatrixSequence',
-           'static_traffic_matrix',
-           'stationary_traffic_matrix',
-           'sin_cyclostationary_traffic_matrix',
-           'read_traffic_matrix',
-           'write_traffic_matrix',
-           'validate_traffic_matrix',
-           'link_loads'
+__all__ = [
+    'TrafficMatrix',
+    'TrafficMatrixSequence',
+    'static_traffic_matrix',
+    'stationary_traffic_matrix',
+    'sin_cyclostationary_traffic_matrix',
+    'read_traffic_matrix',
+    'write_traffic_matrix',
+    'validate_traffic_matrix',
+    'link_loads'
            ]
 
 

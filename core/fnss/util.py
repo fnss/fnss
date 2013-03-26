@@ -4,8 +4,9 @@ Provide basic utility functions
 from random import random
 from ast import literal_eval
 
-__all__ = ['capacity_units',
-           'time_units',
+__all__ = [
+    'capacity_units',
+    'time_units',
           ]
 
 

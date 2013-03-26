@@ -12,12 +12,12 @@ from fnss.topologies.topology import Topology
 
 
 __all__ = [
-          'erdos_renyi_topology',
-          'waxman_1_topology',
-          'waxman_2_topology',
-          'barabasi_albert_topology',
-          'extended_barabasi_albert_topology',
-          'glp_topology'
+    'erdos_renyi_topology',
+    'waxman_1_topology',
+    'waxman_2_topology',
+    'barabasi_albert_topology',
+    'extended_barabasi_albert_topology',
+    'glp_topology'
           ]
 
 def erdos_renyi_topology(n, p, seed=None, fast=False):

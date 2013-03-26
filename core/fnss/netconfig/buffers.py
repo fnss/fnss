@@ -6,11 +6,12 @@ from numpy import mean
 from fnss.util import capacity_units, time_units
 
 
-__all__ = ['set_buffer_sizes_bw_delay_prod', 
-           'set_buffer_sizes_link_bandwidth',
-           'set_buffer_sizes_constant',
-           'get_buffer_sizes',
-           'clear_buffer_sizes',
+__all__ = [
+    'set_buffer_sizes_bw_delay_prod', 
+    'set_buffer_sizes_link_bandwidth',
+    'set_buffer_sizes_constant',
+    'get_buffer_sizes',
+    'clear_buffer_sizes',
            ]
 
 

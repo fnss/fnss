@@ -5,12 +5,14 @@ from math import sqrt
 import networkx as nx
 from fnss.util import time_units
 
-__all__ = ['PROPAGATION_DELAY_VACUUM',
-           'PROPAGATION_DELAY_FIBER',
-           'set_delays_constant', 
-           'set_delays_geo_distance', 
-           'get_delays', 
-           'clear_delays']
+__all__ = [
+    'PROPAGATION_DELAY_VACUUM',
+    'PROPAGATION_DELAY_FIBER',
+    'set_delays_constant', 
+    'set_delays_geo_distance', 
+    'get_delays', 
+    'clear_delays'
+           ]
 
 # Propagation delay of light in the vacuum
 PROPAGATION_DELAY_VACUUM = 1.0/300 # ms/Km

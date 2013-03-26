@@ -8,11 +8,12 @@ import networkx as nx
 from fnss.topologies.topology import Topology
 
 
-__all__ = ['DatacenterTopology',
-           'two_tier_topology',
-           'three_tier_topology',
-           'bcube_topology',
-           'fat_tree_topology'
+__all__ = [
+    'DatacenterTopology',
+    'two_tier_topology',
+    'three_tier_topology',
+    'bcube_topology',
+    'fat_tree_topology'
            ]
 
 

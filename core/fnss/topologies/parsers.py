@@ -8,13 +8,14 @@ import networkx as nx
 from fnss.topologies.topology import Topology, DirectedTopology
 
 
-__all__ = ['parse_rocketfuel_isp_map',
-           'parse_caida_as_relationships',
-           'parse_inet',
-           'parse_abilene',
-           'parse_brite',
-           'parse_topology_zoo',
-           'parse_ashiip',
+__all__ = [
+    'parse_rocketfuel_isp_map',
+    'parse_caida_as_relationships',
+    'parse_inet',
+    'parse_abilene',
+    'parse_brite',
+    'parse_topology_zoo',
+    'parse_ashiip',
           ]
 
 
