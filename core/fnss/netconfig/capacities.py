@@ -38,10 +38,10 @@ def set_capacities_constant(topology, capacity, capacity_unit='Mbps',
         The topology to which link capacities will be set
     capacity : float
         The value of capacity to set
-    links : list, optional
-        List of links, represented as (u, v) tuples to which capacity will be 
-        set. If None or not specified, the capacity will be applied to all 
-        links.
+    links : iterable, optional
+        Iterable container of links, represented as (u, v) tuples to which
+        capacity will be set. If None or not specified, the capacity will be
+        applied to all links.
     capacity_unit : str, optional
         The unit in which capacity value is expressed (e.g. Mbps, Gbps etc..)
         
@@ -66,7 +66,7 @@ def set_capacities_constant(topology, capacity, capacity_unit='Mbps',
                                 / capacity_units[curr_capacity_unit] 
     else:
         topology.graph['capacity_unit'] = capacity_unit
-    edges = topology.edges() if links is None else links
+    edges = topology.edges_iter() if links is None else links
     for u, v in edges:
         topology.edge[u][v]['capacity'] = capacity * conversion_factor
     return
@@ -100,10 +100,10 @@ def set_capacities_random(topology, capacity_pdf, capacity_unit='Mbps'):
     """
     if not capacity_unit in capacity_units:
         raise ValueError("The capacity_unit argument is not valid")
-    if any([capacity < 0 for capacity in capacity_pdf.keys()]):
+    if any((capacity < 0 for capacity in capacity_pdf.keys())):
         raise ValueError('All capacities in capacity_pdf must be positive')
     topology.graph['capacity_unit'] = capacity_unit
-    for u, v in topology.edges():
+    for u, v in topology.edges_iter():
         topology.edge[u][v]['capacity'] = random_from_pdf(capacity_pdf)
     return
 
@@ -133,8 +133,8 @@ def set_capacities_random_power_law(topology, capacities, capacity_unit='Mbps',
     rel_capacities = cumprod(rel_capacities)
     pdf = [1.0/rel_capacities[i] for i in range(len(rel_capacities))]
     norm_factor = sum(pdf)
-    norm_pdf = dict([(capacities[i], pdf[i]/norm_factor)
-                     for i in range(len(capacities))])
+    norm_pdf = dict((capacities[i], pdf[i]/norm_factor)
+                     for i in range(len(capacities)))
     set_capacities_random(topology, norm_pdf, capacity_unit=capacity_unit)
 
 
@@ -175,12 +175,14 @@ def set_capacities_random_zipf_mandelbrot(topology, capacities,
     """
     if alpha <= 0.0:
         raise ValueError('alpha must be positive')
+    if q < 0.0:
+        raise ValueError('q must be >= 0')
     capacities = sorted(capacities, reverse=reverse)
-    pdf = dict([(capacities[i], 1.0 /(i + 1.0 + q)**alpha)
-                for i in range(len(capacities))])
+    pdf = dict((capacities[i], 1.0 /(i + 1.0 + q)**alpha)
+                for i in range(len(capacities)))
     norm_factor = sum(pdf.values())
-    norm_pdf = dict([(capacity, pdf[capacity]/norm_factor)
-                     for capacity in pdf])
+    norm_pdf = dict((capacity, pdf[capacity]/norm_factor)
+                     for capacity in pdf)
     set_capacities_random(topology, norm_pdf, capacity_unit=capacity_unit)
 
 
@@ -237,8 +239,8 @@ def set_capacities_random_uniform(topology, capacities, capacity_unit='Mbps'):
     capacity_unit : str, optional
         The unit in which capacity value is expressed (e.g. Mbps, Gbps etc..)
     """
-    capacity_pdf = dict([(capacity, 1.0/len(capacities)) 
-                         for capacity in capacities])
+    capacity_pdf = dict((capacity, 1.0/len(capacities)) 
+                         for capacity in capacities)
     set_capacities_random(topology, capacity_pdf, capacity_unit=capacity_unit)
 
 
@@ -259,12 +261,12 @@ def set_capacities_degree_gravity(topology, capacities, capacity_unit='Mbps'):
     if topology.is_directed():
         in_degree = nx.in_degree_centrality(topology)
         out_degree = nx.out_degree_centrality(topology)
-        gravity = dict([((u, v), out_degree[u] * in_degree[v])
-                        for (u, v) in topology.edges()])
+        gravity = dict(((u, v), out_degree[u] * in_degree[v])
+                       for (u, v) in topology.edges_iter())
     else:
         degree = nx.degree_centrality(topology)
-        gravity = dict([((u, v), degree[u] * degree[v])
-                        for (u, v) in topology.edges()])
+        gravity = dict(((u, v), degree[u] * degree[v])
+                        for (u, v) in topology.edges_iter())
     _set_capacities_proportionally(topology, capacities, gravity, 
                                    capacity_unit=capacity_unit)
 
@@ -411,8 +413,8 @@ def set_capacities_edge_communicability(topology, capacities,
         The unit in which capacity value is expressed (e.g. Mbps, Gbps etc..)
     """
     communicability = nx.communicability(topology)
-    centrality = dict([((u, v), communicability[u][v])
-                       for (u, v) in topology.edges()])
+    centrality = dict(((u, v), communicability[u][v])
+                      for (u, v) in topology.edges_iter())
     _set_capacities_proportionally(topology, capacities, centrality, 
                                    capacity_unit=capacity_unit)
 
@@ -435,8 +437,8 @@ def _set_capacities_gravity(topology, capacities, node_metric,
     capacity_unit : str, optional
         The unit in which capacity value is expressed (e.g. Mbps, Gbps etc..)
     """
-    gravity = dict([((u, v), node_metric[u] * node_metric[v])
-                    for (u, v) in topology.edges()])
+    gravity = dict(((u, v), node_metric[u] * node_metric[v])
+                   for (u, v) in topology.edges_iter())
     _set_capacities_proportionally(topology, capacities, gravity, 
                                    capacity_unit=capacity_unit)
 
@@ -461,7 +463,7 @@ def _set_capacities_proportionally(topology, capacities, metric,
     """
     if not capacity_unit in capacity_units:
         raise ValueError("The capacity_unit argument is not valid")
-    if any([capacity < 0 for capacity in capacities]):
+    if any((capacity < 0 for capacity in capacities)):
         raise ValueError('All capacities must be positive')
     topology.graph['capacity_unit'] = capacity_unit
     
@@ -536,7 +538,7 @@ def clear_capacities(topology):
     """
     if 'capacity_unit' in topology.graph:
         del topology.graph['capacity_unit']
-    for u, v in topology.edges():
+    for u, v in topology.edges_iter():
         if 'capacity' in topology.edge[u][v]:
             del topology.edge[u][v]['capacity']
 

@@ -35,8 +35,8 @@ def set_delays_constant(topology, delay=1.0, delay_unit='ms', links=None):
         The unit of delays. Supported units are: "us" (microseconds), "ms" 
         (milliseconds) and "s" (seconds)
     links : list, optional
-        List of selected links on which weights are applied. If it is None, all
-        links are selected
+        List of selected links on which weights are applied. If it is None,
+        all links are selected
 
     Examples
     --------
@@ -61,7 +61,7 @@ def set_delays_constant(topology, delay=1.0, delay_unit='ms', links=None):
                                 / time_units[curr_delay_unit] 
     else:
         topology.graph['delay_unit'] = delay_unit
-    edges = topology.edges() if links is None else links
+    edges = topology.edges_iter() if links is None else links
     for u, v in edges:
         topology.edge[u][v]['delay'] = delay * conversion_factor
 
@@ -102,15 +102,15 @@ def set_delays_geo_distance(topology, specific_delay, default_delay=None,
         raise ValueError("The delay_unit argument is not valid") 
     edges = topology.edges() if links is None else links
     if default_delay is None:
-        if not all(['length' in topology.edge[u][v] for u, v in edges]):
-            if not all(['latitude' in topology.node[v] and \
+        if not all(('length' in topology.edge[u][v] for u, v in edges)):
+            if not all(('latitude' in topology.node[v] and \
                         'longitude' in topology.node[v] and \
                         'latitude' in topology.node[u] and \
                         'longitude' in topology.node[u] 
-                        for u, v in edges]):
+                        for u, v in edges)):
                 raise ValueError('All links must have a length attribute or '\
                    'at all nodes must have a latitude and longitude attribute')
-        conversion_factor = 1
+        conversion_factor = 1.0
     if 'delay_unit' in topology.graph and links is not None:
         # If a delay_unit is set, that means that some links have already
         # been assigned delays, so set these delay using the same unit
@@ -178,6 +178,6 @@ def clear_delays(topology):
     """
     if 'delay_unit' in topology.graph:
         del topology.graph['delay_unit']
-    for u, v in topology.edges():
+    for u, v in topology.edges_iter():
         if 'delay' in topology.edge[u][v]:
             del topology.edge[u][v]['delay']

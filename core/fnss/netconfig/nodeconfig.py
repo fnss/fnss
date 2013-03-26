@@ -80,7 +80,7 @@ def clear_stacks(topology):
     ----------
     topology : Topology
     """
-    for v in topology.nodes():
+    for v in topology.nodes_iter():
         if 'stack' in topology.node[v]:
             del topology.node[v]['stack']
 
@@ -180,6 +180,6 @@ def clear_applications(topology):
     topology : Topology
         The topology
     """
-    for v in topology.nodes():
+    for v in topology.nodes_iter():
         if 'application' in topology.node[v]:
             del topology.node[v]['application']

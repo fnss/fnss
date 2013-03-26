@@ -479,7 +479,7 @@ def fan_in_out_capacities(topology):
         topology = topology.to_directed()
     fan_in = {}
     fan_out = {}
-    for node in topology.nodes():
+    for node in topology.nodes_iter():
         node_fan_in = 0
         node_fan_out = 0
         for predecessor in topology.predecessors(node):
@@ -582,7 +582,7 @@ def write_topology(topology, path, encoding='utf-8', prettyprint=True):
         prop.attrib['name'] = name
         prop.attrib['type'] = _xml_type(value)
         prop.text = str(value)
-    for v in topology.nodes():
+    for v in topology.nodes_iter():
         node = ET.SubElement(head, "node")
         node.attrib['id'] = str(v)
         node.attrib['id.type'] = _xml_type(v)
@@ -614,7 +614,7 @@ def write_topology(topology, path, encoding='utf-8', prettyprint=True):
                 prop.attrib['name'] = name
                 prop.attrib['type'] = _xml_type(value)
                 prop.text = str(value)
-    for u, v in topology.edges():
+    for u, v in topology.edges_iter():
         link = ET.SubElement(head, "link")
         from_node = ET.SubElement(link, "from")
         from_node.attrib['type'] = _xml_type(u)

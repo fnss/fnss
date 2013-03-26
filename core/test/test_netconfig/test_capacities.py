@@ -37,53 +37,53 @@ class Test(unittest.TestCase):
         set_capacities_constant(self.G, 2, 'Mbps', odd_links)
         set_capacities_constant(self.G, 5000, 'Kbps', even_links)
         self.assertEqual('Mbps', self.G.graph['capacity_unit'])
-        self.assertTrue(all([self.G.edge[u][v]['capacity'] in [2, 5] 
-                         for (u, v) in self.G.edges()]))
+        self.assertTrue(all(self.G.edge[u][v]['capacity'] in [2, 5] 
+                         for (u, v) in self.G.edges_iter()))
     
     def test_capacities_edge_betweenness(self):
         set_capacities_edge_betweenness(self.G, self.capacities)
-        self.assertTrue(all([self.G.edge[u][v]['capacity'] in self.capacities 
-                         for (u, v) in self.G.edges()]))
+        self.assertTrue(all(self.G.edge[u][v]['capacity'] in self.capacities 
+                         for (u, v) in self.G.edges_iter()))
 
     def test_capacities_edge_communicability(self):
         set_capacities_edge_communicability(self.G, self.capacities)
-        self.assertTrue(all([self.G.edge[u][v]['capacity'] in self.capacities 
-                         for (u, v) in self.G.edges()]))
+        self.assertTrue(all(self.G.edge[u][v]['capacity'] in self.capacities 
+                         for (u, v) in self.G.edges_iter()))
             
     def test_capacities_betweenness_gravity(self):
         set_capacities_betweenness_gravity(self.G, self.capacities)
-        self.assertTrue(all([self.G.edge[u][v]['capacity'] in self.capacities 
-                         for (u, v) in self.G.edges()]))
+        self.assertTrue(all(self.G.edge[u][v]['capacity'] in self.capacities 
+                         for (u, v) in self.G.edges_iter()))
     
     def test_capacities_communicability_gravity(self):
         set_capacities_communicability_gravity(self.G, self.capacities)
-        self.assertTrue(all([self.G.edge[u][v]['capacity'] in self.capacities 
-                         for (u, v) in self.G.edges()]))
+        self.assertTrue(all(self.G.edge[u][v]['capacity'] in self.capacities 
+                         for (u, v) in self.G.edges_iter()))
         
     def test_capacities_degree_gravity(self):
         set_capacities_degree_gravity(self.G, self.capacities)
-        self.assertTrue(all([self.G.edge[u][v]['capacity'] in self.capacities 
-                         for (u, v) in self.G.edges()]))       
+        self.assertTrue(all(self.G.edge[u][v]['capacity'] in self.capacities 
+                         for (u, v) in self.G.edges_iter()))       
     
     def test_capacities_eigenvector_gravity(self):
         set_capacities_eigenvector_gravity(self.G, self.capacities)
-        self.assertTrue(all([self.G.edge[u][v]['capacity'] in self.capacities 
-                         for (u, v) in self.G.edges()]))
+        self.assertTrue(all(self.G.edge[u][v]['capacity'] in self.capacities 
+                         for (u, v) in self.G.edges_iter()))
             
     def test_capacities_pagerank_gravity(self):
         set_capacities_pagerank_gravity(self.G, self.capacities)
-        self.assertTrue(all([self.G.edge[u][v]['capacity'] in self.capacities 
-                         for (u, v) in self.G.edges()]))
+        self.assertTrue(all(self.G.edge[u][v]['capacity'] in self.capacities 
+                         for (u, v) in self.G.edges_iter()))
 
     def test_capacities_random_uniform(self):
         set_capacities_random_uniform(self.G, self.capacities)
-        self.assertTrue(all([self.G.edge[u][v]['capacity'] in self.capacities 
-                         for (u, v) in self.G.edges()]))
+        self.assertTrue(all(self.G.edge[u][v]['capacity'] in self.capacities 
+                         for (u, v) in self.G.edges_iter()))
 
     def test_capacities_random_power_law(self):
         set_capacities_random_power_law(self.G, self.capacities)
-        self.assertTrue(all([self.G.edge[u][v]['capacity'] in self.capacities 
-                         for (u, v) in self.G.edges()]))
+        self.assertTrue(all(self.G.edge[u][v]['capacity'] in self.capacities 
+                         for (u, v) in self.G.edges_iter()))
 
     def test_capacities_random_zipf(self):
         self.assertRaises(ValueError, set_capacities_random_zipf, 
@@ -91,8 +91,9 @@ class Test(unittest.TestCase):
         self.assertRaises(ValueError, set_capacities_random_zipf, 
                       self.G, self.capacities, alpha=-0.2)
         set_capacities_random_zipf(self.G, self.capacities, alpha=0.8)
-        self.assertTrue(all([self.G.edge[u][v]['capacity'] in self.capacities 
-                         for (u, v) in self.G.edges()]))
+        self.assertTrue(all(self.G.edge[u][v]['capacity'] in self.capacities 
+                         for (u, v) in self.G.edges_iter()))
+        clear_capacities(self.G)
         set_capacities_random_zipf(self.G, self.capacities, alpha=1.2)
-        self.assertTrue(all([self.G.edge[u][v]['capacity'] in self.capacities 
-                         for (u, v) in self.G.edges()]))
+        self.assertTrue(all(self.G.edge[u][v]['capacity'] in self.capacities 
+                         for (u, v) in self.G.edges_iter()))

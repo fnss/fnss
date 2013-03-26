@@ -38,6 +38,6 @@ class Test(unittest.TestCase):
         set_delays_constant(self.G, 2, 'ms', odd_links)
         set_delays_constant(self.G, 5000, 'us', even_links)
         self.assertEqual('ms', self.G.graph['delay_unit'])
-        self.assertTrue(all([self.G.edge[u][v]['delay'] in [2, 5] 
-                         for (u, v) in self.G.edges()]))
+        self.assertTrue(all(self.G.edge[u][v]['delay'] in [2, 5] 
+                         for (u, v) in self.G.edges_iter()))
 

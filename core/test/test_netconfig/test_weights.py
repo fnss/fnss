@@ -39,15 +39,15 @@ class Test(unittest.TestCase):
         pass
     
     def test_weights_constant(self):
-        self.assertTrue(all([self.G.edge[u][v]['weight'] in [2, 5] 
-                         for (u, v) in self.G.edges()]))
+        self.assertTrue(all(self.G.edge[u][v]['weight'] in [2, 5] 
+                         for (u, v) in self.G.edges_iter()))
 
     def test_weights_inverse_capacity(self):
         set_weights_inverse_capacity(self.G)
-        self.assertTrue(all([self.G.edge[u][v]['weight'] in [1, 2] 
-                         for (u, v) in self.G.edges()]))
+        self.assertTrue(all(self.G.edge[u][v]['weight'] in [1, 2] 
+                         for (u, v) in self.G.edges_iter()))
         
     def test_weights_delays(self):
         set_weights_delays(self.G)
-        self.assertTrue(all([self.G.edge[u][v]['weight'] in [1, 4] 
-                         for (u, v) in self.G.edges()]))
+        self.assertTrue(all(self.G.edge[u][v]['weight'] in [1, 4] 
+                         for (u, v) in self.G.edges_iter()))

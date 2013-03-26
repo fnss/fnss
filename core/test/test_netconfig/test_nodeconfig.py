@@ -35,7 +35,7 @@ class Test(unittest.TestCase):
         clear_applications(self.topo)
 
     def test_add_get_remove_stack(self):
-        for v in self.topo.nodes():
+        for v in self.topo.nodes_iter():
             self.assertIsNone(get_stack(self.topo, v))
         add_stack(self.topo, 12, self.stack_1_name, self.stack_1_props)
         self.assertEqual(2, len(get_stack(self.topo, 12)))
@@ -52,14 +52,14 @@ class Test(unittest.TestCase):
         self.assertIsNone(get_stack(self.topo, 12))
         
     def test_clear_stacks(self):
-        for v in self.topo.nodes():
+        for v in self.topo.nodes_iter():
             add_stack(self.topo, v, self.stack_1_name, self.stack_1_props)
         clear_stacks(self.topo)
-        for v in self.topo.nodes():
+        for v in self.topo.nodes_iter():
             self.assertIsNone(get_stack(self.topo, v))
     
-    def test_add_get_remoe_applications(self):
-        for v in self.topo.nodes():
+    def test_add_get_remove_applications(self):
+        for v in self.topo.nodes_iter():
             self.assertEqual([], get_application_names(self.topo, v))
         add_application(self.topo, 10, self.app_1_name, self.app_1_props)
         self.assertEqual([self.app_1_name], get_application_names(self.topo, 10))

@@ -31,11 +31,11 @@ def set_weights_inverse_capacity(topology):
     >>> fnss.set_weights_inverse_capacity(topology)
     """
     try:
-        max_capacity = float(max([topology.edge[u][v]['capacity'] 
-                                  for u, v in topology.edges()]))
+        max_capacity = float(max((topology.edge[u][v]['capacity'] 
+                                  for u, v in topology.edges_iter())))
     except KeyError:
         raise ValueError('All links must have a capacity attribute')
-    for u, v in topology.edges():
+    for u, v in topology.edges_iter():
         capacity = topology.edge[u][v]['capacity']
         weight = max_capacity/capacity
         topology.edge[u][v]['weight'] = weight
@@ -60,11 +60,11 @@ def set_weights_delays(topology):
     
     """
     try:
-        min_delay = float(min([topology.edge[u][v]['delay']
-                               for u, v in topology.edges()]))
+        min_delay = float(min((topology.edge[u][v]['delay']
+                               for u, v in topology.edges_iter())))
     except KeyError:
         raise ValueError('All links must have a delay attribute')
-    for u, v in topology.edges():
+    for u, v in topology.edges_iter():
         delay = topology.edge[u][v]['delay']
         weight = delay / min_delay
         topology.edge[u][v]['weight'] = weight
@@ -80,9 +80,9 @@ def set_weights_constant(topology, weight=1.0, links=None):
         The topology on which weights are applied.
     weight : float, optional
         The constant weight to be applied to all links
-    links : list, optional
-        List of selected links on which weights are applied. If it is None, all
-        links are selected
+    links : iterable, optional
+        Iterable container of selected links on which weights are applied.
+        If it is None, all links are selected
 
     Examples
     --------
@@ -91,7 +91,7 @@ def set_weights_constant(topology, weight=1.0, links=None):
     >>> topology.add_edges_from([(1, 2), (5, 8), (4, 5), (1, 7)])
     >>> fnss.set_weights_constant(topology, weight=1.0, links=[(1, 2), (5, 8), (4, 5)])
     """
-    edges = topology.edges() if links is None else links
+    edges = topology.edges_iter() if links is None else links
     for u, v in edges:
         topology.edge[u][v]['weight'] = weight
 
@@ -130,7 +130,7 @@ def clear_weights(topology):
     ----------
     topology : Topology
     """
-    for u, v in topology.edges():
+    for u, v in topology.edges_iter():
         if 'weight' in topology.edge[u][v]:
             del topology.edge[u][v]['weight']
     

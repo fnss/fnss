@@ -437,7 +437,7 @@ def parse_topology_zoo(path):
     topology.graph['type'] = 'topology_zoo'
     topology.graph['link_bundling'] = True if topo_zoo_graph.is_multigraph() \
                                       else False
-    for tv in topo_zoo_graph.nodes():
+    for tv in topo_zoo_graph.nodes_iter():
         v = try_convert_int(tv)
         topology.add_node(v)
         if 'label' in topo_zoo_graph.node[tv]:
@@ -449,7 +449,7 @@ def parse_topology_zoo(path):
             topology.node[v]['latitude'] = latitude
         except KeyError:
             pass
-    for tv, tu in topo_zoo_graph.edges():
+    for tv, tu in topo_zoo_graph.edges_iter():
         v = try_convert_int(tv)
         u = try_convert_int(tu)
         if u == v:

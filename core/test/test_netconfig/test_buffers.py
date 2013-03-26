@@ -42,8 +42,8 @@ class Test(unittest.TestCase):
     
     def test_buffer_sizes_bw_delay_prod(self):
         set_buffer_sizes_bw_delay_prod(self.G)
-        self.assertTrue(all([self.G.edge[u][v]['buffer'] is not None 
-                         for (u, v) in self.G.edges()]))
+        self.assertTrue(all((self.G.edge[u][v]['buffer'] is not None 
+                         for (u, v) in self.G.edges_iter())))
 
     def test_buffer_sizes_bw_delay_prod_unused_links(self):
         topo = Topology()
@@ -53,8 +53,8 @@ class Test(unittest.TestCase):
         set_capacities_constant(topo, 10)
         set_delays_constant(topo, 2)
         set_buffer_sizes_bw_delay_prod(topo)
-        self.assertTrue(all([topo.edge[u][v]['buffer'] is not None 
-                         for (u, v) in topo.edges()]))
+        self.assertTrue(all((topo.edge[u][v]['buffer'] is not None 
+                         for (u, v) in topo.edges_iter())))
 
     def test_buffer_sizes_bw_delay_prod_unused_links_no_return_path(self):
         topo = DirectedTopology()
@@ -77,15 +77,15 @@ class Test(unittest.TestCase):
 
     def test_buffers_size_link_bandwidth(self):
         set_buffer_sizes_link_bandwidth(self.G)
-        self.assertTrue(all([self.G.edge[u][v]['buffer'] is not None 
-                         for (u, v) in self.G.edges()]))
+        self.assertTrue(all((self.G.edge[u][v]['buffer'] is not None 
+                         for (u, v) in self.G.edges_iter())))
 
     def test_buffers_size_constant(self):
         set_buffer_sizes_constant(self.G, 65000, buffer_unit='bytes')
-        self.assertTrue(all([self.G.edge[u][v]['buffer'] == 65000 
-                         for (u, v) in self.G.edges()]))
+        self.assertTrue(all((self.G.edge[u][v]['buffer'] == 65000 
+                         for (u, v) in self.G.edges_iter())))
         
     def test_get_buffer_sizes(self):
         set_buffer_sizes_constant(self.G, 65000, buffer_unit='bytes')
         buffers = get_buffer_sizes(self.G)
-        self.assertTrue(all([buffers[(u, v)] == 65000 for (u, v) in buffers]))
+        self.assertTrue(all((buffers[(u, v)] == 65000 for (u, v) in buffers)))

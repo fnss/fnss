@@ -41,17 +41,17 @@ def set_buffer_sizes_bw_delay_prod(topology, buffer_unit='bytes',
     >>> fnss.set_buffer_sizes_bw_delay_prod(topology)
     """    
     try:
-        assert all(['capacity' in topology.edge[u][v] 
-                    for u, v in topology.edges()])
-        assert all(['delay' in topology.edge[u][v] 
-                    for u, v in topology.edges()])
+        assert all(('capacity' in topology.edge[u][v] 
+                    for u, v in topology.edges_iter()))
+        assert all(('delay' in topology.edge[u][v] 
+                    for u, v in topology.edges_iter()))
         capacity_unit = topology.graph['capacity_unit']
         delay_unit = topology.graph['delay_unit']
     except (AssertionError, KeyError):
         raise ValueError('All links must have a capacity and delay attribute')
     topology.graph['buffer_unit'] = buffer_unit
     # this filters potential self-loops which would crash the function
-    edges = [(u, v) for (u, v) in topology.edges() if u != v]
+    edges = [(u, v) for (u, v) in topology.edges_iter() if u != v]
     # dictionary listing all end-to-end routes in which a link appears
     route_presence = dict(zip(edges, [[] for _ in range(len(edges))]))
     # dictionary with all network routes
@@ -141,8 +141,9 @@ def set_buffer_sizes_link_bandwidth(topology, k=1.0, default_size=None,
         return an error   
     buffer_unit : string, unit
         The unit of buffer sizes. Supported units are: "bytes" and "packets"
-    interfaces : list of tuples, optional
-        The list of selected interfaces on which buffer sizes are applied. 
+    interfaces : iterable of tuples, optional
+        Iterable container of selected interfaces on which buffer sizes are
+        applied. 
         An interface is defined by the tuple (u,v) where u is the node on which
         the interface is located and (u,v) is the link to which the buffer 
         flushes.
@@ -186,8 +187,9 @@ def set_buffer_sizes_constant(topology, buffer_size, buffer_unit='bytes',
         The constant buffer_size to be applied to all interface
     buffer_unit : string, unit
         The unit of buffer sizes. Supported units are: "bytes" and "packets"
-    interfaces : list of tuples, optional
-        The list of selected interfaces on which buffer sizes are applied. 
+    interfaces : iterable container of tuples, optional
+        Iterable container of selected interfaces on which buffer sizes are
+        applied. 
         An interface is defined by the tuple (u,v) where u is the node on which
         the interface is located and (u,v) is the link to which the buffer 
         flushes.
@@ -209,7 +211,7 @@ def set_buffer_sizes_constant(topology, buffer_size, buffer_unit='bytes',
                              'expressed in %s. Use that unit instead of %s' \
                              % (curr_buffer_unit, buffer_unit))
     topology.graph['buffer_unit'] = buffer_unit
-    edges = topology.edges() if interfaces is None else interfaces
+    edges = topology.edges_iter() if interfaces is None else interfaces
     for u, v in edges:
         topology.edge[u][v]['buffer'] = buffer_size
 
@@ -255,7 +257,7 @@ def clear_buffer_sizes(topology):
     """
     if 'buffer_unit' in topology.graph:
         del topology.graph['buffer_unit']
-    for u, v in topology.edges():
+    for u, v in topology.edges_iter():
         if 'buffer' in topology.edge[u][v]:
             del topology.edge[u][v]['buffer']
 

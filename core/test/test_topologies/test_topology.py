@@ -108,6 +108,6 @@ class Test(unittest.TestCase):
         self.assertEquals(len(get_application_names(self.G, 2)), 
                       len(get_application_names(read_topo, 2)))
         self.assertEquals('fnss', get_application_properties(read_topo, 2, 'server')['user-agent'])
-        self.assertEquals([2, 4, 6], [ v for v in read_topo.nodes() if get_stack(read_topo, v) is not None and get_stack(read_topo, v)[0] == 'tcp'])
-        self.assertEquals([2, 4], [ v for v in read_topo.nodes() if 'client' in get_application_names(read_topo, v)])
-        self.assertEquals([2], [ v for v in read_topo.nodes() if 'server' in get_application_names(read_topo, v)])
+        self.assertEquals([2, 4, 6], [ v for v in read_topo.nodes_iter() if get_stack(read_topo, v) is not None and get_stack(read_topo, v)[0] == 'tcp'])
+        self.assertEquals([2, 4], [ v for v in read_topo.nodes_iter() if 'client' in get_application_names(read_topo, v)])
+        self.assertEquals([2], [ v for v in read_topo.nodes_iter() if 'server' in get_application_names(read_topo, v)])

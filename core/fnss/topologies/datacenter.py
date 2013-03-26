@@ -38,13 +38,13 @@ class DatacenterTopology(Topology):
         """
         Return the list of switch nodes in the topology
         """
-        return [v for v in self.nodes() if self.node[v]['type'] == 'switch']
+        return [v for v in self.nodes_iter() if self.node[v]['type'] == 'switch']
     
     def servers(self):
         """
         Return the list of server nodes in the topology
         """
-        return [v for v in self.nodes() if self.node[v]['type'] == 'server']
+        return [v for v in self.nodes_iter() if self.node[v]['type'] == 'server']
 
 
 def two_tier_topology(n_core, n_edge, n_servers):
@@ -326,8 +326,7 @@ def fat_tree_topology(k):
             aggr_node = n_core + (core_node//(k//2)) + (k*pod)
             topo.add_edge(core_node, aggr_node, type='core_aggregation')
     # Create servers and connect them to edge switches
-    for u in [node for node in topo.nodes() 
-              if topo.node[node]['layer'] == 'edge']:
+    for u in [v for v in topo.nodes_iter() if topo.node[v]['layer'] == 'edge']:
         leaf_nodes = range(topo.number_of_nodes(), 
                            topo.number_of_nodes() + k//2)
         topo.add_nodes_from(leaf_nodes, layer='leaf', type='server',
