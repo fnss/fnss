@@ -95,8 +95,9 @@ class EventSchedule(object):
         other : EventSchedule
             The event schedule whose events are added to this one.
         """
-        this = copy(self)
-        return this.add_schedule(other) # merge with shallow copy
+        es = copy(self)
+        es.add_schedule(other) # merge with shallow copy
+        return es
     
     def __radd__(self, other):
         """
