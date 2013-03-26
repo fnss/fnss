@@ -5,12 +5,12 @@ simplify the setup of a network simulation.
 
 These features include the ability to:
 
- * Parse a topology from a dataset, a topology generator or generate it
-   according to a number of synthetic models.
- * Apply link capacities, link weights, link delays and buffer sizes.
- * Deploy protocol stacks and applications on network nodes.
- * Generate traffic matrices.
- * Generate event schedules.
+* Parse a topology from a dataset, a topology generator or generate it
+  according to a number of synthetic models.
+* Apply link capacities, link weights, link delays and buffer sizes.
+* Deploy protocol stacks and applications on network nodes.
+* Generate traffic matrices.
+* Generate event schedules.
 
 The core library can be used in conjunction with the FNSS Java and C++ API or
 the ns-2 and ns-3 adapters to import topologies, traffic matrices and event

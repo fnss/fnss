@@ -59,8 +59,8 @@ def two_tier_topology(n_core, n_edge, n_servers):
      * tier: can either be *core*, *edge* or *leaf*. Nodes in the leaf tier are
        only server, while all core and edge nodes are switches.
        
-    Each edge has an attribute type as well which can either be 'core_edge' if 
-    it connects a core and an edge switch or 'edge_leaf' if it connects an edge
+    Each edge has an attribute type as well which can either be *core_edge* if 
+    it connects a core and an edge switch or *edge_leaf* if it connects an edge
     switch to a server.
 
     Parameters
@@ -125,7 +125,7 @@ def three_tier_topology(n_core, n_aggregation, n_edge, n_servers):
     edge switch to a server. 
 
     The total number of servers is
-    :math:`n_aggregation * n_edge * n_servers`.
+    :math:`n_{aggregation} * n_{edge} * n_{servers}`.
 
     Parameters
     ----------
@@ -193,16 +193,16 @@ def bcube_topology(n, k):
     to each other and servers are used also for packet forwarding. This 
     topology is defined as a recursive structure. A :math:`Bcube_0` is composed
     of n servers connected to an n-port switch. A :math:`Bcube_1` is composed 
-    of n :math:`Bcube_0` connected to n n-port switches. A Bcube_k is composed 
-    of n :math:`Bcube_{k-1}` connected to :math:`n^k` n-port switches.
+    of n :math:`Bcube_0` connected to n n-port switches. A :math:`Bcube_k` is
+    composed of n :math:`Bcube_{k-1}` connected to :math:`n^k` n-port switches.
 
     This topology comprises:
      * :math:`n^(k+1)` servers, each of them connected to :math:`k+1` switches
      * :math:`n*(k+1)` switches, each of them having n ports
 
-    Each node has an attribute type which can either be 'switch' or 'server'
-    and an attribute 'level' which specifies at what level of the Bcube
-    hierarchy it is located
+    Each node has an attribute type which can either be *switch* or *server*
+    and an attribute *level* which specifies at what level of the Bcube
+    hierarchy it is located.
     
     Each edge also has the attribute *level*.
     
@@ -211,7 +211,7 @@ def bcube_topology(n, k):
     k : int
         The level of Bcube
     n : int
-        The number of server per Bcube_0
+        The number of server per :math:`Bcube_0`
 
     Returns
     -------
