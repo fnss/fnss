@@ -129,8 +129,8 @@ class TrafficMatrix(object):
         flows : dict
             A dictionary of all traffic volumes keyed by OD pair 
         """
-        return dict([((o, d), self.flow[o][d]) for o in self.flow
-                     for d in self.flow[o] if o != d])
+        return dict(((o, d), self.flow[o][d])
+                    for o in self.flow for d in self.flow[o] if o != d)
         
     def od_pairs(self):
         """
@@ -391,15 +391,16 @@ def static_traffic_matrix(topology, mean, stddev, max_u=0.9,
     if origin_nodes is None and destination_nodes is None:
         od_pairs = od_pairs_from_topology(topology)
     else:
+        all_nodes = topology.nodes()
         origins = origin_nodes if origin_nodes is not None \
-                  else topology.nodes()
+                  else all_nodes
         destinations = destination_nodes if destination_nodes is not None \
-                       else topology.nodes()
+                       else all_nodes
         od_pairs = [(o, d) for o in origins for d in destinations if o != d]
     nr_pairs = len(od_pairs)
     volumes = sorted(lognormal(mu, sigma, size=nr_pairs))
     #volumes = sorted([lognormvariate(mu, sigma) for _ in range(nr_pairs)])
-    if any([isinf(vol) for vol in volumes]):
+    if any(isinf(vol) for vol in volumes):
         raise ValueError('Some volumes are too large to be handled by a '\
                          'float type. Set a lower value of mu and try again.')
     sorted_od_pairs = __ranking_metrics_heuristic(topology, od_pairs)
@@ -407,11 +408,11 @@ def static_traffic_matrix(topology, mean, stddev, max_u=0.9,
     assignments = dict(zip(sorted_od_pairs, volumes))
     if max_u is not None:
         if origin_nodes is not None:
-            shortest_path = dict([
+            shortest_path = dict(
                     (node, nx.single_source_dijkstra_path(topology,
                                                           node, 
                                                           weight='weight'))
-                    for node in origin_nodes])
+                    for node in origin_nodes)
             # remove OD pairs not connected
             for o in shortest_path:
                 for d in destinations:
@@ -420,7 +421,7 @@ def static_traffic_matrix(topology, mean, stddev, max_u=0.9,
         else:
             shortest_path = nx.all_pairs_dijkstra_path(topology, 
                                                        weight='weight')
-        for u, v in topology.edges():
+        for u, v in topology.edges_iter():
             topology.edge[u][v]['load'] = 0.0
         # Find max u
         for o, d in od_pairs:
@@ -430,9 +431,9 @@ def static_traffic_matrix(topology, mean, stddev, max_u=0.9,
                     topology.edge[path[hop]][path[hop + 1]]['load'] \
                             += assignments[(o, d)]
         # Calculate scaling
-        current_max_u = max([float(topology.edge[u][v]['load']) \
+        current_max_u = max((float(topology.edge[u][v]['load']) \
                              /float(topology.edge[u][v]['capacity']) 
-                             for u, v in topology.edges()])
+                             for u, v in topology.edges_iter()))
         norm_factor = max_u/current_max_u
         for od_pair in assignments:
             assignments[od_pair] *= norm_factor
@@ -517,14 +518,14 @@ def stationary_traffic_matrix(topology, mean, stddev, gamma, log_psi, n,
     volume_unit = static_tm.attrib['volume_unit']
     mean_dict = static_tm.flows()
     psi = exp(log_psi)
-    std_dict = dict([((o, d), (m/psi)**(1.0/gamma))
-                     for (o, d), m in mean_dict.items()])
+    std_dict = dict(((o, d), (m/psi)**(1.0/gamma))
+                     for (o, d), m in mean_dict.items())
     flows = {}
     for o, d in mean_dict:
         # Implementation without Numpy:
         # flows[(o, d)] = [max([0, normalvariate(mean_dict[(o, d)], 
         #                std_dict[(o, d)])]) for _ in range(n)]
-        flows[(o, d)] = [max([0, normal(mean_dict[(o, d)], std_dict[(o, d)])])\
+        flows[(o, d)] = [max((0, normal(mean_dict[(o, d)], std_dict[(o, d)])))\
                          for _ in range(n)]
         
     for i in range(n):
@@ -534,19 +535,19 @@ def stationary_traffic_matrix(topology, mean, stddev, gamma, log_psi, n,
         tm_sequence.append(traffic_marix)
     if max_u is not None:
         if origin_nodes is not None:
-            shortest_path = dict([
+            shortest_path = dict(
                     (node, nx.single_source_dijkstra_path(topology,
                                                           node, 
                                                           weight='weight'))
-                    for node in origin_nodes])
+                    for node in origin_nodes)
         else:
             shortest_path = nx.all_pairs_dijkstra_path(topology, 
                                                        weight='weight')
-        current_max_u = max([max(link_loads(topology, 
+        current_max_u = max((max(link_loads(topology, 
                                             tm_sequence.get(i),
                                             shortest_path
                                             ).values()) 
-                             for i in range(n)])
+                             for i in range(n)))
         norm_factor = max_u/current_max_u
         for i in range(n):
             for o, d in mean_dict:
@@ -647,8 +648,8 @@ def sin_cyclostationary_traffic_matrix(topology, mean, stddev, gamma, log_psi,
     volume_unit = static_tm.attrib['volume_unit']
     mean_dict = static_tm.flows()
     psi = exp(log_psi)
-    std_dict = dict([((o, d), (m/psi)**(1.0/gamma))
-                     for (o, d), m in mean_dict.items()])
+    std_dict = dict(((o, d), (m/psi)**(1.0/gamma))
+                     for (o, d), m in mean_dict.items())
     od_pairs = static_tm.od_pairs()
     for _ in range(periods):
         for i in range(n):
@@ -657,25 +658,25 @@ def sin_cyclostationary_traffic_matrix(topology, mean, stddev, gamma, log_psi,
                 volume = static_tm[(o, d)] * (1 + delta * sin((2*pi*i)/n)) 
                 # Implementation without Numpy
                 # volume = max([0, normalvariate(volume, std_dict[(o, d)])])
-                volume = max([0, normal(volume, std_dict[(o, d)])])
+                volume = max((0, normal(volume, std_dict[(o, d)])))
                 tm.add_flow(o, d, volume)
             tm_sequence.append(tm)
     
     if max_u is not None:
         if origin_nodes is not None:
-            shortest_path = dict([
+            shortest_path = dict(
                     (node, nx.single_source_dijkstra_path(topology,
                                                           node, 
                                                           weight='weight'))
-                    for node in origin_nodes])
+                    for node in origin_nodes)
         else:
             shortest_path = nx.all_pairs_dijkstra_path(topology, 
                                                        weight='weight')
-        current_max_u = max([max(link_loads(topology, 
+        current_max_u = max((max(link_loads(topology, 
                                             tm_sequence.get(i),
                                             shortest_path
                                             ).values()) 
-                             for i in range(n*periods)])
+                             for i in range(n*periods)))
         norm_factor = max_u/current_max_u
         for i in range(n*periods):
             for o, d in mean_dict:
@@ -708,10 +709,10 @@ def __ranking_metrics_heuristic(topology, od_pairs=None):
     
     fan_in, fan_out = fan_in_out_capacities(topology)
     degree = topology.degree()
-    min_capacity = dict([((u, v), min(fan_out[u], fan_in[v]))
-                         for u, v in od_pairs])
-    min_degree = dict([((u, v), min(degree[u], degree[v]))
-                       for u, v in od_pairs])
+    min_capacity = dict(((u, v), min(fan_out[u], fan_in[v]))
+                         for u, v in od_pairs)
+    min_degree = dict(((u, v), min(degree[u], degree[v]))
+                       for u, v in od_pairs)
     
     # NFUR calculation is expensive, so before calculating it, the code
     # checks if it is really needed, i.e. if there are ties after capacity
@@ -721,8 +722,8 @@ def __ranking_metrics_heuristic(topology, od_pairs=None):
     try:
         # The import will fail for Python < 2.7
         from collections import Counter
-        nfur_required = any([val > 1for val in
-                             Counter(cap_deg_pairs).values()])
+        nfur_required = any((val > 1 for val in
+                             Counter(cap_deg_pairs).values()))
     except ImportError:
         nfur_required = True
     if not nfur_required:
@@ -743,8 +744,7 @@ def __ranking_metrics_heuristic(topology, od_pairs=None):
     # in reverse order the max of NFURs. Since all NFURs are >=0, 
     # using the opposite yields the same results as the inverse, but there
     # is no risk of incurring in divisions by 0.
-    max_inv_nfur = dict([((u, v), - max(nfur[u], nfur[v]))
-                         for u, v in od_pairs])
+    max_inv_nfur = dict(((u, v), - max(nfur[u], nfur[v])) for u, v in od_pairs)
     # Sort all OD_pairs
     return sorted(od_pairs, key=lambda od_pair: (min_capacity[od_pair], 
                                                  min_degree[od_pair], 
@@ -806,8 +806,8 @@ def __calc_nfur(topology, fast, parallelize=True):
     args = [(__nfur_func, (topology, chunk, betw)) for chunk in edges_chunks]
     result = pool.map(map_func, args)
     # reduce operation
-    return dict([(v, max([result[i][v] for i in range(len(result))]))
-                 for v in betw])
+    return dict((v, max((result[i][v] for i in range(len(result)))))
+                for v in betw)
 
 
 def __nfur_func(topology, edges, betweenness):
@@ -886,19 +886,19 @@ def validate_traffic_matrix(topology, traffic_matrix, validate_load=False):
                                else topology.to_directed()
    
     od_pairs_topology = od_pairs_from_topology(topology)
+    if validate_load:
+        shortest_path = nx.all_pairs_dijkstra_path(topology, weight='weight')
     for matrix in matrices:
         od_pairs_tm = matrix.od_pairs()
         # verify that OD pairs in TM are equal or subset of topology
-        if not all([(o, d) in od_pairs_topology for o, d in od_pairs_tm]):
+        if not all(((o, d) in od_pairs_topology for o, d in od_pairs_tm)):
             return False
         if validate_load:
-            for u, v in topology.edges():
+            for u, v in topology.edges_iter():
                 topology.edge[u][v]['load'] = 0
             capacity_unit = capacity_units[topology.graph['capacity_unit']]
             volume_unit = capacity_units[matrix.attrib['volume_unit']]
             norm_factor = float(capacity_unit)/float(volume_unit)
-            shortest_path = nx.all_pairs_dijkstra_path(topology, 
-                                                       weight='weight')
             for o, d in od_pairs_tm:
                 path = shortest_path[o][d]
                 if len(path) <= 1:
@@ -906,9 +906,9 @@ def validate_traffic_matrix(topology, traffic_matrix, validate_load=False):
                 for hop in range(len(path) - 1):
                     topology.edge[path[hop]][path[hop + 1]]['load'] \
                             += matrix.flow[o][d]
-            max_u = max([norm_factor * float(topology.edge[u][v]['load']) \
+            max_u = max((norm_factor * float(topology.edge[u][v]['load']) \
                          / float(topology.edge[u][v]['capacity']) 
-                         for u, v in topology.edges()])
+                         for u, v in topology.edges_iter()))
             if max_u > 1.0: return False
     return True
 
@@ -962,7 +962,7 @@ def link_loads(topology, traffic_matrix, routing_matrix=None):
     norm_factor = float(capacity_unit)/float(volume_unit)
     if routing_matrix == None:
         routing_matrix = nx.all_pairs_dijkstra_path(topology, weight='weight')
-    for u, v in topology.edges():
+    for u, v in topology.edges_iter():
         topology.edge[u][v]['load'] = 0
     od_pairs = traffic_matrix.od_pairs()
     for o, d in od_pairs:
@@ -972,10 +972,10 @@ def link_loads(topology, traffic_matrix, routing_matrix=None):
         for hop in range(len(path) - 1):
             topology.edge[path[hop]][path[hop + 1]]['load'] += \
                         traffic_matrix.flow[o][d]
-    return dict([((u, v), norm_factor * 
+    return dict(((u, v), norm_factor * 
                   float(topology.edge[u][v]['load']) \
                   / float(topology.edge[u][v]['capacity']))
-                 for u, v in topology.edges()])
+                 for u, v in topology.edges_iter())
     
 
 def read_traffic_matrix(path, encoding='utf-8'):
