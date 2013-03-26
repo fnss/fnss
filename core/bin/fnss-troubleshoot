@@ -15,8 +15,12 @@ packages = ['fnss',
             'argparse'
             ]
 
+
+def main():
+    """Troubleshooting script
     
-if __name__ == "__main__":
+    Print information useful for troubleshooting.
+    """
     print('[FNSS TROUBLESHOOTING INFORMATION]')
     sysname, nodename, release, version, machine = os.uname()
     py_version = sys.version
@@ -43,3 +47,6 @@ if __name__ == "__main__":
                 exec('del %s' % package)
             except ImportError:
                 print ('[ERROR] Cannot import %s package' % package)
+
+if __name__ == "__main__":
+    main()
