@@ -2,8 +2,9 @@
 #
 # Fast Network Simulation Setup (FNSS), ns-2 adapter
 #
-# Copyright (c) 2012 Lorenzo Saino
-#
+# Copyright (c) 2013, Lorenzo Saino and Cosmin Cocora
+# Contacts: http://fnss.github.com
+# 
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
@@ -151,21 +152,38 @@ set ns [new Simulator]
 
 #Create nodes
 @{
-for node in topology.nodes():
+for node in topology.nodes_iter():
     emit("set n%s [$ns node]\n" % str(node))
 }@
 # Create all links
 set qtype DropTail
-@{ 
-for u, v in topology.edges():
-    delay = "0" if not set_delays else str(topology.edge[u][v]['delay'] * delay_norm)
-    emit("$ns duplex-link $n%s $n%s %sMb %sms $qtype\n"
-         % (str(u), str(v), str(topology.edge[u][v]['capacity'] * capacity_norm),
-            delay))
+@{
+# if topology is undirected, create duplex links, otherwise simplex links
+if topology.is_directed():
+    for u, v in topology.edges_iter():
+        delay = "0" if not set_delays else str(topology.edge[u][v]['delay'] * delay_norm)
+        emit("$ns simplex-link $n%s $n%s %sMb %sms $qtype\n"
+             % (str(u), str(v), str(topology.edge[u][v]['capacity'] * capacity_norm),
+                delay))
+else:
+    for u, v in topology.edges_iter():
+        delay = "0" if not set_delays else str(topology.edge[u][v]['delay'] * delay_norm)
+        emit("$ns duplex-link $n%s $n%s %sMb %sms $qtype\n"
+             % (str(u), str(v), str(topology.edge[u][v]['capacity'] * capacity_norm),
+                delay))
+
+if set_weights:
+    emit("\n# Set link weights\n")
+    for u, v in topology.edges_iter():
+        emit("$ns cost $n%s $n%s %s\n" 
+             % (str(u), str(v), str(topology.edge[u][v]['weight'])))
+        if not topology.is_directed():
+            emit("$ns cost $n%s $n%s %s\n" 
+                 % (str(v), str(u), str(topology.edge[v][u]['weight'])))
 
 if set_buffers:
     emit("\n# Set queue sizes\n")
-    for u, v in topology.edges():
+    for u, v in topology.edges_iter():
         emit("$ns queue-limit $n%s $n%s %s\n" 
              % (str(u), str(v), str(topology.edge[u][v]['buffer'])))
         if not topology.is_directed():
@@ -174,7 +192,7 @@ if set_buffers:
 
 if deploy_stacks:
     emit("\n# Deploy applications and agents\n")
-    for node in topology.nodes():
+    for node in topology.nodes_iter():
         stack = get_stack(topology, node)
         if stack is None: continue
         stack_name, stack_props = stack
@@ -225,7 +243,7 @@ def validate_ns2_stacks(topology):
     topology : Topology
         The topology object to validate
     """
-    for node in topology.nodes():
+    for node in topology.nodes_iter():
         applications = get_application_names(topology, node)
         for name in applications:
             if not 'class' in get_application_properties(topology, node, name):
@@ -264,14 +282,18 @@ def convert_objects_to_ns2(topology, ns2_file, deploy_stacks=True, log=False):
     set_buffers = True
     set_delays = True
     
+    # if all links are annotated with weights, then set weights
+    set_weights = all('weight' in topology.edge[u][v]
+                      for u, v in topology.edges_iter())
+    
     if not 'capacity_unit' in topology.graph:
         if log: 
             __print_log('error', 
                         'Missing capacity unit attribute in the topology. '\
-                        'Set capacities and try again')
+                        'Set capacities and try again.')
             return
         else:
-            raise ValueError('The given topology does not have capacity data')
+            raise ValueError('The given topology does not have capacity data.')
     if not topology.graph['capacity_unit'] in capacity_units:
         if log: 
             __print_log('error', 
@@ -283,8 +305,8 @@ def convert_objects_to_ns2(topology, ns2_file, deploy_stacks=True, log=False):
             raise ValueError('The given topology does not have a valid capacity unit')
     if not 'buffer_unit' in topology.graph:
         if log: __print_log('warning', 
-                            'Missing buffer size unit attribute in the topology.'\
-                            ' Output file will be generated without buffer assignments')
+                            'Missing buffer size unit attribute in the topology. '\
+                            'Output file will be generated without buffer assignments.')
         set_buffers = False
     elif not topology.graph['buffer_unit'] == 'packets':
         if log: __print_log('warning', 
@@ -295,20 +317,24 @@ def convert_objects_to_ns2(topology, ns2_file, deploy_stacks=True, log=False):
         set_buffers = False
     if not 'delay_unit' in topology.graph or not topology.graph['delay_unit'] in time_units:
         if log: __print_log('warning', 
-                            'Missing or invalid delay unit attribute in the topology.'\
-                            ' Output file will be generated with all link delays set to 0')
+                            'Missing or invalid delay unit attribute in the topology. '\
+                            'Output file will be generated with all link delays set to 0.')
         set_delays = False
-    if deploy_stacks and not validate_ns2_stacks(topology):
-        if log: __print_log('warning', 'Some application stacks cannot be parsed correctly. '\
-                          'Read the documentation to learn how to properly configure stacks.' \
-                          ' Output file will be generated without stack assignments')
-        deploy_stacks = False
+    if deploy_stacks:
+        if not validate_ns2_stacks(topology):
+            if log: __print_log('warning', 'Some application stacks cannot be parsed correctly. '\
+                                'Read the documentation to learn how to properly configure stacks. ' \
+                                'Output file will be generated without stack assignments.')
+            deploy_stacks = False
+        if not any('stack' in topology.node[v] for v in topology.nodes_iter()):
+            deploy_stacks = False
     template = __Templite(__template, start='@{', end='}@')
     out_file = open(ns2_file, "w")
-    out_file.write(template.render({'topology': topology,
-                                  'deploy_stacks': deploy_stacks,
-                                  'set_delays': set_delays,
-                                  'set_buffers': set_buffers},
+    out_file.write(template.render({'topology':      topology,
+                                    'deploy_stacks': deploy_stacks,
+                                    'set_delays':    set_delays,
+                                    'set_buffers':   set_buffers,
+                                    'set_weights':   set_weights},
                                  x=8))
     out_file.close()
     if log: __print_log('info', 'Output file created successfully')
@@ -338,9 +364,10 @@ def convert_xml_to_ns2(topology_file, ns2_file, deploy_stacks=True, log=False):
     convert_objects_to_ns2(topology, ns2_file, deploy_stacks, log)
 
 
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser()   
-    parser.add_argument("-t", "--topology", 
+def main():
+    """Parse topology file and convert it to an ns-2 Tcl script"""
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-t", "--topology",
                         help='The topology XML file',
                         required=True)
     parser.add_argument("ns2file",
@@ -349,3 +376,5 @@ if __name__ == '__main__':
     convert_xml_to_ns2(args.topology, args.ns2file, 
                        deploy_stacks=True, log=True)
 
+if __name__ == '__main__':
+    main()
