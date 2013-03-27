@@ -966,7 +966,11 @@ def link_loads(topology, traffic_matrix, routing_matrix=None):
         topology.edge[u][v]['load'] = 0
     od_pairs = traffic_matrix.od_pairs()
     for o, d in od_pairs:
-        path = routing_matrix[o][d]
+        try:
+            path = routing_matrix[o][d]
+        except KeyError:
+            raise ValueError('Cannot calculate link loads. There is no route' \
+                             'from node %s to node %s' % (str(o), str(d)))
         if len(path) <= 1:
             continue
         for hop in range(len(path) - 1):
