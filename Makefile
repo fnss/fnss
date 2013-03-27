@@ -1,6 +1,6 @@
 SHELL = /bin/sh
 
-VERSION = 0.3.0
+VERSION = 0.3.1
 
 CORE_DIR = core
 CPP_DIR  = cpp
@@ -29,7 +29,7 @@ doc: dist docclean
 	cp -r $(CPP_DIR)/doc/html/* $(DOC_DIR)/cpp
 
 # Collect all distribution files
-dist:
+dist: distclean
 	cd $(JAVA_DIR); ant
 	cd $(CORE_DIR); make dist
 	cd $(CPP_DIR); make dist
@@ -40,10 +40,13 @@ dist:
 	mkdir -p $(DIST_DIR)/java
 	mkdir -p $(DIST_DIR)/cpp
 	mkdir -p $(DIST_DIR)/ns2
+	mkdir -p $(DIST_DIR)/ns3
 	cp -r $(CORE_DIR)/dist/* $(DIST_DIR)/core
 	cp -r $(JAVA_DIR)/dist/* $(DIST_DIR)/java
 	cp -r $(CPP_DIR)/dist/* $(DIST_DIR)/cpp
 	cp -r $(NS2_DIR)/dist/* $(DIST_DIR)/ns2
+	cp -r $(NS3_DIR)/dist/* $(DIST_DIR)/ns3
+	cd $(DIST_DIR)/core ; for f in * ; do mv $$f `echo $$f | sed s/fnss-/fnss-core-/` ; done
 	zip --exclude=$(DOC_DIR)/\* --exclude $(DIST_DIR)/\* --exclude ".*" -r $(DIST_DIR)/$(ARCHIVE_NAME).zip *
 	tar --exclude=$(DOC_DIR) --exclude=$(DIST_DIR) --exclude=".*" -czf $(DIST_DIR)/$(ARCHIVE_NAME).tar.gz *
 
