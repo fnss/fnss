@@ -48,6 +48,42 @@ class Test(unittest.TestCase):
     def tearDown(self):
         pass
 
+    def test_base_topology_class(self):
+        weight = 2
+        capacity = 3
+        delay = 4
+        buffer_size = 5
+        topology = Topology()
+        topology.add_path([1, 2, 3])
+        set_weights_constant(topology, weight)
+        set_capacities_constant(topology, capacity)
+        set_delays_constant(topology, delay)
+        set_buffer_sizes_constant(topology, buffer_size)
+        weights = topology.weights()
+        capacities = topology.capacities()
+        delays = topology.delays()
+        buffer_sizes = topology.buffers()
+        for e in topology.edges_iter():
+            self.assertEqual(weight, weights[e])
+            self.assertEqual(capacity, capacities[e])
+            self.assertEqual(delay, delays[e])
+            self.assertEqual(buffer_size, buffer_sizes[e])
+
+    def test_topology_class(self):
+        topology = Topology()
+        topology.add_edge(1, 2)
+        self.assertEqual(1, topology.number_of_edges())
+        topology.add_edge(2, 1)
+        self.assertEqual(1, topology.number_of_edges())
+        topology.add_edge('1', '2')
+        topology.add_edge('2', '1')
+        self.assertEqual(2, topology.number_of_edges())
+    
+    def test_directed_topology_class(self):
+        topology = DirectedTopology()
+        topology.add_edge(1, 2)
+        topology.add_edge(2, 1)
+        self.assertEqual(2, topology.number_of_edges())
 
     def test_od_pairs_from_topology_directed(self):
         dir_topology = DirectedTopology()
