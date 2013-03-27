@@ -473,13 +473,14 @@ def glp_topology(n, m, m0, p, beta, seed=None):
         max_n_edges = (n_nodes * (n_nodes - 1)) / 2
         if n_edges + m > max_n_edges: # cannot add m links
             add_node(G, pi) # add a new node instead
-            if n_nodes == n: # topology complete
-                return
+            # return in any case because before doing another operation
+            # (add node or links) we need to recalculate pi
+            return
         new_links = 0
         while new_links < m:
             u = random_from_pdf(pi)
             v = random_from_pdf(pi)
-            if u is not v and not G.has_edge(u, v):
+            if u != v and not G.has_edge(u, v):
                 G.add_edge(u, v)
                 new_links += 1
     
