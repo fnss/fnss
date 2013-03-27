@@ -412,7 +412,7 @@ def extended_barabasi_albert_topology(n, m, m0, p, q, seed=None):
 
 def glp_topology(n, m, m0, p, beta, seed=None):
     r"""
-    Return a random topology using the Generalized Linear Prefernece (GLP)
+    Return a random topology using the Generalized Linear Preference (GLP)
     preferential attachment model.
         
     It differs from the extended Barabasi-Albert model in that there is link
@@ -421,7 +421,7 @@ def glp_topology(n, m, m0, p, beta, seed=None):
     
     More precisely, the GLP topology is built as follows. First, a 
     line topology with *m0* nodes is created. Then, at each step:
-    with probability *p*, add m new links between existing nodes, selected 
+    with probability *p*, add *m* new links between existing nodes, selected 
     with probability:
     
     .. math::

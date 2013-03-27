@@ -4,15 +4,16 @@ import sys
 import pkg_resources as pkg
 
 # list of FNSS dependencies, including FNSS itself
-packages = ['fnss',
-            'networkx',
-            'numpy',
-            'scipy',
-            'nose',
-            'sphinx',
-            'numpydoc',
-            'unittest2',
-            'argparse'
+packages = [
+        'fnss',
+        'networkx',
+        'numpy',
+        'scipy',
+        'nose',
+        'sphinx',
+        'numpydoc',
+        'unittest2',
+        'argparse'
             ]
 
 
