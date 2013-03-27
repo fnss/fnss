@@ -1,7 +1,7 @@
 """
 Provides basic functions and classes for operating on network topologies.
 """
-import xml.etree.ElementTree as ET
+import xml.etree.cElementTree as ET
 import networkx as nx
 from fnss.util import _xml_type, _xml_cast_type, _xml_indent
 

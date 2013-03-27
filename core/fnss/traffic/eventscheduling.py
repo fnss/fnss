@@ -7,7 +7,7 @@ number of properties.
 An event schedule can be read and written from/to an XML files with provided
 functions.
 """
-import xml.etree.ElementTree as ET 
+import xml.etree.cElementTree as ET 
 from random import expovariate
 from bisect import insort
 from copy import copy

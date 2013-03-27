@@ -11,7 +11,7 @@ A traffic matrix or a sequence of matrices can be read and written from/to an
 XML files with provided functions.
 """
 import networkx as nx
-import xml.etree.ElementTree as ET
+import xml.etree.cElementTree as ET
 from multiprocessing import cpu_count, Pool
 from math import exp, sin, pi, log, sqrt
 #from random import lognormvariate, normalvariate
