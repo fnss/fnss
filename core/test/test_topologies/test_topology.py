@@ -8,7 +8,8 @@ else:
     except ImportError:
         raise ImportError("The unittest2 package is needed to run the tests.") 
 del sys
-from fnss.topologies import *
+from fnss.topologies.topology import *
+from fnss.topologies import glp_topology, ring_topology, star_topology
 from fnss.netconfig import *
 
 
@@ -17,11 +18,10 @@ TMP_DIR = environ['test.tmp.dir'] if 'test.tmp.dir' in environ else None
 
 class Test(unittest.TestCase):
 
-
     @classmethod
     def setUpClass(cls):
         # set up topology used for all traffic matrix tests
-        cls.G = erdos_renyi_topology(10, 0.5)
+        cls.G = glp_topology(n=50, m=1, m0=10, p=0.2, beta=-2, seed=1)
         set_capacities_random(cls.G, {10: 0.5, 20: 0.3, 40: 0.2}, 
                               capacity_unit='Mbps')
         set_delays_constant(cls.G, 2, delay_unit='ms')
@@ -35,15 +35,12 @@ class Test(unittest.TestCase):
         add_application(cls.G, 2, 'server', 
                            {'port': 80, 'active': True, 'user-agent': 'fnss'})
 
-
     @classmethod
     def tearDownClass(cls):
         pass
 
-
     def setUp(self):
         pass
-
 
     def tearDown(self):
         pass
@@ -98,7 +95,6 @@ class Test(unittest.TestCase):
         for od in expected_od_pairs:
             self.assertTrue(od in od_pairs)
 
-
     def test_od_pairs_from_topology_undirected(self):
         topology = ring_topology(3)
         topology.add_path([7, 8, 9]) # isolated node: no flows from/to this node 
@@ -108,7 +104,6 @@ class Test(unittest.TestCase):
         self.assertEquals(len(expected_od_pairs), len(od_pairs))
         for od in expected_od_pairs:
             self.assertTrue(od in od_pairs)
-
 
     def test_fan_in_out_capacities_directed(self):
         dir_topology = DirectedTopology()
@@ -121,14 +116,12 @@ class Test(unittest.TestCase):
         self.assertEquals({0: 10, 1: 10, 2: 20, 3: 0}, in_cap)
         self.assertEquals({0: 10, 1: 20, 2: 0, 3: 10}, out_cap)
         
-
     def test_fan_in_out_capacities_undirected(self):
         topology = star_topology(3)
         set_capacities_constant(topology, 10, 'Mbps')
         in_cap, out_cap = fan_in_out_capacities(topology)
         self.assertEquals({0: 30, 1: 10, 2: 10, 3: 10}, in_cap)
         self.assertEquals(in_cap, out_cap)
-
 
     @unittest.skipIf(TMP_DIR is None, "Temp folder not present")
     def test_read_write_topology(self):
@@ -137,13 +130,18 @@ class Test(unittest.TestCase):
         self.assertTrue(path.exists(tmp_topo_file))
         read_topo = read_topology(tmp_topo_file)
         self.assertEquals(len(self.G), len(read_topo))
-        self.assertEquals(self.G.number_of_edges(), read_topo.number_of_edges())
+        self.assertEquals(self.G.number_of_edges(),
+                          read_topo.number_of_edges())
         self.assertEquals('tcp', get_stack(read_topo, 2)[0])
         self.assertEquals(1024, get_stack(read_topo, 2)[1]['rcvwnd'])
         self.assertEquals('cubic', get_stack(read_topo, 2)[1]['protocol'])
         self.assertEquals(len(get_application_names(self.G, 2)), 
                       len(get_application_names(read_topo, 2)))
         self.assertEquals('fnss', get_application_properties(read_topo, 2, 'server')['user-agent'])
-        self.assertEquals([2, 4, 6], [ v for v in read_topo.nodes_iter() if get_stack(read_topo, v) is not None and get_stack(read_topo, v)[0] == 'tcp'])
-        self.assertEquals([2, 4], [ v for v in read_topo.nodes_iter() if 'client' in get_application_names(read_topo, v)])
-        self.assertEquals([2], [ v for v in read_topo.nodes_iter() if 'server' in get_application_names(read_topo, v)])
+        self.assertEquals([2, 4, 6], [ v for v in read_topo.nodes_iter()
+                                      if get_stack(read_topo, v) is not None
+                                      and get_stack(read_topo, v)[0] == 'tcp'])
+        self.assertEquals([2, 4], [ v for v in read_topo.nodes_iter()
+                                   if 'client' in get_application_names(read_topo, v)])
+        self.assertEquals([2], [ v for v in read_topo.nodes_iter()
+                                if 'server' in get_application_names(read_topo, v)])

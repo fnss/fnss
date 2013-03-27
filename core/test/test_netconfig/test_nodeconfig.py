@@ -29,7 +29,6 @@ class Test(unittest.TestCase):
     def setUp(self):
         pass
 
-
     def tearDown(self):
         clear_stacks(self.topo)
         clear_applications(self.topo)
@@ -62,17 +61,29 @@ class Test(unittest.TestCase):
         for v in self.topo.nodes_iter():
             self.assertEqual([], get_application_names(self.topo, v))
         add_application(self.topo, 10, self.app_1_name, self.app_1_props)
-        self.assertEqual([self.app_1_name], get_application_names(self.topo, 10))
-        self.assertEqual(self.app_1_props, get_application_properties(self.topo, 10, self.app_1_name))
+        self.assertEqual([self.app_1_name],
+                         get_application_names(self.topo, 10))
+        self.assertEqual(self.app_1_props,
+                         get_application_properties(self.topo, 10, 
+                                                    self.app_1_name))
         add_application(self.topo, 10, self.app_1_name, self.app_2_props)
-        self.assertEqual([self.app_1_name], get_application_names(self.topo, 10))
-        self.assertEqual(self.app_2_props, get_application_properties(self.topo, 10, self.app_1_name))
+        self.assertEqual([self.app_1_name],
+                         get_application_names(self.topo, 10))
+        self.assertEqual(self.app_2_props,
+                         get_application_properties(self.topo, 10,
+                                                    self.app_1_name))
         add_application(self.topo, 10, self.app_2_name, self.app_2_props)
-        self.assertEqual([self.app_1_name, self.app_2_name], get_application_names(self.topo, 10))
-        self.assertEqual(self.app_2_props, get_application_properties(self.topo, 10, self.app_1_name))
-        self.assertEqual(self.app_2_props, get_application_properties(self.topo, 10, self.app_2_name))
+        self.assertEqual([self.app_1_name, self.app_2_name],
+                         get_application_names(self.topo, 10))
+        self.assertEqual(self.app_2_props,
+                         get_application_properties(self.topo, 10,
+                                                    self.app_1_name))
+        self.assertEqual(self.app_2_props,
+                         get_application_properties(self.topo, 10,
+                                                    self.app_2_name))
         remove_application(self.topo, 10, self.app_2_name)
-        self.assertEqual([self.app_1_name], get_application_names(self.topo, 10))
+        self.assertEqual([self.app_1_name],
+                         get_application_names(self.topo, 10))
         remove_application(self.topo, 10, self.app_1_name)
         self.assertEqual([], get_application_names(self.topo, 10))
         add_application(self.topo, 10, self.app_1_name, self.app_1_props)

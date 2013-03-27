@@ -16,10 +16,8 @@ class Test(unittest.TestCase):
     def setUp(self):
         pass
 
-
     def tearDown(self):
         pass
-
 
     def test_line_topology(self):
         def test_line_connectivity(n):
@@ -64,7 +62,6 @@ class Test(unittest.TestCase):
         test_K_ary_tree_connectivity(5, 3)
         test_K_ary_tree_connectivity(2, 1)
         
-        
     def test_ring_topology(self):
         def test_ring_connectivity(n):
             G = ring_topology(n)
@@ -78,7 +75,6 @@ class Test(unittest.TestCase):
         self.assertRaises(TypeError, ring_topology, 'String')
         test_ring_connectivity(10)
         test_ring_connectivity(21)
-
 
     def test_star_topology(self):
         def test_star_connectivity(n):

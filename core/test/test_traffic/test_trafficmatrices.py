@@ -9,7 +9,7 @@ else:
 del sys
 from os import environ, path
 from fnss.traffic.trafficmatrices import *
-from fnss import erdos_renyi_topology, set_capacities_random, \
+from fnss import glp_topology, set_capacities_random, \
 set_capacities_constant, ring_topology, DirectedTopology
 
 
@@ -18,11 +18,10 @@ TMP_DIR = environ['test.tmp.dir'] if 'test.tmp.dir' in environ else None
 
 class Test(unittest.TestCase):
 
-
     @classmethod
     def setUpClass(cls):
         # set up topology used for all traffic matrix tests
-        cls.G = erdos_renyi_topology(20, 0.2)
+        cls.G = glp_topology(n=30, m=1, m0=10, p=0.2, beta=-2, seed=1)
         set_capacities_random(cls.G, {10: 0.5, 20: 0.3, 40: 0.2}, 
                               capacity_unit='Mbps')
 
@@ -36,7 +35,6 @@ class Test(unittest.TestCase):
 
     def tearDown(self):
         pass
-
 
     def test_traffic_matrix_class(self):
         tm = TrafficMatrix(volume_unit='Mbps')
@@ -55,7 +53,6 @@ class Test(unittest.TestCase):
         self.assertEqual(3, len(tm))
         self.assertFalse(1 in tm.flow)
         self.assertFalse((1, 3) in tm)
-
 
     def test_traffic_matrix_sequence_class(self):
         tms = TrafficMatrixSequence()
@@ -82,7 +79,6 @@ class Test(unittest.TestCase):
         del tms[0]
         self.assertEqual(2, len(tms))
         
-        
     def test_link_loads(self):
         topo = ring_topology(5)
         set_capacities_constant(topo, 100, capacity_unit='Mbps')
@@ -99,7 +95,6 @@ class Test(unittest.TestCase):
         self.assertAlmostEqual(0.0, load[(2, 1)])
         self.assertAlmostEqual(0.7, load[(0, 4)])
         self.assertAlmostEqual(0.5, load[(4, 3)])
-
         
     def test_static_traffic_matrix(self):
         tm = static_traffic_matrix(self.G, 10, 8, max_u=0.9)
@@ -137,7 +132,6 @@ class Test(unittest.TestCase):
         self.assertAlmostEqual(0.9, max([max(link_loads(self.G, tm).values()) for tm in tms]))
         self.assertLessEqual(0, min([min(link_loads(self.G, tm).values()) for tm in tms]))
     
-    
     @unittest.skipIf(TMP_DIR is None, "Temp folder not present")
     def test_read_write_tm(self):
         tm = static_traffic_matrix(self.G, mean=10, stddev=0.1, max_u=0.9)
@@ -146,7 +140,6 @@ class Test(unittest.TestCase):
         read_tm = read_traffic_matrix(tmp_tm_file)
         u, v = tm.od_pairs()[2]
         self.assertAlmostEqual(tm[(u, v)], read_tm[(u, v)])
-
     
     @unittest.skipIf(TMP_DIR is None, "Temp folder not present")
     def test_read_write_tms(self):
@@ -157,7 +150,6 @@ class Test(unittest.TestCase):
         read_tms = read_traffic_matrix(tmp_tms_file)
         u, v = tms[3].od_pairs()[2]
         self.assertAlmostEqual(tms[3][(u, v)], read_tms[3][(u, v)])
-
 
     def test_validate_traffic_matrix(self):
         topology = DirectedTopology()
