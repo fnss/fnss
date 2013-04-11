@@ -60,7 +60,7 @@ public:
 	Quantity(const MeasurementUnit &converter);
 
 	/**
-	 * Parse a string to obtain the numerical value and unit.The previously stored
+	 * Parse a string to obtain the numerical value and unit. The previously stored
 	 * data is discarded.
 	 * 
 	 * @param str the \c std::string to be parsed for value and unit data.
@@ -73,9 +73,11 @@ public:
 	 * If not provided in the input, the unit is assumed to be the base of
 	 * \c this->converter.
 	 *
+	 * @param separator the \c std::the separator to insert between value and unit.
+	 *
 	 * @return the \c std::string representation of the object.
 	 */
-	std::string toString() const;
+	std::string toString(const std::string &separator="") const;
 
 	/**
 	 * Convert to the specified unit(eg. from GB/s to Tb/h).

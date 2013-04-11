@@ -34,10 +34,10 @@ void Quantity::fromString(const std::string &str) {
 		this->unit = this->converter.getBaseUnit();
 }
 
-std::string Quantity::toString() const {
+std::string Quantity::toString(const std::string &separator) const {
 	std::ostringstream ss;
 	ss<<this->value;
-	return ss.str() + std::string(" ") + this->unit;
+	return ss.str() + separator + this->unit;
 }
 
 void Quantity::convert(const std::string &unit) {

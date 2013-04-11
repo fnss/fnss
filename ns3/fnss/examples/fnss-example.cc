@@ -23,7 +23,6 @@ int main (int argc, char *argv[])
 	FNSSSimulation sim(topologyFile);
 	sim.assignIPv4Addresses();
 	sim.scheduleEvents(eventsFile);
-	
 
 	Simulator::Run ();
 	Simulator::Destroy ();

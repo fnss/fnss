@@ -82,7 +82,7 @@ void FNSSSimulation::buildTopology(const fnss::Topology &topology) {
 		val.m_ptr = CreateObject <Node>();
 		this->m_nodes[*it] = val;
 	}
-	NS_LOG_INFO("Created " << this->m_nodes.size() <<" nodes.");
+	NS_LOG_INFO("Created " << this->m_nodes.size() << " nodes.");
 
 	//Create the links.
 	std::set<std::pair < std::string, std::string > > edges = topology.getAllEdges();
@@ -100,7 +100,7 @@ void FNSSSimulation::buildTopology(const fnss::Topology &topology) {
 										this->m_nodes[(*it).second].m_ptr));
 		this->m_links.push_back(p2pDev);
 	}
-	NS_LOG_INFO("Created " << this->m_links.size() <<" edges.");
+	NS_LOG_INFO("Created " << this->m_links.size() << " edges.");
 
 	//Install the default internet stack on all nodes.
 	InternetStackHelper internet;

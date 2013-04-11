@@ -13,10 +13,10 @@ MeasurementUnit initSIPrefix() {
 	map["M"] = pow((double) 10, (double) 6);
 	map["k"] = pow((double) 10, (double) 3);
 	map["d"] = pow((double) 10, (double) -1);
-	map["n"] = pow((double) 10, (double) -9);
 	map["c"] = pow((double) 10, (double) -2);
 	map["m"] = pow((double) 10, (double) -3);
 	map["u"] = pow((double) 10, (double) -6);
+	map["n"] = pow((double) 10, (double) -9);
 
 	return MeasurementUnit("", map);
 }
