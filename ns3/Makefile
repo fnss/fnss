@@ -7,12 +7,22 @@ DIST_DIR = dist
 DOC_DIR = doc
 ARCHIVE_NAME = fnss-ns3-$(VERSION)
 
-.PHONY: clean dist distclean doc docclean install test uninstall
+.PHONY: clean dist distclean doc docclean install test uninstall validate_ns3_dir
 
 all: install dist
 
+# Validate the value of the provided NS3_DIR parameter, which is the installation directory of ns-3
+validate_ns3_dir:
+ifeq ("$(NS3_DIR)", "")
+	$(error Please provide the NS3_DIR parameter, e.g. make NS3_DIR=~/ns-allinone-3.16/ns-3.16/)
+endif
+ifeq ($(wildcard $(NS3_DIR)/waf), )
+	$(error The provided NS3_DIR parameter is not valid. NS3_DIR must contain the waf file. See README for more details)
+endif
+
+
 # Install module in ns-3
-install:
+install: validate_ns3_dir
 	rm -rf $(NS3_DIR)/src/$(SRC_DIR)
 	cp -r fnss $(NS3_DIR)/src 
 	cd $(NS3_DIR); \
@@ -20,7 +30,7 @@ install:
 	./waf build
 
 # Uninstall module from ns-3
-uninstall:
+uninstall: validate_ns3_dir
 	rm -rf $(NS3_DIR)/src/$(SRC_DIR)
 	cd $(NS3_DIR); \
 	./waf configure --enable-examples --enable-tests; \
