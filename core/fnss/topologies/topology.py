@@ -417,8 +417,8 @@ class DirectedTopology(nx.DiGraph, BaseTopology):
 
 def od_pairs_from_topology(topology):
     """
-    Calculate all possible origin-destination pairs of graph topology. 
-    This function does not simply calculate all possible pairs of topology
+    Calculate all possible origin-destination pairs of the topology. 
+    This function does not simply calculate all possible pairs of the topology
     nodes. Instead, it only returns pairs of nodes connected by at least
     a path. 
 

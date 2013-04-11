@@ -494,9 +494,9 @@ def _set_capacities_proportionally(topology, capacities, metric,
                 break
         # if the loop is not stopped yet, it means that because of float
         # rounding error, max_capacity <  metric_boundaries[-1], so we set the
-        # higehest capacity value.
+        # greatest capacity value.
         # Anyway, the code should never reach this point, because before the
-        # for loop we area already adjustinf the value of metric_boundaries[-1]
+        # for loop we are already adjusting the value of metric_boundaries[-1]
         # to make it > max_capacity
         else: topology.edge[u][v]['capacity'] = capacities[-1]
    

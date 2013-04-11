@@ -125,7 +125,7 @@ def _xml_cast_type(type_attrib, val):
         return float(val)
     elif type_attrib == 'boolean':
         return bool(val)
-    elif type_attrib in ['tuple', 'list', 'dict']:
+    elif type_attrib in ('tuple', 'list', 'dict'):
         return literal_eval(val)
     else:
         return val
