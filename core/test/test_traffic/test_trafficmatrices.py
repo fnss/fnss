@@ -8,6 +8,8 @@ else:
         raise ImportError("The unittest2 package is needed to run the tests.") 
 del sys
 from os import environ, path
+from math import exp
+from numpy import isinf
 from fnss.traffic.trafficmatrices import *
 from fnss import glp_topology, set_capacities_random, \
 set_capacities_constant, ring_topology, DirectedTopology
@@ -132,6 +134,30 @@ class Test(unittest.TestCase):
         self.assertAlmostEqual(0.9, max([max(link_loads(self.G, tm).values()) for tm in tms]))
         self.assertLessEqual(0, min([min(link_loads(self.G, tm).values()) for tm in tms]))
     
+    def test_sin_cyclostationary_traffic_matrix_low_log_psi(self):
+        # Test that with very low value of log_psi and/or gamma to test 
+        # that FNSS deals properly with division by 0 cases
+        log_psi = [-1500, -200]
+        for lp in log_psi:
+            if exp(lp) == 0:
+                self.assertRaises(ValueError, 
+                                  sin_cyclostationary_traffic_matrix,
+                                  self.G, mean=10, stddev=0.2, 
+                                  gamma=0.3, log_psi=lp, delta=0.2, 
+                                  n=24, periods=2, max_u=0.9)
+            else:
+                try:
+                    tms = sin_cyclostationary_traffic_matrix(
+                                      self.G, mean=10, stddev=0.2, 
+                                      gamma=0.3, log_psi=lp, delta=0.2, 
+                                      n=24, periods=2, max_u=0.9)
+                except ValueError:
+                    pass
+                else:
+                    volumes = [tm[y] for tm in tms for y in tm.flows()]
+                    valid_volumes = [vol >= 0 and not isinf(vol) for vol in volumes]
+                    self.assertTrue(all(valid_volumes))
+
     @unittest.skipIf(TMP_DIR is None, "Temp folder not present")
     def test_read_write_tm(self):
         tm = static_traffic_matrix(self.G, mean=10, stddev=0.1, max_u=0.9)

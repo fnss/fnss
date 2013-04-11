@@ -518,8 +518,18 @@ def stationary_traffic_matrix(topology, mean, stddev, gamma, log_psi, n,
     volume_unit = static_tm.attrib['volume_unit']
     mean_dict = static_tm.flows()
     psi = exp(log_psi)
+    if psi == 0.0:
+        raise ValueError("The value of log_psi provided is too small and "
+                         "causes psi=0.0, which makes the standard deviation "
+                         "of random fluctuation to become infinite. Try with "
+                         "a greater value of log_psi")
     std_dict = dict(((o, d), (m/psi)**(1.0/gamma))
                      for (o, d), m in mean_dict.items())
+    if any(isinf(std) for std in std_dict.values()):
+        raise ValueError("The value of log_psi or gamma provided are too "
+                         "small and causes the standard deviation of random "
+                         "fluctuations to become infinite. Try with a greater "
+                         "value of log_psi and/or gamma")
     flows = {}
     for o, d in mean_dict:
         # Implementation without Numpy:
@@ -648,8 +658,19 @@ def sin_cyclostationary_traffic_matrix(topology, mean, stddev, gamma, log_psi,
     volume_unit = static_tm.attrib['volume_unit']
     mean_dict = static_tm.flows()
     psi = exp(log_psi)
+    if psi == 0.0:
+        raise ValueError("The value of log_psi provided is too small and "
+                         "causes psi=0.0, which makes the standard deviation "
+                         "of random fluctuation to become infinite. Try with "
+                         "a greater value of log_psi")
     std_dict = dict(((o, d), (m/psi)**(1.0/gamma))
                      for (o, d), m in mean_dict.items())
+    print(std_dict.values())
+    if any(isinf(std) for std in std_dict.values()):
+        raise ValueError("The value of log_psi or gamma provided are too "
+                         "small and causes the standard deviation of random "
+                         "fluctuations to become infinite. Try with a greater "
+                         "value of log_psi and/or gamma")
     od_pairs = static_tm.od_pairs()
     for _ in range(periods):
         for i in range(n):
