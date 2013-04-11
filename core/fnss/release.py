@@ -39,5 +39,5 @@ schedules in the desired target simulator.
 """
 
 # URL
-url = 'http://fnss.github.com/'
+url = 'http://fnss.github.io/'
 download_url = url

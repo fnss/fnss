@@ -15,7 +15,7 @@ or install it with::
 and an attempt will be made to find and install an appropriate version
 that matches your operating system and Python version.
 
-More download file options are at http://fnss.github.com/
+More download file options are at http://fnss.github.io/
 
 Installing from source
 ======================
@@ -93,7 +93,7 @@ NetworkX (version >= 1.6)
 
 NetworkX is a Python package for the creation, manipulation, and study of the structure, dynamics, and functions of complex networks.
 
-  - Download: http://networkx.github.com
+  - Download: http://networkx.github.io
 
 
 NumPy (version >= 1.4)
