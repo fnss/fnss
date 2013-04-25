@@ -10,5 +10,6 @@ Examples
     :maxdepth: 1
 
     datacenter.rst
+    dynamic_topology.rst
     gen_event_schedule.rst
     rocketfuel_tm.rst
