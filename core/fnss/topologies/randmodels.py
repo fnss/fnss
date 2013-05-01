@@ -59,7 +59,8 @@ def erdos_renyi_topology(n, p, seed=None, fast=False):
     return G
 
 
-def waxman_1_topology(n, alpha=0.4, beta=0.1, L=1.0, seed=None):
+def waxman_1_topology(n, alpha=0.4, beta=0.1, L=1.0,
+                      distance_unit='Km', seed=None):
     r"""
     Return a Waxman-1 random topology.
 
@@ -91,9 +92,11 @@ def waxman_1_topology(n, alpha=0.4, beta=0.1, L=1.0, seed=None):
     
     Notes
     -----
-    Each node of G has the attributes *latitude* and *longitude*
-    Each edge of G has the attribute *length*
-        
+    Each node of G has the attributes *latitude* and *longitude*. These
+    attributes are not expressed in degrees but in *distance_unit*.
+    
+    Each edge of G has the attribute *length*, which is also expressed in
+    *distance_unit*.
 
     References
     ----------
@@ -110,7 +113,8 @@ def waxman_1_topology(n, alpha=0.4, beta=0.1, L=1.0, seed=None):
     if seed is not None:
         random.seed(seed)
 
-    G = Topology(type='waxman_1')
+    G = Topology(type='waxman_1', distance_unit=distance_unit)
+    
     G.name = "waxman_1_topology(%s, %s, %s, %s)" % (n, alpha, beta, L)
     G.add_nodes_from(range(n))
     nodes = G.nodes()
@@ -119,11 +123,12 @@ def waxman_1_topology(n, alpha=0.4, beta=0.1, L=1.0, seed=None):
         for v in nodes:
             d = L * random.random()
             if random.random() < alpha * exp(-d/(beta * L)):
-                G.add_edge(u, v, {'length': d})
+                G.add_edge(u, v, length=d)
     return G
 
 
-def waxman_2_topology(n, alpha=0.4, beta=0.1, domain=(0, 0, 1, 1), seed=None):
+def waxman_2_topology(n, alpha=0.4, beta=0.1, domain=(0, 0, 1, 1),
+                      distance_unit='Km', seed=None):
     r"""Return a Waxman-2 random topology.
 
     The Waxman-2 random topology models place n nodes uniformly at random
@@ -179,7 +184,7 @@ def waxman_2_topology(n, alpha=0.4, beta=0.1, domain=(0, 0, 1, 1), seed=None):
     if seed is not None:
         random.seed(seed)
 
-    G = Topology(type='waxman_2')
+    G = Topology(type='waxman_2', distance_unit=distance_unit)
     G.name = "waxman_2_topology(%s, %s, %s)" % (n, alpha, beta)
     G.add_nodes_from(range(n))
     
@@ -201,7 +206,7 @@ def waxman_2_topology(n, alpha=0.4, beta=0.1, domain=(0, 0, 1, 1), seed=None):
     L = max(l.values())
     for (u, v), d in l.items():
         if random.random() < alpha * exp(-d/(beta*L)):
-            G.add_edge(u, v, {'length': d})
+            G.add_edge(u, v, length=d)
   
     return G
     

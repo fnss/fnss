@@ -7,8 +7,14 @@ from ast import literal_eval
 __all__ = [
     'capacity_units',
     'time_units',
+    'distance_units'
           ]
 
+
+# Average Earth radius, in Km
+EARTH_RADIUS = 6371
+
+distance_units = {'m': 0.001, 'km': 1, 'Km': 1}
 
 # http://en.wikipedia.org/wiki/Data_rate_units
 capacity_units = {'Tbps': 10**12,        'Gbps': 10**9,      'Mbps': 10**6,      

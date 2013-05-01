@@ -37,6 +37,8 @@ class Test(unittest.TestCase):
         self.assertTrue(all('link_index' in topology.edge[u][v]
                             and 'link_type' in topology.edge[u][v])
                         for u, v in topology.edges_iter())
+        self.assertTrue(all(topology.edge[u][v]['length'] >= 0
+                            for u,v in topology.edges_iter()))
 
 
     @unittest.skipIf(RES_DIR is None, "Resources folder not present")
@@ -89,6 +91,9 @@ class Test(unittest.TestCase):
         self.assertEqual(46, topology.number_of_edges())
         self.assertEqual(1000000000.0, topology.edge[4][15]['capacity'])
         self.assertEquals('bps', topology.graph['capacity_unit'])
+        self.assertTrue(all(topology.edge[u][v]['length'] >= 0
+                    for u,v in topology.edges_iter()
+                    if 'length' in topology.edge[u][v]))
 
     
     @unittest.skipIf(RES_DIR is None, "Resources folder not present")

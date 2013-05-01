@@ -1,5 +1,6 @@
 import sys
-from fnss.topologies.simplemodels import star_topology
+from fnss.topologies import Topology, star_topology
+
 if sys.version_info[:2] >= (2, 7):
     import unittest
 else:
@@ -35,9 +36,9 @@ class Test(unittest.TestCase):
                      if (u + v) % 2 == 1]
         even_links = [(u, v) for (u, v) in topo.edges_iter()
                       if (u + v) % 2 == 0]
-        set_delays_constant(topo, 2, 'ms', odd_links)
-        set_delays_constant(topo, 5000, 'us', even_links)
-        self.assertEqual('ms', topo.graph['delay_unit'])
+        set_delays_constant(topo, 2, 's', odd_links)
+        set_delays_constant(topo, 5000000, 'us', even_links)
+        self.assertEqual('s', topo.graph['delay_unit'])
         self.assertTrue(all(topo.edge[u][v]['delay'] in [2, 5] 
                          for (u, v) in topo.edges_iter()))
 
@@ -46,19 +47,57 @@ class Test(unittest.TestCase):
         L = 5
         G_len = waxman_1_topology(100, L=L)
         G_xy = waxman_2_topology(100, domain=(0, 0, 3, 4))
-        # leave only node coordinate to force calculation of Euclidean distance
+        # leave only node coordinate to trigger failure
         for u, v in G_xy.edges_iter():
             del G_xy.edge[u][v]['length']
-        for topo in (G_len, G_xy):
-            self.assertRaises(ValueError,set_delays_geo_distance,
-                              topo, 2, delay_unit='Km')
-            set_delays_geo_distance(topo, specific_delay,
-                                    None, 'ms', links=None)
-            delays = nx.get_edge_attributes(topo, 'delay')
-            self.assertEqual(topo.number_of_edges(), len(delays))
-            self.assertGreaterEqual(specific_delay*L, max(delays.values()))
-            self.assertLessEqual(0, min(delays.values()))
+        self.assertRaises(ValueError,set_delays_geo_distance,
+                          G_len, 2, delay_unit='Km')
+        self.assertRaises(ValueError,set_delays_geo_distance,
+                          G_xy, specific_delay, None, 'ms')
+        set_delays_geo_distance(G_len, specific_delay,
+                                None, 'ms', links=None)
+        delays = nx.get_edge_attributes(G_len, 'delay')
+        self.assertEqual(G_len.number_of_edges(), len(delays))
+        self.assertGreaterEqual(specific_delay*L, max(delays.values()))
+        self.assertLessEqual(0, min(delays.values()))
+
+    def test_delays_geo_distance_conversions(self):
+        topology = Topology(distance_unit='m')
+        topology.add_edge(1,2, length=2000)
+        specific_delay=1.2
+        set_delays_geo_distance(topology, specific_delay, None, 'us')
+        self.assertAlmostEqual(topology.edge[1][2]['delay'], 2400)
+        clear_delays(topology)
+        set_delays_geo_distance(topology, specific_delay, None, 's')
+        self.assertAlmostEqual(topology.edge[1][2]['delay'], 0.0024)
         
+    def test_delays_geo_distance_conversions_partial_assignments(self):
+        topology = Topology(distance_unit='m')
+        topology.add_edge(1, 2, length=2000)
+        topology.add_edge(2, 3, length=3000)
+        topology.add_edge(3, 4)
+        specific_delay=1.2
+        set_delays_geo_distance(topology, specific_delay, None, 'us', links=[(1, 2)])
+        set_delays_geo_distance(topology, specific_delay, 3, 's', links=[(2, 3), (3, 4)])
+        self.assertEquals(topology.graph['distance_unit'], 'm')
+        self.assertEquals(topology.graph['delay_unit'], 'us')
+        self.assertAlmostEqual(topology.edge[1][2]['delay'], 2400)
+        self.assertAlmostEqual(topology.edge[2][3]['delay'], 3600)
+        self.assertAlmostEqual(topology.edge[3][4]['delay'], 3000000)
+    
+    def test_delays_geo_distance_conversions_defaults(self):
+        topology = Topology(distance_unit='m')
+        topology.add_edge(1, 2, length=2000)
+        topology.add_edge(2, 3, length=3000)
+        topology.add_edge(3, 4)
+        specific_delay=1.2
+        set_delays_geo_distance(topology, specific_delay, 3, 's', None)
+        self.assertEquals(topology.graph['distance_unit'], 'm')
+        self.assertEquals(topology.graph['delay_unit'], 's')
+        self.assertAlmostEqual(topology.edge[1][2]['delay'], 0.0024)
+        self.assertAlmostEqual(topology.edge[2][3]['delay'], 0.0036)
+        self.assertAlmostEqual(topology.edge[3][4]['delay'], 3)
+
     def test_clear_delays(self):
         topo = star_topology(12)
         set_delays_constant(topo, 1, 'ms', None)

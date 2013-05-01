@@ -1,9 +1,8 @@
 """
 Provides functions to assign and manipulate link delays.
 """
-from math import sqrt
 import networkx as nx
-from fnss.util import time_units
+from fnss.util import time_units, distance_units
 
 __all__ = [
     'PROPAGATION_DELAY_VACUUM',
@@ -98,46 +97,41 @@ def set_delays_geo_distance(topology, specific_delay, default_delay=None,
     >>> topology = fnss.parse_abilene('abilene_topo.txt')
     >>> fnss.set_delays_geo_distance(topology, specific_delay=fnss.PROP_DELAY_FIBER)
     """
+    # Validate input parameters
     if not delay_unit in time_units:
-        raise ValueError("The delay_unit argument is not valid") 
+        raise ValueError("The delay_unit argument is not valid")
+    if not 'distance_unit' in topology.graph:
+        raise ValueError("The provided topology does not have a "\
+                         "distance_unit attribute")
+    distance_unit = topology.graph['distance_unit']
+    if distance_unit not in distance_units:
+        raise ValueError("The distance_unit attribute of the provided "\
+                         "topology (%s) is not valid" % distance_unit)
     edges = topology.edges() if links is None else links
     if default_delay is None:
-        if not all(('length' in topology.edge[u][v] for u, v in edges)):
-            if not all(('latitude' in topology.node[v] and \
-                        'longitude' in topology.node[v] and \
-                        'latitude' in topology.node[u] and \
-                        'longitude' in topology.node[u] 
-                        for u, v in edges)):
-                raise ValueError('All links must have a length attribute or '\
-                   'at all nodes must have a latitude and longitude attribute')
-        conversion_factor = 1.0
+        if any(('length' not in topology.edge[u][v] for u, v in edges)):
+            raise ValueError('All links must have a length attribute')
     if 'delay_unit' in topology.graph and links is not None:
         # If a delay_unit is set, that means that some links have already
-        # been assigned delays, so set these delay using the same unit
-        # already used
+        # been assigned delays, so set these delays using the same unit
+        # already used instead of the delay unit provided as argument
         curr_delay_unit = topology.graph['delay_unit']
-        if curr_delay_unit != delay_unit:
-            conversion_factor = float(time_units[delay_unit]) \
-                                / time_units[curr_delay_unit] 
+        conv_factor = 1.0/time_units[curr_delay_unit]
     else:
         topology.graph['delay_unit'] = delay_unit
+        curr_delay_unit = delay_unit # used in case of default delay assignment
+        conv_factor = 1.0/time_units[delay_unit]
+    # factor to convert length value in Km
+    length_conv_factor = distance_units[distance_unit]
+    # factor to convert default delay in target delay unit
+    default_conv_factor = time_units[delay_unit] / time_units[curr_delay_unit]
     for u, v in edges:
         if 'length' in topology.edge[u][v]:
-            length = topology.edge[u][v]['length']
-            delay = specific_delay * length
-        elif 'longitude' in topology.node[u] and \
-             'latitude' in topology.node[u] and \
-             'longitude' in topology.node[v] and \
-             'latitude' in topology.node[v]:
-            x_v = float(topology.node[v]['longitude'])
-            y_v = float(topology.node[v]['latitude'])
-            x_u = float(topology.node[u]['longitude'])
-            y_u = float(topology.node[u]['latitude'])  
-            length = sqrt((x_v - x_u)**2 + (y_v - y_u)**2)
-            delay = specific_delay * length
+            length = topology.edge[u][v]['length'] * length_conv_factor
+            delay = specific_delay * length * conv_factor
         else:
-            delay = default_delay
-        topology.edge[u][v]['delay'] = delay * conversion_factor
+            delay = default_delay * default_conv_factor
+        topology.edge[u][v]['delay'] = delay 
 
 
 def get_delays(topology):
