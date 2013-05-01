@@ -104,8 +104,7 @@ public class Topology extends PropertyContainer implements Cloneable {
 	}
 
 	/**
-	 * Return the unit of geographical distance (used for nodes coordinates
-	 * and link lengths)
+	 * Return the unit of geographical distance (used for link lengths)
 	 * 
 	 * @return the distance unit
 	 */

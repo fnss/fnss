@@ -104,6 +104,23 @@ public class Edge extends PropertyContainer implements Cloneable {
 	}
 	
 	/**
+	 * Return the length of the link
+	 *
+	 * @return the length
+	 */
+	public float getLength() {
+		return length;
+	}
+
+	/**
+	 * Set the length of the link
+	 * 
+	 * @param length the length to set
+	 */
+	public void setLength(float length) {
+		this.length = length;
+	}
+	/**
 	 * Return a copy of this object
 	 * 
 	 * @return A copy of this object

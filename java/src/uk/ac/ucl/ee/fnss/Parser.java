@@ -110,6 +110,8 @@ public class Parser {
 					edge.setWeight(Float.parseFloat(value));
 				} else if (name.equals("buffer")) {
 					edge.setBufferSize(Float.parseFloat(value));
+				} else if (name.equals("length")) {
+					edge.setLength(Float.parseFloat(value));
 				} else {
 					edge.setProperty(name, value);
 				}
