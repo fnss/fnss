@@ -1,6 +1,6 @@
 SHELL = /bin/sh
 
-VERSION = 0.3.1
+VERSION = 0.3.2
 
 # Directory variables
 TEST_DIR = test
