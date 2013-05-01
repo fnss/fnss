@@ -5,7 +5,6 @@ Link capacities can be assigned either deterministically or randomly, according
 to various models.
 """
 import networkx as nx
-from numpy import cumprod
 from fnss.util import random_from_pdf, capacity_units
 
 
@@ -109,10 +108,24 @@ def set_capacities_random(topology, capacity_pdf, capacity_unit='Mbps'):
 
 
 def set_capacities_random_power_law(topology, capacities, capacity_unit='Mbps', 
-                                    reverse=False):
+                                    alpha=1.1):
     """
     Set random link capacities according to a power-law probability density 
     function.
+    
+    The probability that a capacity :math:`c_i` is assigned to a link is:
+       
+    .. math::
+        p(c_i) = \\frac{{c_i}^{-\\alpha}}{\\sum_{c_k \\in C}{{c_k}^{-\\alpha}}}.
+    
+    Where :math:`C` is the set of allowed capacity, i.e. the ``capacities``
+    argument
+    
+    Note that this capacity assignment differs from
+    ``set_capacities_random_zipf`` because, while in Zipf assignment the power
+    law relationship is between the rank of a capacity and the probability of 
+    being assigned to a link, in this assignment, the power law is between the
+    value of the capacity and the probability of being assigned to a link.
     
     Parameters
     ----------
@@ -122,19 +135,14 @@ def set_capacities_random_power_law(topology, capacities, capacity_unit='Mbps',
         A list of all possible capacity values
     capacity_unit : str, optional
         The unit in which capacity value is expressed (e.g. Mbps, Gbps etc..)
-    reverse : bool, optional
-        If False, lower capacity links are the most frequent, if True, higher
-        capacity links are more frequent
     """
-    capacities = sorted(capacities, reverse=reverse)
-    rel_capacities = [float(capacities[i+1])/float(capacities[i]) 
-                      for i in range(len(capacities) - 1)]
-    rel_capacities.insert(0, 1.0)
-    rel_capacities = cumprod(rel_capacities)
-    pdf = [1.0/rel_capacities[i] for i in range(len(rel_capacities))]
+    if alpha <= 0.0:
+        raise ValueError('alpha must be positive')
+    capacities = sorted(capacities)
+    pdf = [capacities[i]**(-alpha) for i in range(len(capacities))]
     norm_factor = sum(pdf)
     norm_pdf = dict((capacities[i], pdf[i]/norm_factor)
-                     for i in range(len(capacities)))
+                    for i in range(len(capacities)))
     set_capacities_random(topology, norm_pdf, capacity_unit=capacity_unit)
 
 
@@ -193,7 +201,7 @@ def set_capacities_random_zipf(topology, capacities, capacity_unit='Mbps',
     function.
     
     The same objective can be achieved by invoking the function
-    ''set_capacities_random_zipf_mandlebrot'' with parameter q set to 0.
+    ``set_capacities_random_zipf_mandlebrot`` with parameter q set to 0.
     
     This capacity allocation consists in the following steps:
     

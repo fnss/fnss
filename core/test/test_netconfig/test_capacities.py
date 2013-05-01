@@ -96,6 +96,10 @@ class Test(unittest.TestCase):
                          for (u, v) in self.topo.edges_iter()))
 
     def test_capacities_random_power_law(self):
+        self.assertRaises(ValueError, set_capacities_random_power_law, 
+                      self.topo, self.capacities, alpha=0)
+        self.assertRaises(ValueError, set_capacities_random_power_law, 
+                      self.topo, self.capacities, alpha=-0.2)
         set_capacities_random_power_law(self.topo, self.capacities)
         self.assertTrue(all(self.topo.edge[u][v]['capacity'] in self.capacities 
                          for (u, v) in self.topo.edges_iter()))
