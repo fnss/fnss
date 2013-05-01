@@ -22,8 +22,9 @@ and save everything to an XML file
     # per switch (i.e. 200 servers in total)
     topology = fnss.two_tier_topology(n_core=10, n_edge=20, n_servers=10)
 
-    # assign capcities. Assign let's set links connecting servers to edge switches
-    # to 1 Gbps and links connecting core and edge switches to 10 Gbps.
+    # assign capacities
+    # let's set links connecting servers to edge switches to 1 Gbps
+    # and links connecting core and edge switches to 10 Gbps.
 
     # get list of core_edge links and edge_leaf links
     link_types = nx.get_edge_attributes(topology, 'type')

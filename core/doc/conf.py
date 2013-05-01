@@ -40,7 +40,7 @@ extensions = [
 intersphinx_mapping = {
     'python':   ('http://docs.python.org/', None),
     'numpy':    ('http://docs.scipy.org/doc/numpy/', None),
-    'networkx': ('http://networkx.github.com/', None),
+    'networkx': ('http://networkx.github.io/', None),
                       }
 
 # generate autosummary pages

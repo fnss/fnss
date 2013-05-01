@@ -228,7 +228,7 @@ def bcube_topology(n, k):
     """
     # Validate input arguments
     if type(n) is not int or type(k) is not int:
-        raise TypeError('k and h arguments must be of int type')
+        raise TypeError('k and n arguments must be of int type')
     if n < 1:
         raise ValueError("Invalid n parameter. It should be >= 1")
     if k < 0:
