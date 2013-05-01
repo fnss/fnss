@@ -192,7 +192,6 @@ public class Topology extends PropertyContainer implements Cloneable {
 		return nodes.keySet();
 	}
 
-
 	/**
 	 * Return the number of nodes in the topology
 	 * 
@@ -201,6 +200,18 @@ public class Topology extends PropertyContainer implements Cloneable {
 	public int numberOfNodes() {
 		return nodes.size();
 	}
+	
+	/**
+	 * Add an edge to the topology. If the nodes connected by the edge are not
+	 * present, they are created.
+	 * 
+	 * @param u The start node
+	 * @param v The end node
+	 */
+	public void addEdge(String u, String v) {
+		addEdge(u, v, new Edge());
+	}
+	
 	/**
 	 * Add an edge to the topology. If the nodes connected by the edge are not
 	 * present, they are created.
