@@ -10,11 +10,11 @@ package uk.ac.ucl.ee.fnss;
  */
 public class Edge extends PropertyContainer implements Cloneable {
 
-
 	private float capacity = -1;
-	private float weight = -1;
-	private float delay = -1;
+	private float weight = 1;
+	private float delay = 0;
 	private float bufferSize = - 1;
+	private float length = 0;
 
 	/**
 	 * Constructor
@@ -44,7 +44,7 @@ public class Edge extends PropertyContainer implements Cloneable {
 	}
 
 	/**
-	 * Return the wight of the link
+	 * Return the weight of the link
 	 *
 	 * @return the weight
 	 */
