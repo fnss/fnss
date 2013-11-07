@@ -4,46 +4,6 @@ Provide basic utility functions
 from random import random
 from ast import literal_eval
 
-__all__ = [
-    'capacity_units',
-    'time_units',
-    'distance_units'
-          ]
-
-
-# Average Earth radius, in Km
-EARTH_RADIUS = 6371
-
-distance_units = {'m': 0.001, 'km': 1, 'Km': 1}
-
-# http://en.wikipedia.org/wiki/Data_rate_units
-capacity_units = {'Tbps': 10**12,        'Gbps': 10**9,      'Mbps': 10**6,      
-                  'Kbps': 1000,          'kbps': 1000,       'bps': 1,
-                  'Tbit/s': 10**12,      'Gbit/s': 10**9,    'Mbit/s': 10**6,    
-                  'Kbit/s': 1000,        'kbit/s': 1000,     'bit/s': 1,
-                  'Tb': 10**12,          'Gb': 10**9,        'Mb': 10**6,        
-                  'Kb': 1000,            'kb': 1000,         'b': 1,
-                  'TBps': 8*(10**12),    'GBps': 8*(10**9),  'MBps': 8*(10**6),  
-                  'KBps': 8000,          'kBps': 8000,       'Bps': 8,
-                  'TB/s': 8*(10**12),    'GB/s': 8*(10**9),  'MB/s': 8*(10**6),  
-                  'KB/s': 8000,          'kB/s': 8000,       'B/s': 8,
-                  'TB': 8*(10**12),      'GB': 8*(10**9),    'MB': 8*(10**6),    
-                  'KB': 8000,            'kB': 8000,         'B': 8
-                  }
-
-
-time_units = {'minutes': 60*10**3,      'minute': 60*10**3,
-              'min': 60*10**3,          'm': 60*10**3,
-              'seconds': 10**3,         'second': 10**3,
-              'sec': 10**3,             's': 10**3,
-              'milliseconds': 1,        'millisecond': 1,
-              'millisec': 1,            'ms': 1,
-              'microseconds': 0.001,    'microsecond': 0.001,
-              'microsec': 0.001,        'us': 0.001,
-              'nanoseconds': 0.000001,  'nanosecond': 0.000001,
-              'nanosec': 0.000001,      'ns': 0.000001
-              }
-
 
 def split_list(l, size):
     """
@@ -59,6 +19,12 @@ def split_list(l, size):
     Returns
     -------
     A list of sub-lists
+    
+    Example
+    -------
+    >>> from fnss.util import split_list
+    >>> split_list([1, 2, 3, 4, 5, 6], 2)
+    [[1, 2], [3, 4], [5, 6]]
     """
     return [l[i: i + size] for i in range(0, len(l), size)]
 
@@ -72,7 +38,12 @@ def random_from_pdf(pdf):
     pdf : dict
         Dictionary mapping values of the random variable and probability of
         occurrence. The sum of all dictionary values must be 1.
-        
+    
+    Returns
+    -------
+    key : key of pdf
+        A randomly selected key from the keyset of the *pdf* parameter
+    
     Example
     -------
     >>> pdf = {100: 0.5, 200: 0.5}
@@ -80,7 +51,7 @@ def random_from_pdf(pdf):
     100 # random
     """
     # validate input parameters
-    if(type(pdf) != dict):
+    if not isinstance(pdf, dict):
         raise ValueError('The parameter pdf must be a dictionary')
     if abs(sum(pdf.values()) - 1) > 0.0001:
         raise ValueError('The sum of all probabilities must be equal to 1')
@@ -167,15 +138,22 @@ def _xml_type(val):
 def _xml_indent(elem, level=0):
     """
     Indent the elements of the XML tree
+    
+    Parameters
+    ----------
+    elem : xml.etree.Element object
+        XML Element to indent
+    level : int, optional
+        The starting indentation level
     """
-    i = "\n" + level*"  "
+    i = "\n" + (level * "  ")
     if len(elem):
         if not elem.text or not elem.text.strip():
             elem.text = i + "  "
         if not elem.tail or not elem.tail.strip():
             elem.tail = i
         for elem in elem:
-            _xml_indent(elem, level+1)
+            _xml_indent(elem, level + 1)
         if not elem.tail or not elem.tail.strip():
             elem.tail = i
     else:

@@ -17,8 +17,9 @@ from math import exp, sin, pi, log, sqrt
 #from random import lognormvariate, normalvariate
 from numpy.random import lognormal, normal
 from numpy import isinf
-from fnss.util import capacity_units, time_units, split_list, \
-                      _xml_type, _xml_indent, _xml_cast_type, map_func
+from fnss.units import capacity_units, time_units
+from fnss.util import split_list, map_func, \
+                      _xml_type, _xml_indent, _xml_cast_type
 from fnss.topologies.topology import fan_in_out_capacities, \
                                      od_pairs_from_topology
 

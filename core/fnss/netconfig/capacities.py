@@ -5,7 +5,9 @@ Link capacities can be assigned either deterministically or randomly, according
 to various models.
 """
 import networkx as nx
-from fnss.util import random_from_pdf, capacity_units
+
+from fnss.util import random_from_pdf
+from fnss.units import capacity_units
 
 
 __all__ = [

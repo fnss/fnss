@@ -2,7 +2,7 @@
 Provides functions to assign and manipulate link delays.
 """
 import networkx as nx
-from fnss.util import time_units, distance_units
+from fnss.units import time_units, distance_units
 
 __all__ = [
     'PROPAGATION_DELAY_VACUUM',

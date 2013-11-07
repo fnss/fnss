@@ -3,7 +3,8 @@ Provides function to assign and manipulate buffer sizes of network interfaces.
 """
 import networkx as nx
 from numpy import mean
-from fnss.util import capacity_units, time_units
+
+from fnss.units import capacity_units, time_units
 
 
 __all__ = [

@@ -35,4 +35,4 @@ __license__ = license_short
 from fnss.netconfig import *
 from fnss.topologies import *
 from fnss.traffic import *
-from fnss.util import *
+from fnss.units import *

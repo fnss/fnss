@@ -11,7 +11,8 @@ import xml.etree.cElementTree as ET
 from random import expovariate
 from bisect import insort
 from copy import copy
-from fnss.util import _xml_type, _xml_indent, _xml_cast_type, time_units
+from fnss.util import _xml_type, _xml_indent, _xml_cast_type
+from fnss.units import time_units
 
 __all__ = [
     'EventSchedule',

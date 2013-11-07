@@ -4,9 +4,11 @@ other generators.
 """
 from re import compile, findall, sub 
 from math import pi, sqrt, cos, acos
+
 import networkx as nx
+
 from fnss.topologies.topology import Topology, DirectedTopology
-from fnss.util import EARTH_RADIUS
+from fnss.units import EARTH_RADIUS
 
 
 __all__ = [
