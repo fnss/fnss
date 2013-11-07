@@ -18,7 +18,7 @@ __all__ = [
     'parse_abilene',
     'parse_brite',
     'parse_topology_zoo',
-    'parse_ashiip',
+    'parse_ashiip'
           ]
 
 
@@ -198,7 +198,6 @@ def parse_inet(path):
     if len(lines) != 1 + n_nodes + n_links:
         raise ValueError('Invalid input file. '\
                          'It does not have as many lines as expected')
-    
     i = 0
     for line in lines[1:]:
         entry = sep.split(line.strip())

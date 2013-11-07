@@ -16,8 +16,8 @@ import sys, os
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 
-# This imports FNSS package
-sys.path.insert(0, os.path.abspath('..'))
+# This imports the FNSS package
+sys.path.insert(0, os.path.abspath(os.path.pardir))
 import fnss
 
 # -- General configuration -----------------------------------------------------
@@ -48,6 +48,7 @@ autosummary_generate = True
 
 # Add any paths that contain templates here, relative to this directory.
 #templates_path = ['./templates/']
+
 # The suffix of source filenames.
 source_suffix = '.rst'
 
@@ -67,7 +68,6 @@ copyright = u'2012-2013, %s' % author
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
 # built documents.
-#
 # The short X.Y version.
 version = fnss.release.version
 # The full version, including alpha/beta/rc tags.

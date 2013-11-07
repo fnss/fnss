@@ -57,14 +57,16 @@ If you don't have permission to install software on your
 system, you can install into another directory using
 the --user, --prefix, or --home flags to setup.py.
 
-For example
-
-::
+For example:: 
 
     python setup.py install --prefix=/home/username/python
-    or
+
+or::
+    
     python setup.py install --home=~
-    or
+    
+or::
+    
     python setup.py install --user
 
 If you didn't install in the standard Python site-packages directory

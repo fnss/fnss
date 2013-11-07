@@ -456,8 +456,7 @@ def _set_capacities_gravity(topology, capacities, node_metric,
 def _set_capacities_proportionally(topology, capacities, metric, 
                                    capacity_unit='Mbps'):
     """
-    Set link capacities proportionally to the product of the values of a given
-    edge metric of the link
+    Set link capacities proportionally to the value of a given edge metric.
     
     Parameters
     ----------
@@ -465,8 +464,8 @@ def _set_capacities_proportionally(topology, capacities, metric,
         The topology to which link capacities will be set
     capacities : list
         A list of all possible capacity values
-    node_metric : dict
-        A dictionary with all values of the given node metric, keyed by node
+    metric : dict
+        A dictionary with all values of the given edge metric, keyed by edge
         name
     capacity_unit : str, optional
         The unit in which capacity value is expressed (e.g. Mbps, Gbps etc..)

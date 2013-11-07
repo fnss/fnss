@@ -79,7 +79,7 @@ def set_delays_geo_distance(topology, specific_delay, default_delay=None,
     ----------
     topology : Topology
         The topology on which delays are applied.
-    specific_delay : float, optional
+    specific_delay : float
         The specific delay (in ms/Km) to be applied to all links
     default_delay : float, optional
         The delay to be applied to links whose length is not known. If None, if
@@ -95,7 +95,7 @@ def set_delays_geo_distance(topology, specific_delay, default_delay=None,
     --------
     >>> import fnss
     >>> topology = fnss.parse_abilene('abilene_topo.txt')
-    >>> fnss.set_delays_geo_distance(topology, specific_delay=fnss.PROP_DELAY_FIBER)
+    >>> fnss.set_delays_geo_distance(topology, specific_delay=fnss.PROPAGATION_DELAY_FIBER)
     """
     # Validate input parameters
     if not delay_unit in time_units:

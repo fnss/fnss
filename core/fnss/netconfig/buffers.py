@@ -17,7 +17,7 @@ __all__ = [
 
 
 def set_buffer_sizes_bw_delay_prod(topology, buffer_unit='bytes', 
-                                   packet_size="1500"):
+                                   packet_size=1500):
     """
     Assign a buffer sizes proportionally to the product of link bandwidth and 
     average network RTT. This is a rule of thumb according to which the buffers
@@ -28,10 +28,11 @@ def set_buffer_sizes_bw_delay_prod(topology, buffer_unit='bytes',
     topology : Topology or DirectedTopology
         The topology on which delays are applied.
     buffer_unit : string
-        The unit of buffer sizes. Supported units are: "bytes" and "packets"
-    mtu : int, optional
-        The average packet size of the network. It used only if "packets" is 
-        selected as buffer size to properly calculate buffer sizes
+        The unit of buffer sizes. Supported units are: *bytes* and *packets*
+    packet_size : int, optional
+        The average packet size (in bytes). It used only if *packets* is 
+        selected as buffer size to properly calculate buffer sizes given
+        bandwidth and delay values.
 
     Examples
     --------
@@ -84,7 +85,7 @@ def set_buffer_sizes_bw_delay_prod(topology, buffer_unit='bytes',
     # dict containing mean RTT experienced by flows traversing a specific link
     mean_rtt_dict = {} 
     for (u, v), route in route_presence.items():
-        if len(route) > 0:
+        if route:
             try:
                 mean_rtt = mean([e2e_delay[o][d] + e2e_delay[d][o] 
                                  for (o, d) in route])
@@ -120,15 +121,18 @@ def set_buffer_sizes_bw_delay_prod(topology, buffer_unit='bytes',
 
 
 def set_buffer_sizes_link_bandwidth(topology, k=1.0, default_size=None, 
-                                    buffer_unit='bytes', interfaces=None):
+                                    buffer_unit='bytes', packet_size=1500):
     """
     Assign a buffer sizes proportionally to the bandwidth of the interface on 
-    which the flush. In particularly, the buffer size will be equal to k*C,
-    where C is the capacity of the link in bps.
+    which the flush. In particularly, the buffer size will be equal to
+    :math:`k \times C`, where :math:`C` is the capacity of the link in bps.
     
-    To use this function, all links of the topology must have a 'capacity' 
+    This assignment is equal to the bandwidth-delay product if :math:`k` is the
+    average RTT in seconds. 
+    
+    To use this function, all links of the topology must have a *capacity* 
     attribute. If the length of a link cannot be determined, it is applied the 
-    delay equal default_delay if specified, otherwise an error is returned. 
+    delay equal *default_delay* if specified, otherwise an error is returned. 
     
     Parameters
     ----------
@@ -141,14 +145,12 @@ def set_buffer_sizes_link_bandwidth(topology, k=1.0, default_size=None,
         it is None and at least one link does not have a capacity attribute,
         return an error   
     buffer_unit : string, unit
-        The unit of buffer sizes. Supported units are: "bytes" and "packets"
-    interfaces : iterable of tuples, optional
-        Iterable container of selected interfaces on which buffer sizes are
-        applied. 
-        An interface is defined by the tuple (u,v) where u is the node on which
-        the interface is located and (u,v) is the link to which the buffer 
-        flushes.
-
+        The unit of buffer sizes. Supported units are: *bytes* and *packets*
+    packet_size : int, optional
+        The average packet size (in bytes). It used only if *packets* is 
+        selected as buffer size to properly calculate buffer sizes given
+        bandwidth and delay values.
+    
     Examples
     --------
     >>> import fnss
@@ -157,16 +159,20 @@ def set_buffer_sizes_link_bandwidth(topology, k=1.0, default_size=None,
     >>> fnss.set_delays_constant(topology, 2, 'ms')
     >>> fnss.set_buffer_sizes_link_bandwidth(topology, k=1.0)
     """
-    edges = topology.edges() if interfaces is None else interfaces
+    if k <= 0:
+        raise ValueError('k must be a positive number')
     if default_size is None:
-        try:
-            [topology.edge[u][v]['capacity'] for u, v in edges]
-        except KeyError:
-            raise ValueError('All links must have a capacity attribute.'\
-                             'Set capacity or specify a default buffer size') 
+        if 'capacity_unit' not in topology.graph \
+                or not all('capacity' in topology.edge[u][v]
+                           for u, v in topology.edges_iter()):
+            raise ValueError('All links must have a capacity attribute. '
+                             'Set capacity or specify a default buffer size')
     topology.graph['buffer_unit'] = buffer_unit
-    norm_factor = capacity_units[topology.graph['capacity_unit']]
-    for u, v in edges:
+    # We further dived norm_factor by 8 because buffer unit is bytes
+    norm_factor = capacity_units[topology.graph['capacity_unit']] / 8.0 
+    if buffer_unit == 'packets':
+        norm_factor /= packet_size
+    for u, v in topology.edges_iter():
         if 'capacity' in topology.edge[u][v]:
             capacity = topology.edge[u][v]['capacity']
             buffer_size = int(k * capacity * norm_factor)
@@ -187,7 +193,7 @@ def set_buffer_sizes_constant(topology, buffer_size, buffer_unit='bytes',
     buffer_size : int
         The constant buffer_size to be applied to all interface
     buffer_unit : string, unit
-        The unit of buffer sizes. Supported units are: "bytes" and "packets"
+        The unit of buffer sizes. Supported units are: *bytes* and *packets*
     interfaces : iterable container of tuples, optional
         Iterable container of selected interfaces on which buffer sizes are
         applied. 
@@ -217,7 +223,6 @@ def set_buffer_sizes_constant(topology, buffer_size, buffer_unit='bytes',
         topology.edge[u][v]['buffer'] = buffer_size
 
 
-
 def get_buffer_sizes(topology):
     """
     Returns all the buffer sizes.
@@ -242,7 +247,6 @@ def get_buffer_sizes(topology):
     >>> buffer = fnss.get_buffer_sizes(topology)
     >>> buffer[(1,2)]
     10
-
     """
     return nx.get_edge_attributes(topology, 'buffer')
 
