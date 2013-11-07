@@ -24,15 +24,14 @@ if sys.version_info[:2] < (2, 6):
 del sys
 
 # Import release information
-from fnss.release import author, version, license_short
+import fnss.release as release
 
-__author__ = author
-__version__ = version
-__license__ = license_short
-
+__author__ = release.author
+__version__ = release.version
+__license__ = release.license_short
 
 # import all subpackages and modules
-from fnss.netconfig import *
 from fnss.topologies import *
+from fnss.netconfig import *
 from fnss.traffic import *
 from fnss.units import *

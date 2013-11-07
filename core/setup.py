@@ -57,8 +57,10 @@ except ImportError:
                    'Install it and try again' % package)
             sys.exit(-1)
 
-# It imports release module this way because if I tried to import fnss package
-# and some requried dependencies were not installed, that would fail 
+# It imports release module this way because if it tried to import fnss package
+# and some required dependencies were not installed, that would fail
+# This is the only way to access the release module without needing all
+# dependencies.
 sys.path.insert(0, 'fnss')
 import release
 sys.path.pop(0)
