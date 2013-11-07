@@ -12,7 +12,6 @@ import org.jdom2.input.SAXBuilder;
  * Provides methods to parse FNSS output XML files and convert them in Java object.
  * 
  * @author Lorenzo Saino
- *
  */
 public class Parser {
 	
