@@ -28,7 +28,7 @@ def ring_topology(n):
     -------
     topology : A Topology object
     """
-    if type(n) is not int:
+    if not isinstance(n, int):
         raise TypeError('n argument must be of int type')
     if n < 1:
         raise ValueError('n argument must be a positive integer')
@@ -53,7 +53,7 @@ def line_topology(n):
     topology : A Topology object
     
     """
-    if type(n) is not int:
+    if not isinstance(n, int):
         raise TypeError('n argument must be of int type')
     if n < 1:
         raise ValueError('n argument must be a positive integer')
@@ -81,7 +81,7 @@ def star_topology(n):
     -------
     topology : A Topology object
     """
-    if type(n) is not int:
+    if not isinstance(n, int):
         raise TypeError('n argument must be of int type')
     if n < 1:
         raise ValueError('n argument must be a positive integer')
@@ -107,7 +107,7 @@ def full_mesh_topology(n):
     -------
     topology : A Topology object
     """
-    if type(n) is not int:
+    if not isinstance(n, int):
         raise TypeError('n argument must be of int type')
     if n < 1:
         raise ValueError('n argument must be a positive integer')
@@ -137,7 +137,7 @@ def k_ary_tree_topology(k, h):
     -------
     topology : A Topology object
     """
-    if type(k) is not int or type(h) is not int:
+    if not isinstance(k, int) or not isinstance(h, int):
         raise TypeError('k and h arguments must be of int type')
     if k <= 1:
         raise ValueError("Invalid k parameter. It should be > 1")
@@ -200,7 +200,7 @@ def dumbbell_topology(m1, m2):
     -------
     topology : A Topology object
     """
-    if type(m1) is not int or type(m2) is not int:
+    if not isinstance(m1, int) or not isinstance(m2, int):
         raise TypeError('m1 and m2 arguments must be of int type')
     if m1 < 2:
         raise ValueError("Invalid graph description, m1 should be >= 2")

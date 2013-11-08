@@ -6,7 +6,9 @@ The generated topologies are either Topology or DIrectedTopology objects.
 """
 import random
 from math import sqrt, exp
+
 import networkx as nx
+
 from fnss.util import random_from_pdf
 from fnss.topologies.topology import Topology
 
@@ -46,7 +48,7 @@ def erdos_renyi_topology(n, p, seed=None, fast=False):
        Phys. Rev. E, 71, 036113, 2005.
     """
     # validate input parameters
-    if type(n) is not int or n < 0:
+    if not isinstance(n, int) or n < 0:
         raise ValueError('n must be a positive integer')
     if p > 1 or p < 0:
         raise ValueError('p must be a value in (0,1)')
@@ -104,7 +106,7 @@ def waxman_1_topology(n, alpha=0.4, beta=0.1, L=1.0,
        IEEE J. Select. Areas Commun. 6(9),(1988) 1617-1622. 
     """
     # validate input parameters
-    if type(n) is not int or n <= 0:
+    if not isinstance(n, int) or n <= 0:
         raise ValueError('n must be a positive integer')
     if alpha > 1 or alpha <= 0 or beta > 1 or beta <= 0:
         raise ValueError('alpha and beta must be float values in (0,1]')
@@ -170,11 +172,11 @@ def waxman_2_topology(n, alpha=0.4, beta=0.1, domain=(0, 0, 1, 1),
        IEEE J. Select. Areas Commun. 6(9),(1988) 1617-1622. 
     """
     # validate input parameters
-    if type(n) is not int or n <= 0:
+    if not isinstance(n, int) or n <= 0:
         raise ValueError('n must be a positive integer')
     if alpha > 1 or alpha <= 0 or beta > 1 or beta <= 0:
         raise ValueError('alpha and beta must be float values in (0,1]')
-    if type(domain) is not tuple or len(domain) is not 4:
+    if not isinstance(domain, tuple) or len(domain) != 4:
         raise ValueError('domain must be a tuple of 4 number')
     (xmin, ymin, xmax, ymax) = domain
     if xmin > xmax:

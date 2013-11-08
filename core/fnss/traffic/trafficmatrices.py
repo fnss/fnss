@@ -896,9 +896,9 @@ def validate_traffic_matrix(topology, traffic_matrix, validate_load=False):
         True if the topology and the traffic matrix are compatible, 
         False otherwise
     """
-    if type(traffic_matrix) is TrafficMatrix:
+    if isinstance(traffic_matrix, TrafficMatrix):
         matrices = [traffic_matrix]
-    elif type(traffic_matrix) is TrafficMatrixSequence:
+    elif isinstance(traffic_matrix, TrafficMatrixSequence):
         matrices = traffic_matrix.matrix
     else:
         raise ValueError('tm must be either a TrafficMatrix or a '\
