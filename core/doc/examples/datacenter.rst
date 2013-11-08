@@ -18,9 +18,9 @@ and save everything to an XML file
     import fnss
     import networkx as nx
 
-    # create a topology with 10 core switches, 20 edge switches and 10 servers
-    # per switch (i.e. 200 servers in total)
-    topology = fnss.two_tier_topology(n_core=10, n_edge=20, n_servers=10)
+    # create a topology with 10 core switches, 20 edge switches and 10 hosts
+    # per switch (i.e. 200 hosts in total)
+    topology = fnss.two_tier_topology(n_core=10, n_edge=20, n_hosts=10)
 
     # assign capacities
     # let's set links connecting servers to edge switches to 1 Gbps
