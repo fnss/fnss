@@ -1,9 +1,12 @@
 """
 Provide basic utility functions
 """
+from __future__ import division
 from random import random
+from math import pi, sqrt, sin, cos, asin
 from ast import literal_eval
 
+from fnss.units import EARTH_RADIUS 
 
 def split_list(l, size):
     """
@@ -159,3 +162,32 @@ def _xml_indent(elem, level=0):
     else:
         if level and (not elem.tail or not elem.tail.strip()):
             elem.tail = i
+            
+def geographical_distance(lat_u, lon_u, lat_v, lon_v):
+    """Return geographical distance along the Earth surface between two points
+    *u* and *v*
+    
+    This distance is computed using the Haversine formula.
+    
+    Parameters
+    ----------
+    lat_u : float
+        Latitude of point *u* in degrees
+    lon_u : float
+        Longitude of point *u* in degrees
+    lat_v : float
+        Latitude of point *v* in degrees
+    lon_v : float
+        Longitude of point *v* in degrees
+        
+    Returns
+    -------
+    d : float
+        The distance between *u* and *v*
+    """
+    lat_u = (pi/180) * lat_u
+    lon_u = (pi/180) * lon_u
+    lat_v = (pi/180) * lat_v
+    lon_v = (pi/180) * lon_v
+    return 2*EARTH_RADIUS*asin(sqrt(sin((lat_u - lat_v)/2)**2 + 
+                                    cos(lat_v)*cos(lat_u)*sin((lon_u-lon_v)/2)**2))

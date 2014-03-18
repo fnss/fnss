@@ -3,12 +3,13 @@ Provides functions to parse topologies from datasets or from outputs of
 other generators.
 """
 from re import compile, findall, sub 
-from math import pi, sqrt, cos, acos
+from math import sqrt
 
 import networkx as nx
 
 from fnss.topologies.topology import Topology, DirectedTopology
-from fnss.units import EARTH_RADIUS
+#from fnss.units import EARTH_RADIUS
+from fnss.util import geographical_distance
 
 
 __all__ = [
@@ -280,12 +281,11 @@ def parse_abilene(topology_file, links_file=None):
                     u = link_entry[0]
                     v = link_entry[1]
                     capacity = int(link_entry[2])
-                    lon_u = (pi/180) * topology.node[u]['longitude']
-                    lat_u = (pi/180) * topology.node[u]['latitude']
-                    lon_v = (pi/180) * topology.node[v]['longitude']
-                    lat_v = (pi/180) * topology.node[v]['latitude']
-                    length = EARTH_RADIUS * \
-                             acos(cos(lon_v - lon_u) * cos(lat_v - lat_u))
+                    lon_u = topology.node[u]['longitude']
+                    lat_u = topology.node[u]['latitude']
+                    lon_v = topology.node[v]['longitude']
+                    lat_v = topology.node[v]['latitude']
+                    length = geographical_distance(lat_v, lon_v, lat_u, lon_u)
                     weight = int(link_entry[3])
                 except (ValueError, IndexError):
                     raise ValueError('Invalid input file. Parsing failed '\
@@ -483,11 +483,11 @@ def parse_topology_zoo(path):
                 'Longitude' in topo_zoo_graph.node[tv] and \
                 'Latitude' in topo_zoo_graph.node[tu] and \
                 'Longitude' in topo_zoo_graph.node[tu]:
-            lat_v = (pi/180) * topo_zoo_graph.node[tv]['Latitude'] 
-            lon_v = (pi/180) * topo_zoo_graph.node[tv]['Longitude'] 
-            lat_u = (pi/180) * topo_zoo_graph.node[tu]['Latitude']  
-            lon_u = (pi/180) * topo_zoo_graph.node[tu]['Longitude']
-            length = EARTH_RADIUS * acos(cos(lon_v-lon_u) * cos(lat_v-lat_u))
+            lat_v = topo_zoo_graph.node[tv]['Latitude'] 
+            lon_v = topo_zoo_graph.node[tv]['Longitude'] 
+            lat_u = topo_zoo_graph.node[tu]['Latitude']  
+            lon_u = topo_zoo_graph.node[tu]['Longitude']
+            length = geographical_distance(lat_v, lon_v, lat_u, lon_u)
             topology.edge[v][u]['length'] = length
         if topo_zoo_graph.is_multigraph():
             edge = topo_zoo_graph.edge[tv][tu]
