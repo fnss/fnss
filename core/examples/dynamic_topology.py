@@ -63,7 +63,7 @@ for failure_time, event in event_schedule:
 
 # Now merge failure and restoration schedules
 # After merging events are still chronologically sorted
-event_schedule.merge_with(restore_schedule)
+event_schedule.add_schedule(restore_schedule)
 
 # Note: there are several ways to create this link failure-restoration schedule
 # This method has been used to illustrate a variety of functions and methods
