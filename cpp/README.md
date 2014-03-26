@@ -1,5 +1,7 @@
 # Fast Network Simulation Setup (FNSS) - C++ library
-The FNSS C++ library allows to parse XML files of topologies, traffic matrices and event schedules generated through the core FNSS library. The parsed files are converted in C++ objects that can be used in C++-based simulators.
+The FNSS C++ library allows to parse XML files of topologies, traffic matrices and event schedules generated through the core FNSS library.
+The parsed files are converted in C++ objects that can be used in C++-based simulators.
+If you wish to use FNSS to import topologies to the ns-3 simulator, please use the ns-3 adapter instead.
 
 ## Project directory structure
 The files of the C++ FNSS library are organized in the following directories.
@@ -39,9 +41,8 @@ To learn how to use the library you can either look at the documentation in the 
 Should you need any further information, please contact us and we'll be happy to help you.
 
 ## Requirements
-There is no specific requirement for building and using the library.
-The only requried library not included in the C++ standard library is [RapidXML](http://rapidxml.sourceforge.net/) which is already included in the `lib` directory and ready to use.
+The only required library not included in the C++ standard library is [RapidXML](http://rapidxml.sourceforge.net/) which is already included in the `lib` directory and ready to use.
 To build the documentation you need the [Doxygen](www.doxygen.org/) documentation generator.
 
 ## License
-The FNSS C++ library is released under the terms of the  [BSD License](http://en.wikipedia.org/wiki/BSD_licenses). See LICENSE.txt.
+The FNSS C++ library is released under the terms of the [BSD License](http://en.wikipedia.org/wiki/BSD_licenses). See LICENSE.txt.
