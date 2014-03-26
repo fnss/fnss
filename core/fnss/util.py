@@ -42,7 +42,7 @@ def split_list(l, size):
     return [l[i: i + size] for i in range(0, len(l), size)]
 
 
-def random_from_pdf(pdf):
+def random_from_pdf(pdf, seed=None):
     """
     Return a random value according to a given probability density function.
     
@@ -51,6 +51,8 @@ def random_from_pdf(pdf):
     pdf : dict
         Dictionary mapping values of the random variable and probability of
         occurrence. The sum of all dictionary values must be 1.
+    seed : int, optional
+        The seed to be used
     
     Returns
     -------
@@ -68,7 +70,8 @@ def random_from_pdf(pdf):
         raise ValueError('The parameter pdf must be a dictionary')
     if abs(sum(pdf.values()) - 1) > 0.0001:
         raise ValueError('The sum of all probabilities must be equal to 1')
-    r = random()
+    random.seed(seed)
+    r = random.random()
     w = 0.0
     for key, value in pdf.items():
         w += value
