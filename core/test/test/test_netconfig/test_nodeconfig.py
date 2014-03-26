@@ -71,8 +71,8 @@ class Test(unittest.TestCase):
                          fnss.get_application_properties(self.topo, 10,
                                                     self.app_1_name))
         fnss.add_application(self.topo, 10, self.app_2_name, self.app_2_props)
-        self.assertEqual([self.app_1_name, self.app_2_name],
-                         fnss.get_application_names(self.topo, 10))
+        self.assertEqual(set([self.app_1_name, self.app_2_name]),
+                         set(fnss.get_application_names(self.topo, 10)))
         self.assertEqual(self.app_2_props,
                          fnss.get_application_properties(self.topo, 10,
                                                     self.app_1_name))
