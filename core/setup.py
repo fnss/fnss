@@ -85,7 +85,8 @@ if __name__ == "__main__":
             'fnss.adapters',
         ],
         scripts=[
-            'bin/fnss-troubleshoot'
+            'bin/fnss-troubleshoot',
+            'bin/mn-fnss'
         ],
         url=release.url,
         download_url=release.download_url,
@@ -104,6 +105,7 @@ if __name__ == "__main__":
              'Programming Language :: Python :: 3',
              'Programming Language :: Python :: 3.1',
              'Programming Language :: Python :: 3.2',
+             'Programming Language :: Python :: 3.3',
              'Topic :: Software Development :: Libraries :: Python Modules',
              'Topic :: Scientific/Engineering',
         ],

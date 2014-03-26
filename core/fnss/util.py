@@ -15,6 +15,7 @@ __all__ = [
     'xml_type',
     'xml_indent',
     'geographical_distance',
+    'package_available',
           ]
 
 
@@ -175,6 +176,17 @@ def xml_indent(elem, level=0):
     else:
         if level and (not elem.tail or not elem.tail.strip()):
             elem.tail = i
+
+
+def package_available(pkg):
+    """Tests whether a package is available or not
+    """
+    try:
+        exec('import %s' % pkg)
+    except ImportError:
+        return False
+    else:
+        return True
 
 def geographical_distance(lat_u, lon_u, lat_v, lon_v):
     """Return geographical distance along the Earth surface between two points

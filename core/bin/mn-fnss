@@ -1,0 +1,91 @@
+#!/usr/bin/env python
+"""Usage:
+  mn-fnss [options] <topology-file>
+  mn-fnss (--help | -h)
+
+Launch Mininet console with an FNSS topology.
+
+This script parses an FNSS topology XML file and launches the Mininet console
+passing this topology.
+
+This script accepts all the options of Mininet *mn* script, except for the
+*custom* and *topo* options which are overwritten by this script.
+
+In addition, if the user specifies the mn *link* option, then all potential
+link attributes of the topology (e.g. capacity, delay and max queue size) are
+discarded and values provided with the link attributes are used instead.
+
+Unless used to get this help message, this script must be run as superuser.
+
+Example usage:
+  $ python
+  >>> import fnss
+  >>> topo = fnss.two_tier_topology(1, 2, 2)
+  >>> fnss.write_topology(topo, 'fnss-topo.xml')
+  $ sudo mn-fnss fnss-topo.xml
+"""
+import os
+import sys
+import tempfile
+import signal
+import subprocess
+
+from fnss.adapters.mn import to_mininet
+from fnss.topologies.topology import read_topology
+
+def usage():
+    """Print usage information and exit"""
+    sys.exit(__doc__)
+
+def run_mn(path, argv):
+    """Run Mininet given with a given FNSS topology
+    
+    Mininet's *mn* script only accepts custom topologies passed in the form of
+    a Python source file that contains the code for generating a Mininet
+    topology on the fly. For this reason, this function, given an FNSS topology
+    file, creates a temporary Python source file containing the code to parse
+    such FNSS topology file and convert it to Mininet format. It then launches
+    *mn* passing this temporary file as argument and destroys it after *mn*
+    terminates.
+    
+    Parameters
+    ----------
+    path : str
+        The absolute path to the FNSS topology XML file
+    argv : list
+        List of arguments for mn
+    """
+    t = tempfile.NamedTemporaryFile(prefix='fnss-mn')
+    cmd = "from fnss.adapters.mn import to_mininet\n" \
+          "from fnss.topologies.topology import read_topology\n" \
+          "topos = {'fnss': (lambda: to_mininet(read_topology('%s')))}" \
+          % os.path.abspath(path)
+    with open(t.name, 'w') as f:
+        f.write(cmd)
+    # This signal handling code is required to ensure that these signals are
+    # handled only by the mn subprocess instead of the mn-fnss process
+    handler = lambda signum, frame: None
+    for sig in (signal.SIGTERM, signal.SIGINT, signal.SIGHUP, signal.SIGQUIT):
+        signal.signal(sig, handler)
+    # I need to force the link type otherwise fail
+    if '--link' not in argv:
+        argv.extend(('--link', 'tc'))
+    subprocess.call(['mn', '--custom', t.name, '--topo', 'fnss'] + argv)
+    t.close()
+
+
+def main():
+    """Main function"""
+    if len(sys.argv) < 2:
+        usage()
+    arg = sys.argv.pop()
+    if arg in ('--help', '-h'):
+        usage()
+    if not os.path.isfile(arg):
+        print("File '%s' does not exist." % arg)
+        usage()
+    run_mn(arg, sys.argv[1:])
+
+        
+if __name__ == '__main__':
+    main()

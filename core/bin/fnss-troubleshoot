@@ -1,4 +1,9 @@
 #!/usr/bin/env python
+"""Troubleshooting script.
+
+This script prints useful debugging information about fnss dependencies
+currently installed.
+"""
 import os
 import sys
 import pkg_resources as pkg
@@ -14,6 +19,7 @@ packages = [
         'numpydoc',
         'unittest2',
         'argparse',
+        'mininet',
         'mako',
             ]
 
@@ -21,7 +27,7 @@ packages = [
 def main():
     """Troubleshooting script
     
-    Print information useful for troubleshooting.
+    Print useful information for troubleshooting.
     """
     print('[FNSS TROUBLESHOOTING INFORMATION]')
     sysname, nodename, release, version, machine = os.uname()
@@ -48,7 +54,7 @@ def main():
                     print('[INFO] %s: version unknown' % package)
                 exec('del %s' % package)
             except ImportError:
-                print ('[ERROR] Cannot import %s package' % package)
+                print('[ERROR] Cannot import %s package' % package)
 
 if __name__ == "__main__":
     main()
