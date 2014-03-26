@@ -1,5 +1,5 @@
 Fast Network Simulation Setup (FNSS) ns-3 adapter
-Copyright (C) 2013, Lorenzo Saino and Cosmin Cocora
+Copyright (C) 2014, Lorenzo Saino and Cosmin Cocora
 Contacts: http://fnss.github.io
 
 This program is free software; you can redistribute it and/or
