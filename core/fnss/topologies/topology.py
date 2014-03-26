@@ -11,6 +11,8 @@ __all__ = [
     'DirectedTopology',
     'od_pairs_from_topology',
     'fan_in_out_capacities',
+    'rename_edge_attribute',
+    'rename_node_attribute',
     'read_topology',
     'write_topology',
            ]
@@ -495,6 +497,68 @@ def fan_in_out_capacities(topology):
         fan_in[node] = node_fan_in
         fan_out[node] = node_fan_out
     return fan_in, fan_out
+
+
+def rename_edge_attribute(topology, old_attr, new_attr):
+    """
+    Rename all edges attributes with a specific name to a new name
+    
+    Parameters
+    ----------
+    topology : Topology
+        The topology object
+    old_attr : any hashable type
+        Old attribute name
+    new_attr : any hashable type
+        New attribute name
+    
+    Example
+    -------
+    >>> import fnss
+    >>> topo = fnss.Topology()
+    >>> topo.add_edge(1, 2, cost=1)
+    >>> topo.add_edge(2, 3, cost=2)
+    >>> topo.edges(data=True)
+    [(1, 2, {'cost': 1}), (2, 3, {'cost': 2})]
+    >>> fnss.rename_edge_attribute(topo, 'cost', 'weight')
+    >>> topo.edges(data=True)
+    [(1, 2, {'weight': 1}), (2, 3, {'weight': 2})]
+    """
+    for u, v in topology.edges_iter():
+        if old_attr in topology.edge[u][v]:
+            topology.edge[u][v][new_attr] = topology.edge[u][v][old_attr]
+            del topology.edge[u][v][old_attr]
+
+
+def rename_node_attribute(topology, old_attr, new_attr):
+    """
+    Rename all nodes attributes with a specific name to a new name
+    
+    Parameters
+    ----------
+    topology : Topology
+        The topology object
+    old_attr : any hashable type
+        Old attribute name
+    new_attr : any hashable type
+        New attribute name
+    
+    Example
+    -------
+    >>> import fnss
+    >>> topo = fnss.Topology()
+    >>> topo.add_node(1, pos=(0, 0))
+    >>> topo.add_node(2, pos=(1, 1))
+    >>> topo.nodes(data=True)
+    [(1, {'pos': (0, 0)}), (2, {'pos': (1, 1)})]
+    >>> fnss.rename_edge_attribute(topo, 'pos', 'coordinates')
+    >>> topo.edges(data=True)
+    [(1, {'coordinates': (0, 0)}), (2, {'coordinates': (1, 1)})]
+    """
+    for v in topology.nodes_iter():
+        if old_attr in topology.edge[v]:
+            topology.node[v][new_attr] = topology.node[v][old_attr]
+            del topology.node[v][old_attr]
 
 
 def read_topology(path, encoding='utf-8'):

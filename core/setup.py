@@ -80,7 +80,8 @@ if __name__ == "__main__":
             'fnss',
             'fnss.netconfig',
             'fnss.topologies',
-            'fnss.traffic'
+            'fnss.traffic',
+            'fnss.adapters',
         ],
         scripts=[
             'bin/fnss-troubleshoot'
