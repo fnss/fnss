@@ -10,7 +10,7 @@ author_email = 'fnss.dev@gmail.com'
 
 # version information
 # Used by __init__, doc and setup
-version = '0.3.2'
+version = '0.4.0'
 
 # License information
 # Used by __init__, doc and setup
