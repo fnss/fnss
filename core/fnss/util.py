@@ -1,12 +1,22 @@
-"""
-Provide basic utility functions
+"""Provide basic utility functions
 """
 from __future__ import division
-from random import random
+import ast
+import random
 from math import pi, sqrt, sin, cos, asin
-from ast import literal_eval
 
 from fnss.units import EARTH_RADIUS 
+
+__all__ = [
+    'split_list',
+    'random_from_pdf',
+    'map_func',
+    'xml_cast_type',
+    'xml_type',
+    'xml_indent',
+    'geographical_distance',
+          ]
+
 
 def split_list(l, size):
     """
@@ -83,7 +93,7 @@ def map_func(x):
     return func(*args)
 
 
-def _xml_cast_type(type_attrib, val):
+def xml_cast_type(type_attrib, val):
     """
     Cast a value read to an XML to an appropriate Python type
     
@@ -106,12 +116,12 @@ def _xml_cast_type(type_attrib, val):
     elif type_attrib == 'boolean':
         return bool(val)
     elif type_attrib in ('tuple', 'list', 'dict'):
-        return literal_eval(val)
+        return ast.literal_eval(val)
     else:
         return val
 
 
-def _xml_type(val):
+def xml_type(val):
     """
     Return a type string for writing to an XML file.
     
@@ -138,7 +148,7 @@ def _xml_type(val):
         return 'string'
 
 
-def _xml_indent(elem, level=0):
+def xml_indent(elem, level=0):
     """
     Indent the elements of the XML tree
     
@@ -156,13 +166,13 @@ def _xml_indent(elem, level=0):
         if not elem.tail or not elem.tail.strip():
             elem.tail = i
         for elem in elem:
-            _xml_indent(elem, level + 1)
+            xml_indent(elem, level + 1)
         if not elem.tail or not elem.tail.strip():
             elem.tail = i
     else:
         if level and (not elem.tail or not elem.tail.strip()):
             elem.tail = i
-            
+
 def geographical_distance(lat_u, lon_u, lat_v, lon_v):
     """Return geographical distance along the Earth surface between two points
     *u* and *v*

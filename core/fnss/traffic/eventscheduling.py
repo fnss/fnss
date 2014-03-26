@@ -7,11 +7,12 @@ number of properties.
 An event schedule can be read and written from/to an XML files with provided
 functions.
 """
-import xml.etree.cElementTree as ET 
-from random import expovariate
-from bisect import insort
-from copy import copy
-from fnss.util import _xml_type, _xml_indent, _xml_cast_type
+import random
+import bisect
+import copy
+import xml.etree.cElementTree as ET
+
+import fnss.util as util
 from fnss.units import time_units
 
 __all__ = [
@@ -96,7 +97,7 @@ class EventSchedule(object):
         other : EventSchedule
             The event schedule whose events are added to this one.
         """
-        es = copy(self)
+        es = copy.copy(self)
         es.add_schedule(other) # merge with shallow copy
         return es
     
@@ -139,7 +140,7 @@ class EventSchedule(object):
             raise ValueError('Time must be a positive value')
         if absolute_time:
             if time < self.attrib['t_end']:
-                insort(self.event, (time, event)) # maintain list sorted
+                bisect.insort(self.event, (time, event)) # maintain list sorted
                 return
             self.attrib['t_end'] = time
         else:
@@ -263,7 +264,7 @@ def deterministic_process_event_schedule(interval, t_start, duration, t_unit,
 
 
 def poisson_process_event_schedule(avg_interval, t_start, duration, t_unit, 
-                                         event_generator, *args, **kwargs):
+                                   event_generator, *args, **kwargs):
     """
     Return a schedule of Poisson-distributed events
     
@@ -276,8 +277,10 @@ def poisson_process_event_schedule(avg_interval, t_start, duration, t_unit,
         The time at which the schedule starts
     duration : float
         The duration of the event schedule
-    t_unit: string
+    t_unit : string
         The unit in which time values are expressed (e.g. 'ms', 's')
+    seed : int, long or hashable type, optional
+        The seed to be used by the random generator.
     event_generator : function
         A function that when called returns an event, i.e. a dictionary of 
         event properties
@@ -309,7 +312,7 @@ def poisson_process_event_schedule(avg_interval, t_start, duration, t_unit,
     t_last_event = t_start
     event_schedule = EventSchedule(t_start=t_start, t_unit=t_unit)
     while True:
-        t_last_event += (expovariate(1.0/avg_interval))
+        t_last_event += (random.expovariate(1.0/avg_interval))
         if t_last_event < t_end:
             event = event_generator(*args, **kwargs)
             event_schedule.add(t_last_event, event, absolute_time=True)
@@ -327,7 +330,7 @@ def read_event_schedule(path):
     head = tree.getroot()
     for prop in head.findall('property'):
         name = prop.attrib['name']
-        value = _xml_cast_type(prop.attrib['type'], prop.text)
+        value = util.xml_cast_type(prop.attrib['type'], prop.text)
         event_schedule.attrib[name] = value
     # this is needed for not messing up the automatic sorting of the event list
     event_schedule.attrib['t_end'] = 0 
@@ -336,7 +339,7 @@ def read_event_schedule(path):
         event_prop = {}
         for prop in event.findall('property'):
             name = prop.attrib['name']
-            value = _xml_cast_type(prop.attrib['type'], prop.text)
+            value = util.xml_cast_type(prop.attrib['type'], prop.text)
             event_prop[name] = value
         event_schedule.add(time, event_prop, absolute_time=True)
     return event_schedule
@@ -351,7 +354,7 @@ def write_event_schedule(event_schedule, path,
     for name, value in event_schedule.attrib.items():
         prop = ET.SubElement(head, "property")
         prop.attrib['name'] = str(name)
-        prop.attrib['type'] = _xml_type(value)
+        prop.attrib['type'] = util.xml_type(value)
         prop.text = str(value)
     for time, event_props in event_schedule:
         event = ET.SubElement(head, "event")
@@ -359,8 +362,8 @@ def write_event_schedule(event_schedule, path,
         for name, value in event_props.items():
             prop = ET.SubElement(event, "property")
             prop.attrib['name'] = str(name)
-            prop.attrib['type'] = _xml_type(value)
+            prop.attrib['type'] = util.xml_type(value)
             prop.text = str(value)
     if prettyprint:
-        _xml_indent(head)
+        util.xml_indent(head)
     ET.ElementTree(head).write(path, encoding=encoding)

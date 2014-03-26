@@ -2,13 +2,12 @@
 Provides functions to parse topologies from datasets or from outputs of
 other generators.
 """
-from re import compile, findall, sub 
-from math import sqrt
+import re
+import math
 
 import networkx as nx
 
 from fnss.topologies.topology import Topology, DirectedTopology
-#from fnss.units import EARTH_RADIUS
 from fnss.util import geographical_distance
 
 
@@ -81,9 +80,9 @@ def parse_rocketfuel_isp_map(path):
                 # Case external node     
                 # -euid =externaladdress rn
                 try:
-                    node = int(findall("-\d+", line)[0])
-                    address = (findall("=\S+", line)[0])[1:]  # .strip("=")
-                    r = int(findall("r\d$", line)[0][1:])  # .strip("r"))
+                    node = int(re.findall("-\d+", line)[0])
+                    address = (re.findall("=\S+", line)[0])[1:]  # .strip("=")
+                    r = int(re.findall("r\d$", line)[0][1:])  # .strip("r"))
                 except IndexError:
                     raise ValueError('Invalid input file. Parsing failed '\
                                      'while trying to parse an external node')
@@ -93,17 +92,17 @@ def parse_rocketfuel_isp_map(path):
                 # uid @loc [+] [bb] (num_neigh) [&ext] -> <nuid-1> <nuid-2> 
                 # ... {-euid} ... =name[!] rn
                 try:
-                    node = int(findall("\d+", line)[0])
-                    node_location = findall("@\S*", line)[0]
-                    node_location = sub("[\+@]", "", node_location)
-                    r = int(findall("r\d$", line)[0][1:])# .strip("r"))
-                    address = (findall("=\S+", line)[0])[1:]  # .strip("=")
+                    node = int(re.findall("\d+", line)[0])
+                    node_location = re.findall("@\S*", line)[0]
+                    node_location = re.sub("[\+@]", "", node_location)
+                    r = int(re.findall("r\d$", line)[0][1:])# .strip("r"))
+                    address = (re.findall("=\S+", line)[0])[1:]  # .strip("=")
                 except IndexError:
                     raise ValueError('Invalid input file. Parsing failed '\
                                      'while trying to parse an internal node')
-                internal_links = findall("<(\d+)>", line)
-                external_links = findall("{(-?\d+)}", line)
-                backbone = True if len(findall("\sbb\s", line)) > 0 \
+                internal_links = re.findall("<(\d+)>", line)
+                external_links = re.findall("{(-?\d+)}", line)
+                backbone = True if len(re.findall("\sbb\s", line)) > 0 \
                            else False
                 topology.add_node(node, type='internal', 
                                   location=node_location, 
@@ -188,7 +187,7 @@ def parse_inet(path):
     """
     topology = Topology(type='inet', distance_unit='Km')
     lines = open(path, "r").readlines()
-    sep = compile('[\s\t]')
+    sep = re.compile('[\s\t]')
     first_line = sep.split(lines[0].strip())
     try:
         n_nodes = int(first_line[0])
@@ -221,7 +220,7 @@ def parse_inet(path):
                 y_u = topology.node[u]['latitude']
                 x_v = topology.node[v]['longitude']
                 y_v = topology.node[v]['latitude']
-                length = float(sqrt((x_v - x_u)**2 + (y_v - y_u)**2))
+                length = float(math.sqrt((x_v - x_u)**2 + (y_v - y_u)**2))
             except (ValueError, IndexError):
                 raise ValueError('Invalid input file. Parsing failed while '\
                                  'trying to parse a link')
@@ -275,7 +274,7 @@ def parse_abilene(topology_file, links_file=None):
                 topology.add_node(name, city=city, latitude=latitude, 
                            longitude=longitude)
             elif line_type == 'link':
-                sep = compile('[\s\t]')
+                sep = re.compile('[\s\t]')
                 link_entry = sep.split(line)
                 try:
                     u = link_entry[0]
@@ -302,7 +301,7 @@ def parse_abilene(topology_file, links_file=None):
                 line, _ = line.split(comment_char, 1)
             line = line.strip()
             if len(line) > 0:
-                sep = compile('[\s\t]')
+                sep = re.compile('[\s\t]')
                 link_entry = sep.split(line)
                 try:
                     u, v = link_entry[0].split(',', 1)
@@ -533,7 +532,7 @@ def parse_ashiip(file_name):
         # There is no documented aShiip format but we assume that if the line
         # does not start with a number it is not part of the topology
         if line[0].isdigit():
-            node_ids = findall("\d+", line)
+            node_ids = re.findall("\d+", line)
             if len(node_ids) < 3:
                 raise ValueError('Invalid input file. Parsing failed while '\
                                  'trying to parse a line')

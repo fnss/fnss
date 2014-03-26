@@ -10,16 +10,16 @@ TrafficMatrixSequence object.
 A traffic matrix or a sequence of matrices can be read and written from/to an
 XML files with provided functions.
 """
-import networkx as nx
-import xml.etree.cElementTree as ET
-from multiprocessing import cpu_count, Pool
+import multiprocessing as mp
 from math import exp, sin, pi, log, sqrt
-#from random import lognormvariate, normalvariate
-from numpy.random import lognormal, normal
+import xml.etree.cElementTree as ET
+
 from numpy import isinf
+from numpy.random import lognormal, normal
+import networkx as nx
+
 from fnss.units import capacity_units, time_units
-from fnss.util import split_list, map_func, \
-                      _xml_type, _xml_indent, _xml_cast_type
+import fnss.util as util
 from fnss.topologies.topology import fan_in_out_capacities, \
                                      od_pairs_from_topology
 
@@ -819,19 +819,22 @@ def __calc_nfur(topology, fast, parallelize=True):
         # achieved by splitting the calculation
         return __nfur_func(topology, edges, betw)
     try:
-        processes = cpu_count()
+        processes = mp.cpu_count()
     except NotImplementedError:
         processes = 32 # upper bound of number of cores on a commodity server
-    pool = Pool(processes)
+    pool = mp.Pool(processes)
     # map operation
-    edges_chunks = split_list(edges, len(edges)//processes)
+    edges_chunks = util.split_list(edges, len(edges)//processes)
+#    args = ((topology, chunk, betw) for chunk in edges_chunks)
+#    result = pool.map(__nfur_func, args)
     args = [(__nfur_func, (topology, chunk, betw)) for chunk in edges_chunks]
-    result = pool.map(map_func, args)
+    result = pool.map(util.map_func, args)
     # reduce operation
     return dict((v, max((result[i][v] for i in range(len(result)))))
                 for v in betw)
 
-
+#def __nfur_func(args):
+#    topology, edges, betweenness = args
 def __nfur_func(topology, edges, betweenness):
     """
     Calculate NFUR on a specific set of edges
@@ -1028,15 +1031,15 @@ def read_traffic_matrix(path, encoding='utf-8'):
         traffic_matrix = TrafficMatrix()
         for prop in head.findall('property'):
             name = prop.attrib['name']
-            value = _xml_cast_type(prop.attrib['type'], prop.text)
+            value = util.xml_cast_type(prop.attrib['type'], prop.text)
             if name == 'volume_unit' and value not in capacity_units:
                 raise ET.ParseError(\
                                 'Invalid volume_unit property in time node')
             traffic_matrix.attrib[name] = value
         for origin in head.findall('origin'):
-            o = _xml_cast_type(origin.attrib['id.type'], origin.attrib['id'])
+            o = util.xml_cast_type(origin.attrib['id.type'], origin.attrib['id'])
             for destination in origin.findall('destination'):
-                d = _xml_cast_type(destination.attrib['id.type'], 
+                d = util.xml_cast_type(destination.attrib['id.type'], 
                                    destination.attrib['id'])
                 volume = float(destination.text)
                 traffic_matrix.add_flow(o, d, volume)
@@ -1050,7 +1053,7 @@ def read_traffic_matrix(path, encoding='utf-8'):
         traffic_matrix = TrafficMatrixSequence()
         for prop in head.findall('property'):
             name = prop.attrib['name']
-            value = _xml_cast_type(prop.attrib['type'], prop.text)
+            value = util.xml_cast_type(prop.attrib['type'], prop.text)
             traffic_matrix.attrib[name] = value
         for matrix in head.findall('time'):
             traffic_matrix.append(parse_single_matrix(matrix)) 
@@ -1080,14 +1083,14 @@ def write_traffic_matrix(traffic_matrix, path, encoding='utf-8',
         improved human readability
     """
     head = ET.Element("traffic-matrix")
-    if type(traffic_matrix) is TrafficMatrix:
+    if isinstance(traffic_matrix, TrafficMatrix):
         head.attrib['type'] = 'single'
         matrices = [traffic_matrix]
-    elif type(traffic_matrix) is TrafficMatrixSequence:
+    elif isinstance(traffic_matrix, TrafficMatrixSequence):
         for name, value in traffic_matrix.attrib:
             prop = ET.SubElement(head, "property")
             prop.attrib['name'] = str(name)
-            prop.attrib['type'] = _xml_type(value)
+            prop.attrib['type'] = util.xml_type(value)
             prop.text = str(value)
         head.attrib['type'] = 'sequence'
         matrices = traffic_matrix.matrix
@@ -1100,18 +1103,18 @@ def write_traffic_matrix(traffic_matrix, path, encoding='utf-8',
         for name, value in matrix.attrib.items():
             prop = ET.SubElement(time, "property")
             prop.attrib['name'] = str(name)
-            prop.attrib['type'] = _xml_type(value)
+            prop.attrib['type'] = util.xml_type(value)
             prop.text = str(value)
         for o in matrix.flow:
             origin = ET.SubElement(time, "origin")
             origin.attrib['id'] = str(o)
-            origin.attrib['id.type'] = _xml_type(o)
+            origin.attrib['id.type'] = util.xml_type(o)
             for d in matrix.flow[o]:
                 volume = matrix.flow[o][d]
                 destination = ET.SubElement(origin, "destination")
                 destination.attrib['id'] = str(d)
-                destination.attrib['id.type'] = _xml_type(d)
+                destination.attrib['id.type'] = util.xml_type(d)
                 destination.text = str(volume)
     if prettyprint:
-        _xml_indent(head)
+        util.xml_indent(head)
     ET.ElementTree(head).write(path, encoding=encoding)

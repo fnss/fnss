@@ -4,7 +4,9 @@
 __all__ = [
     'capacity_units',
     'time_units',
-    'distance_units'
+    'distance_units',
+    'convert_capacity_value',
+    'convert_time_value'
           ]
 
 
@@ -44,11 +46,39 @@ time_units = {'minutes': 60*10**3,      'minute': 60*10**3,
 
 def convert_capacity_value(value, old_unit, new_unit):
     """Convert a capacity value from a unit to another one.
+    
+    Parameters
+    ----------
+    value : float
+        Value of a measure to convert
+    old_unit : str
+        Unit from which the conversion is made
+    new_unit : str
+        Unit to which the conversion is made
+        
+    Returns
+    -------
+    converted_value : float
+        Capacity value in the new unit
     """
     return value * capacity_units[old_unit] / capacity_units[new_unit]
 
 def convert_time_value(value, old_unit, new_unit):
     """Convert a time/delay value from a unit to another one.
+    
+    Parameters
+    ----------
+    value : float
+        Value of a measure to convert
+    old_unit : str
+        Unit from which the conversion is made
+    new_unit : str
+        Unit to which the conversion is made
+        
+    Returns
+    -------
+    converted_value : float
+        Time/delay value in the new unit
     """
     return value * time_units[old_unit] / time_units[new_unit]
     

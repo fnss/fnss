@@ -3,7 +3,7 @@ Provides basic functions and classes for operating on network topologies.
 """
 import xml.etree.cElementTree as ET
 import networkx as nx
-from fnss.util import _xml_type, _xml_cast_type, _xml_indent
+import fnss.util as util
 
 
 __all__ = [
@@ -12,7 +12,7 @@ __all__ = [
     'od_pairs_from_topology',
     'fan_in_out_capacities',
     'read_topology',
-    'write_topology'
+    'write_topology',
            ]
 
 
@@ -188,7 +188,7 @@ class Topology(nx.Graph, BaseTopology):
 
         Notes
         -----
-        This returns a "deepcopy" of the edge, node, and
+        This returns a 'deepcopy' of the edge, node, and
         graph attributes which attempts to completely copy
         all of the data and references.
 
@@ -231,7 +231,7 @@ class Topology(nx.Graph, BaseTopology):
 
         Notes
         -----
-        This returns a "deepcopy" of the edge, node, and
+        This returns a 'deepcopy' of the edge, node, and
         graph attributes which attempts to completely copy
         all of the data and references.
 
@@ -347,7 +347,7 @@ class DirectedTopology(nx.DiGraph, BaseTopology):
 
         Notes
         -----
-        This returns a "deepcopy" of the edge, node, and
+        This returns a 'deepcopy' of the edge, node, and
         graph attributes which attempts to completely copy
         all of the data and references.
 
@@ -390,7 +390,7 @@ class DirectedTopology(nx.DiGraph, BaseTopology):
 
         Notes
         -----
-        This returns a "deepcopy" of the edge, node, and
+        This returns a 'deepcopy' of the edge, node, and
         graph attributes which attempts to completely copy
         all of the data and references.
 
@@ -412,7 +412,6 @@ class DirectedTopology(nx.DiGraph, BaseTopology):
         [(0, 1)]
         """
         return Topology(super(DirectedTopology, self).to_undirected())
-
 
 
 def od_pairs_from_topology(topology):
@@ -443,8 +442,9 @@ def od_pairs_from_topology(topology):
         routes = nx.all_pairs_shortest_path_length(topology)
         return [(o, d) for o in routes for d in routes[o] if o != d]
     else:
-        conn_components = nx.connected_components(topology)
-        return [(o, d) for G in conn_components for o in G for d in G if o !=d]
+        conn_comp = nx.connected_components(topology)
+        return [(o, d) for G in conn_comp for o in G for d in G if o != d]
+
 
 def fan_in_out_capacities(topology):
     """
@@ -455,14 +455,20 @@ def fan_in_out_capacities(topology):
     Parameters
     ----------
     topology : Topology
-        The topology object whose fan-in and fan-out capacities are calculated,
+        The topology object whose fan-in and fan-out capacities are calculated.
         This topology must be annotated with link capacities.
     
     Returns
     -------
     fan_in_out_capacities : tuple (fan_in, fan_out)
         A tuple of two dictionaries, representing, respectively the fan-in and 
-        fan-out capacities keyed by node ids
+        fan-out capacities keyed by node.
+        
+    Notes
+    -----
+    This function works correctly for both directed and undirected topologies.
+    If the topology is undirected, the returned dictionaries of fan-in and
+    fan-out capacities are identical.
     
     Examples
     --------
@@ -513,48 +519,48 @@ def read_topology(path, encoding='utf-8'):
                    else DirectedTopology()
     for prop in head.findall('property'):
         name = prop.attrib['name']
-        value = _xml_cast_type(prop.attrib['type'], prop.text)
+        value = util.xml_cast_type(prop.attrib['type'], prop.text)
         topology.graph[name] = value
     for node in head.findall('node'):
-        v = _xml_cast_type(node.attrib['id.type'], node.attrib['id'])
+        v = util.xml_cast_type(node.attrib['id.type'], node.attrib['id'])
         topology.add_node(v)
         for prop in node.findall('property'):
             name = prop.attrib['name']
-            value = _xml_cast_type(prop.attrib['type'], prop.text)
+            value = util.xml_cast_type(prop.attrib['type'], prop.text)
             topology.node[v][name] = value
         if len(node.findall('stack')) > 0:
             if len(node.findall('stack')) > 1:
                 raise ET.ParseError('Invalid topology. ' \
                                     'A node has more than one stack.')
             stack = node.findall('stack')[0]
-            stack_name = _xml_cast_type(stack.attrib['name.type'], 
+            stack_name = util.xml_cast_type(stack.attrib['name.type'], 
                                         stack.attrib['name'])
             stack_props = {}
             for prop in stack.findall('property'):
                 name = prop.attrib['name']
-                value = _xml_cast_type(prop.attrib['type'], prop.text)
+                value = util.xml_cast_type(prop.attrib['type'], prop.text)
                 stack_props[name] = value
             topology.node[v]['stack'] = (stack_name, stack_props)
         if len(node.findall('application')) > 0:
             topology.node[v]['application'] = {}
             for application in node.findall('application'):
-                app_name = _xml_cast_type(application.attrib['name.type'], 
+                app_name = util.xml_cast_type(application.attrib['name.type'], 
                                           application.attrib['name'])
                 app_props = {}
                 for prop in application.findall('property'):
                     name = prop.attrib['name']
-                    value = _xml_cast_type(prop.attrib['type'], prop.text)
+                    value = util.xml_cast_type(prop.attrib['type'], prop.text)
                     app_props[name] = value
                 topology.node[v]['application'][app_name] = app_props
     for edge in head.findall('link'):
-        u = _xml_cast_type(edge.find('from').attrib['type'], 
+        u = util.xml_cast_type(edge.find('from').attrib['type'], 
                            edge.find('from').text)
-        v = _xml_cast_type(edge.find('to').attrib['type'], 
+        v = util.xml_cast_type(edge.find('to').attrib['type'], 
                            edge.find('to').text)
         topology.add_edge(u, v)
         for prop in edge.findall('property'):
             name = prop.attrib['name']
-            value = _xml_cast_type(prop.attrib['type'], prop.text)
+            value = util.xml_cast_type(prop.attrib['type'], prop.text)
             topology.edge[u][v][name] = value
     return topology
 
@@ -574,59 +580,59 @@ def write_topology(topology, path, encoding='utf-8', prettyprint=True):
     prettyprint : bool, optional
         Indent the XML code in the output file
     """
-    head = ET.Element("topology")
+    head = ET.Element('topology')
     head.attrib['linkdefault'] = 'directed' if topology.is_directed() \
                                             else 'undirected' 
     for name, value in topology.graph.items():
-        prop = ET.SubElement(head, "property")
+        prop = ET.SubElement(head, 'property')
         prop.attrib['name'] = name
-        prop.attrib['type'] = _xml_type(value)
+        prop.attrib['type'] = util.xml_type(value)
         prop.text = str(value)
     for v in topology.nodes_iter():
-        node = ET.SubElement(head, "node")
+        node = ET.SubElement(head, 'node')
         node.attrib['id'] = str(v)
-        node.attrib['id.type'] = _xml_type(v)
+        node.attrib['id.type'] = util.xml_type(v)
         for name, value in topology.node[v].items():
             if name is 'stack':
                 stack_name, stack_props = topology.node[v]['stack']
-                stack = ET.SubElement(node, "stack")
+                stack = ET.SubElement(node, 'stack')
                 stack.attrib['name'] = stack_name
-                stack.attrib['name.type'] = _xml_type(stack_name)
+                stack.attrib['name.type'] = util.xml_type(stack_name)
                 for prop_name, prop_value in stack_props.items():
-                    prop = ET.SubElement(stack, "property")
+                    prop = ET.SubElement(stack, 'property')
                     prop.attrib['name'] = prop_name
-                    prop.attrib['type'] = _xml_type(prop_value)
+                    prop.attrib['type'] = util.xml_type(prop_value)
                     prop.text = str(prop_value)
             elif name is 'application':
                 for application_name, application_props in \
                             topology.node[v]['application'].items():
-                    application = ET.SubElement(node, "application")
+                    application = ET.SubElement(node, 'application')
                     application.attrib['name'] = application_name
                     application.attrib['name.type'] = \
-                            _xml_type(application_name)
+                            util.xml_type(application_name)
                     for prop_name, prop_value in application_props.items():
-                        prop = ET.SubElement(application, "property")
+                        prop = ET.SubElement(application, 'property')
                         prop.attrib['name'] = prop_name
-                        prop.attrib['type'] = _xml_type(prop_value)
+                        prop.attrib['type'] = util.xml_type(prop_value)
                         prop.text = str(prop_value)
             else:
-                prop = ET.SubElement(node, "property")
+                prop = ET.SubElement(node, 'property')
                 prop.attrib['name'] = name
-                prop.attrib['type'] = _xml_type(value)
+                prop.attrib['type'] = util.xml_type(value)
                 prop.text = str(value)
     for u, v in topology.edges_iter():
-        link = ET.SubElement(head, "link")
-        from_node = ET.SubElement(link, "from")
-        from_node.attrib['type'] = _xml_type(u)
+        link = ET.SubElement(head, 'link')
+        from_node = ET.SubElement(link, 'from')
+        from_node.attrib['type'] = util.xml_type(u)
         from_node.text = str(u)
-        to_node = ET.SubElement(link, "to")
-        to_node.attrib['type'] = _xml_type(v)
+        to_node = ET.SubElement(link, 'to')
+        to_node.attrib['type'] = util.xml_type(v)
         to_node.text = str(v)
         for name, value in topology.edge[u][v].items():
-            prop = ET.SubElement(link, "property")
+            prop = ET.SubElement(link, 'property')
             prop.attrib['name'] = name
-            prop.attrib['type'] = _xml_type(value)
+            prop.attrib['type'] = util.xml_type(value)
             prop.text = str(value)
     if prettyprint:
-        _xml_indent(head)
+        util.xml_indent(head)
     ET.ElementTree(head).write(path, encoding=encoding)

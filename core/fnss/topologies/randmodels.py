@@ -4,8 +4,8 @@ models.
 
 The generated topologies are either Topology or DIrectedTopology objects.
 """
+import math
 import random
-from math import sqrt, exp
 
 import networkx as nx
 
@@ -124,7 +124,7 @@ def waxman_1_topology(n, alpha=0.4, beta=0.1, L=1.0,
         u = nodes.pop()
         for v in nodes:
             d = L * random.random()
-            if random.random() < alpha * exp(-d/(beta * L)):
+            if random.random() < alpha * math.exp(-d/(beta * L)):
                 G.add_edge(u, v, length=d)
     return G
 
@@ -204,10 +204,10 @@ def waxman_2_topology(n, alpha=0.4, beta=0.1, domain=(0, 0, 1, 1),
             x_v = G.node[v]['longitude']
             y_u = G.node[u]['latitude']
             y_v = G.node[v]['latitude']
-            l[(u, v)] = sqrt((x_u - x_v)**2 + (y_u - y_v)**2) 
+            l[(u, v)] = math.sqrt((x_u - x_v)**2 + (y_u - y_v)**2) 
     L = max(l.values())
     for (u, v), d in l.items():
-        if random.random() < alpha * exp(-d/(beta*L)):
+        if random.random() < alpha * math.exp(-d/(beta*L)):
             G.add_edge(u, v, length=d)
   
     return G
