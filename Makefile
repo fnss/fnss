@@ -5,7 +5,6 @@ VERSION = 0.3.2
 CORE_DIR = core
 CPP_DIR  = cpp
 JAVA_DIR = java
-NS2_DIR  = ns2
 NS3_DIR  = ns3
 
 DOC_DIR  = doc
@@ -33,18 +32,15 @@ dist: distclean
 	cd $(JAVA_DIR); ant
 	cd $(CORE_DIR); make dist
 	cd $(CPP_DIR); make dist
-	cd $(NS2_DIR); make dist
 	cd $(NS3_DIR); make dist
 	mkdir -p $(DIST_DIR)
 	mkdir -p $(DIST_DIR)/core
 	mkdir -p $(DIST_DIR)/java
 	mkdir -p $(DIST_DIR)/cpp
-	mkdir -p $(DIST_DIR)/ns2
 	mkdir -p $(DIST_DIR)/ns3
 	cp -r $(CORE_DIR)/dist/* $(DIST_DIR)/core
 	cp -r $(JAVA_DIR)/dist/* $(DIST_DIR)/java
 	cp -r $(CPP_DIR)/dist/* $(DIST_DIR)/cpp
-	cp -r $(NS2_DIR)/dist/* $(DIST_DIR)/ns2
 	cp -r $(NS3_DIR)/dist/* $(DIST_DIR)/ns3
 	cd $(DIST_DIR)/core ; for f in * ; do mv $$f `echo $$f | sed s/fnss-/fnss-core-/` ; done
 	zip --exclude=$(DOC_DIR)/\* --exclude $(DIST_DIR)/\* --exclude ".*" -r $(DIST_DIR)/$(ARCHIVE_NAME).zip *
@@ -64,6 +60,5 @@ clean: distclean docclean
 	cd $(JAVA_DIR); ant clean
 	cd $(CORE_DIR); make clean
 	cd $(CPP_DIR); make clean
-	cd $(NS2_DIR); make clean
 	cd $(NS3_DIR); make clean
 

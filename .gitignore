@@ -31,9 +31,6 @@ cpp/doc
 cpp/dist
 cpp/examples/bin
 
-# Ignore ns2 built files
-ns2/dist
-
 # Ignore ns3 built files
 ns3/dist
 ns3/doc

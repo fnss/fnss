@@ -13,7 +13,8 @@ packages = [
         'sphinx',
         'numpydoc',
         'unittest2',
-        'argparse'
+        'argparse',
+        'mako',
             ]
 
 

@@ -13,7 +13,8 @@ if sys.version_info[:2] < (2, 6):
 
 # Packages required to run FNSS
 required_packages = [('networkx', '>=', '1.6'),
-                     ('numpy', '>=', '1.4')]
+                     ('numpy', '>=', '1.4'),
+                     ('mako', '>=', '0.4')]
 
 # Packages required to run tests and build documentation
 optional_packages = [('nose', '>=', '1.1'),
