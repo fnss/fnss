@@ -23,7 +23,7 @@ doc: dist docclean
 	mkdir -p $(DOC_DIR)/core
 	mkdir -p $(DOC_DIR)/java
 	mkdir -p $(DOC_DIR)/cpp
-	cp -r $(CORE_DIR)/doc/html/* $(DOC_DIR)/core
+	cp -r $(CORE_DIR)/doc/build/html/* $(DOC_DIR)/core
 	cp -r $(JAVA_DIR)/doc/* $(DOC_DIR)/java
 	cp -r $(CPP_DIR)/doc/html/* $(DOC_DIR)/cpp
 

@@ -17,8 +17,9 @@ core/dist
 core/build
 core/fnss.egg-info
 core/MANIFEST
-core/doc/html
 core/doc/build
+core/doc/source/apidoc/generated
+core/doc/source/examples
 
 # Ignore Java built files
 java/dist

@@ -15,7 +15,7 @@ test:
 
 # Build HTML documentation
 doc: docclean
-	cd $(DOC_DIR); sphinx-build . html/
+	cd $(DOC_DIR); make html
 
 # Create distribution package
 dist: clean doc
@@ -27,8 +27,7 @@ install: clean
 
 # Clean documentation
 docclean:
-	rm -rf $(DOC_DIR)/html
-	rm -rf $(DOC_DIR)/_build
+	cd $(DOC_DIR); make clean
 
 # Clean dist files
 distclean:
