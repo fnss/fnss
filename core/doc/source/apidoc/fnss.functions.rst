@@ -179,6 +179,8 @@ Functions
 
     fan_in_out_capacities
     od_pairs_from_topology
+    rename_edge_attribute
+    rename_node_attribute
     read_topology
     write_topology
 

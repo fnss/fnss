@@ -53,7 +53,7 @@ clean:
 init: clean
 	mkdir -p $(TMPDIR)
 	cp $(SRCDIR)/conf.py $(TMPDIR)/conf.py
-	python $(SCRIPTDIR)/list_members.py $(TMPDIR)/index.rst $(GENAPIDOCDIR)
+	python $(SCRIPTDIR)/make_apidoc.py $(TMPDIR)/index.rst $(GENAPIDOCDIR)
 	sphinx-build -b linkcheck $(TMPDIR) $(TMPDIR)
 	rm -rf $(TMPDIR)
 	python $(SCRIPTDIR)/make_examples.py $(EXCODEDIR) $(EXSRCDOCDIR)
