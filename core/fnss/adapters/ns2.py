@@ -4,7 +4,6 @@ This module contains the code for converting an FNSS topology object into a Tcl
 script to deploy such topology into ns-2.
 """
 from warnings import warn
-from mako.template import Template
 
 from fnss.units import time_units, capacity_units
 from fnss.netconfig.nodeconfig import get_stack, \
@@ -164,6 +163,11 @@ def to_ns2(topology, path, stacks=True):
      * All names and values of stack and application properties must be valid
        properties recognized by the ns-2 application or protocol stack.
     """
+    try:
+        from mako.template import Template
+    except ImportError:
+        raise ImportError('Cannot import mako.template module. '
+                          'Make sure mako is installed on this machine.')
     set_buffers = True
     set_delays = True
     # if all links are annotated with weights, then set weights
