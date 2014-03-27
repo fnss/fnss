@@ -8,9 +8,9 @@ recursive-include test test*
 recursive-include examples *.py
 
 # Include all HTML documentation
-recursive-include doc/html *
-prune doc/html/.doctrees
-exclude doc/html/.buildinfo
+recursive-include doc/build/html *
+prune doc/build/html/.doctrees
+exclude doc/build/html/.buildinfo
 
 # Redundant code but specify just in case of changes to default Distutils behaviour
 global-exclude *~

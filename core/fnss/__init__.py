@@ -12,9 +12,11 @@ These features include the ability to:
 * Generate traffic matrices.
 * Generate event schedules.
 
-The core library can be used in conjunction with the FNSS Java and C++ API or
-the ns-2 and ns-3 adapters to import topologies, traffic matrices and event
-schedules in the desired target simulator.
+This core library includes adapters that allow users to export topologies to
+ns-2, Mininet and Autonetkit.
+In addition, the core library can be used in conjunction with the FNSS Java and
+C++ API or the ns-3 adapter to export topologies, traffic matrices and event
+schedules to the desired target simulator or emulator.
 """
 # check Python version
 import sys

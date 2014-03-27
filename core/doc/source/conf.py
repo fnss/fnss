@@ -11,7 +11,7 @@
 # serve to show the default.
 
 import sys, os
-
+from datetime import date
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
@@ -63,7 +63,7 @@ author = fnss.release.author
 
 # General information about the project.
 project = u'FNSS'
-copyright = u'2012-2013, %s' % author
+copyright = u'2012-%s, %s' % (str(date.today().year), author)
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the

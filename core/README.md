@@ -8,17 +8,18 @@ These features include the ability to:
  * Generate traffic matrices
  * Generate event schedules
 
-The core library can be used in conjunction with the FNSS Java and C++ API or the ns-2 and ns-3 adapters import topologies, traffic matrices and event schedules in the desired target simulator. 
+The core library provides function to export created topologies to ns-2, Mininet and Autonetkit.
+It can also be used in conjunction with the FNSS Java and C++ API or the ns-3 adapters to import topologies, traffic matrices and event schedules in the desired target simulator. 
 
 ## Project directory structure
 The files of the FNSS core library are organized in the following directories.
 
-* bin: verious scripts to be run from the command shell
-* dist: folder where the built packages are saved
-* doc: documentation
-* examples: example code using the library
-* fnss: source code
-* test: test code
+ * bin: verious scripts to be run from the command shell
+ * dist: folder where the built packages are saved
+ * doc: documentation
+ * examples: example code using the library
+ * fnss: source code
+ * test: test code
 
 ## Install
 You do not necessarily need to install FNSS to start using it. If you have already all the required packages on your system (look at requirements section below), you can simply add the directory where this README is located to your PYTHONPATH environment variable and you will be able to FNSS straight away.
@@ -73,17 +74,25 @@ To run the core library of FNSS you need to have [Python](http://www.python.org/
 In addition you also need the following Python packages.
 
  * [numpy](http://www.numpy.org/) (version 1.4 or later)
- * [networkx](http://networkx.github.gov) (version 1.6 or later)
+ * [networkx](http://networkx.github.gov/) (version 1.6 or later)
 
-To run the tests, you also need the following Python packages:
+To be able to export topologies to ns-2, you also need:
+
+ * [mako](http://www.makotemplates.org/) (version 0.4 or later)
+
+To be able to export topologies to Mininet you need Mininet itself:
+
+ * [mininet](http://www.mininet.org/) (version 2.1.0 or later)
+
+To run unit test cases, you also need the following Python packages:
 
  * [nose](https://nose.readthedocs.org/en/latest/) (version 1.1 or later) 
- * [unittest2](https://pypi.python.org/pypi/unittest2) (version 0.4 or later) only if you use Python 2.6
+ * [unittest2](https://pypi.python.org/pypi/unittest2/) (version 0.4 or later) only if you use Python 2.6
 
 To build the documentation from sources, you also need the following Python packages:
 
  * [sphinx](http://sphinx-doc.org/) (version 1.1 or later)
- * [numpydoc](http://pypi.python.org/pypi/numpydoc) (version 0.4 or later)
+ * [numpydoc](http://pypi.python.org/pypi/numpydoc/) (version 0.4 or later)
  
 ## License
-The FNSS core library is released under the terms of the [BSD License](http://en.wikipedia.org/wiki/BSD_licenses). See LICENSE.txt.
+The FNSS core library is released under the terms of the [BSD License](http://en.wikipedia.org/wiki/BSD_licenses). See `LICENSE.txt`.
