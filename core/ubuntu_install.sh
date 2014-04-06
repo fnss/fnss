@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# This script automatically download and install the FNSS core library along with all its dependencies
+# This script automatically downloads and installs the FNSS core library along with all its dependencies
 #
 # This script has been tested only on Ubuntu version 12.04+
 #

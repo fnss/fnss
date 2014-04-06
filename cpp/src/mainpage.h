@@ -13,5 +13,5 @@
  * they can be used in a C++ simulator.
  *
  * For further information, please refer to the README file or visit the
- * website <a href="http://fnss.github.com">http://fnss.github.com</a>
+ * website <a href="http://fnss.github.com">http://fnss.github.io</a>
  */
