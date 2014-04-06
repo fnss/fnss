@@ -5,6 +5,7 @@ API Reference
 
    fnss.classes
    fnss.functions
+   fnss.scripts
 
 
     
