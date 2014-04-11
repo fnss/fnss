@@ -1,10 +1,11 @@
+import io.github.fnss.Event;
+import io.github.fnss.EventSchedule;
+import io.github.fnss.Parser;
+
 import java.io.IOException;
 
 import org.jdom2.JDOMException;
 
-import uk.ac.ucl.ee.fnss.Event;
-import uk.ac.ucl.ee.fnss.EventSchedule;
-import uk.ac.ucl.ee.fnss.Parser;
 
 /**
  * This example shows how to parse an event schedule from an XML file

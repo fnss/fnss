@@ -28,8 +28,8 @@ The FNSS library is packaged in the file `fnss-java-api-VERSION.jar` which you c
 In addition to that, you need to add to your classpath also all the third-party libraries used by FNSS, which are listed under the requirements section of this README file.
 For your convenience, we provided up-to-date Jar files of all FNSS dependencies in the `lib` directory.
 We also included them in the files `fnss-java-api-VERSION-all.tar.gz` and `fnss-java-api-VERSION-all.zip` which you can download from the FNSS website or find in the `dist` directory after building FNSS.
-After adding FNSS and all its dependencies to your classpath, you can start using FNSS by importing the package `uk.ac.ucl.ee.fnss` in your code.
-To learn how to use the library, you can either look at the Javadoc documentation in the `doc` subdirectory or look at some examples provided in the `examples` subdirectory.
+After adding FNSS and all its dependencies to your classpath, you can start using FNSS by importing the package `io.github.fnss` in your code.
+To learn how to use the library, you can either look at the Javadoc documentation in the `doc` folder or look at some examples provided in the `examples` folder.
 Should you need any further information, please contact us and we'll be happy to help you.
  
 ## Requirements

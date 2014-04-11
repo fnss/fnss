@@ -90,7 +90,7 @@
 	      		<pathelement path="${test.bin.dir}"/>
 	      	</classpath>
 	      	<formatter type="brief" usefile="false" />
-	      	<test name="uk.ac.ucl.ee.fnss.AllTests" />
+	      	<test name="io.github.fnss.AllTests" />
 		</junit>
   	</target>
   	

@@ -1,3 +1,7 @@
+import io.github.fnss.Edge;
+import io.github.fnss.Topology;
+import io.github.fnss.ext.jgrapht.JGraphTConverter;
+
 import java.util.List;
 
 import org.jgrapht.Graph;
@@ -5,9 +9,6 @@ import org.jgrapht.WeightedGraph;
 import org.jgrapht.alg.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultWeightedEdge;
 
-import uk.ac.ucl.ee.fnss.Edge;
-import uk.ac.ucl.ee.fnss.Topology;
-import uk.ac.ucl.ee.fnss.ext.jgrapht.JGraphTConverter;
 
 /**
  * This example shows how to convert an FNSS topology object into a JGraphT

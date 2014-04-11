@@ -1,8 +1,9 @@
+import io.github.fnss.Edge;
+import io.github.fnss.Topology;
+import io.github.fnss.ext.jung.JUNGConverter;
+
 import java.util.List;
 
-import uk.ac.ucl.ee.fnss.Edge;
-import uk.ac.ucl.ee.fnss.Topology;
-import uk.ac.ucl.ee.fnss.ext.jung.JUNGConverter;
 import edu.uci.ics.jung.algorithms.shortestpath.DijkstraShortestPath;
 import edu.uci.ics.jung.graph.Graph;
 import edu.uci.ics.jung.graph.util.Pair;

@@ -1,11 +1,12 @@
+import io.github.fnss.Pair;
+import io.github.fnss.Parser;
+import io.github.fnss.TrafficMatrix;
+import io.github.fnss.TrafficMatrixSequence;
+
 import java.io.IOException;
 
 import org.jdom2.JDOMException;
 
-import uk.ac.ucl.ee.fnss.Pair;
-import uk.ac.ucl.ee.fnss.Parser;
-import uk.ac.ucl.ee.fnss.TrafficMatrix;
-import uk.ac.ucl.ee.fnss.TrafficMatrixSequence;
 
 /**
  * This example shows how to parse a traffic matrix sequence from an XML file
