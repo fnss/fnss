@@ -53,7 +53,7 @@ Source archive file
 
   3. Run this instruction to build and install::
 
-        % python setup.py install
+        $ python setup.py install
 
 
 Git repository

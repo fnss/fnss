@@ -22,7 +22,7 @@ description_short = 'Fast creation and configuration of topologies, traffic'\
 
 description_long = """The Fast Network Simulation Setup (FNSS) core library is
 a Python library providing a set of features allowing network researchers and
-engineers to simplify the setup of a network simulation.
+engineers to simplify the setup of a network experiment.
 
 These features include the ability to:
 
@@ -33,9 +33,11 @@ These features include the ability to:
 * Generate traffic matrices.
 * Generate event schedules.
 
-The core library can be used in conjunction with the FNSS Java and C++ API or
-the ns-2 and ns-3 adapters to import topologies, traffic matrices and event
-schedules in the desired target simulator.
+The core library allows users to export the generated scenarios (topologies,
+traffic matrices and event schedules) to ns-2, Mininet or AutoNetKit.
+
+It also allows to save scenarios in XML files, which can be later imported
+by the FNSS Java, C++ and ns-3 libraries.
 """
 
 # URL

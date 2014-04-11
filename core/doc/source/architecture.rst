@@ -26,7 +26,7 @@ In addition, the library also comprises a set of classes to model specific entit
  * **TrafficMatrixSequence**: a sequence of traffic matrices, capturing the evolution of traffic on a network over a period of time. 
  * **EventSchedule**: a schedule of events to be simulated.
  
-In order to make the simulation setup information created with FNSS core library (topology, traffic, events) available to the desired target simulator, FNSS provides the capability to export such information to XML files. These XML files can then be read by the Java or C++ APIs or by the ns-2 and ns-3 adapters. 
+In order to make the simulation setup information created with FNSS core library (topology, traffic, events) available to the desired target simulator, FNSS provides the capability to export such information to XML files. These XML files can then be read by the Java, C++ or ns-3 libraries. 
 More specifically, the following objects can be saved to XML files:
  * **Topology**, **DirectedTopology**, **DatacenterTopology** and any potential subclasses can be writted to XML files with the function ``write_topology``.
  * **TrafficMatrix**, **TrafficMatrixSequence** and any potential subclasses can be writted to XML files with the function ``write_traffic_matrix``.

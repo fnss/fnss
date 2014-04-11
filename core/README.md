@@ -1,5 +1,5 @@
-# Fast Network Simulation Setup (FNSS) - Core library
-The FNSS core library is a Python library providing a set of features allowing the simplification of the setup of a network simulation.
+# FNSS core (Python) library
+The FNSS core library is a Python library providing a set of features allowing the simplification of the setup of a network experiment.
 These features include the ability to:
 
  * Parse a topology from a dataset, a topology generator or generate it according to a number of synthetic models
@@ -8,18 +8,18 @@ These features include the ability to:
  * Generate traffic matrices
  * Generate event schedules
 
-The core library provides function to export created topologies to ns-2, Mininet and Autonetkit.
-It can also be used in conjunction with the FNSS Java and C++ API or the ns-3 adapters to import topologies, traffic matrices and event schedules in the desired target simulator. 
+The core library provides function to export created topologies to [ns-2](http://www.isi.edu/nsnam/ns/), [Mininet](http://www.mininet.org) and [Autonetkit](http://www.autonetkit.org).
+It can also be used in conjunction with the FNSS Java, C++ API or [ns-3](http://www.nsnam.org/) libraries to import topologies, traffic matrices and event schedules in the desired target simulator or emulator. 
 
 ## Project directory structure
 The files of the FNSS core library are organized in the following directories.
 
- * bin: verious scripts to be run from the command shell
- * dist: folder where the built packages are saved
- * doc: documentation
- * examples: example code using the library
- * fnss: source code
- * test: test code
+ * `bin`: verious scripts to be run from the command shell
+ * `dist`: folder where the built packages are saved
+ * `doc`: documentation
+ * `examples`: example code using the library
+ * `fnss`: source code
+ * `test`: test code
 
 ## Install
 You do not necessarily need to install FNSS to start using it. If you have already all the required packages on your system (look at requirements section below), you can simply add the directory where this README is located to your PYTHONPATH environment variable and you will be able to FNSS straight away.
@@ -31,11 +31,11 @@ There should be a `setup.py` file in this directory.
 
 To install run the following command:
 
-`python setup.py install`
+    $ python setup.py install
 
 Alternatively, you can use the make script provided:
 
-`make install`
+    $ make install
 
 ## Build package and documentation
 You do not need to build the package to use the FNSS core library: you can install it following the procedure described above. 
@@ -44,30 +44,30 @@ There should also be a `setup.py` file in this directory.
 
 To create a package, run the following command:
 
-`make dist`
+    $ make dist
 
 This will create the package file and save them in the `dist` folder.
 It will also generate all the HTML documentation and save it in the folder `doc/html`.
 If you only want to build the documentation, run:
 
-`make doc`
+    $ make doc
 
 Before attempting to build the documentation make sure that you have all the packages required, listed below.
 
 ## How to use
 Once the package is successfully installed, you can start using FNSS straight away.
-To use the FNSS package, simply import it by typing `import fnss` or `from fnss import *` in your Python console or in your source file.
+To use the FNSS package, simply import it by typing `import fnss` in your Python console or in your source file.
 After importing the `fnss` package, all FNSS functions and classes are automatically imported. 
 For furhter information on how to use library you can either look at the API documentation located in the `doc/html` folder (run `make doc` to build it). Alternatively, you can have a look at some code examples under the `examples` directory.
 
 ## Test
 To run the tests, open a shell and move to the `test` subdirectory (it should contain a `test.py` file) and then run the command:
 
-`python test.py`
+    $ python test.py
 
 Alternatively, you can use the make script provided:
 
-`make test`
+    $ make test
 
 ## Requirements
 To run the core library of FNSS you need to have [Python](http://www.python.org/) (version 2.6 or later, 2.7 or later recommended).
