@@ -1,6 +1,6 @@
 SHELL = /bin/sh
 
-VERSION = 0.4.0
+VERSION = 0.4.1
 
 CORE_DIR = core
 CPP_DIR  = cpp
@@ -46,9 +46,6 @@ dist: distclean
 	cp -r $(CPP_DIR)/dist/* $(DIST_DIR)/cpp
 	cp -r $(NS3_DIR)/dist/* $(DIST_DIR)/ns3
 	cd $(DIST_DIR)/core ; for f in * ; do mv $$f `echo $$f | sed s/fnss-/fnss-core-/` ; done
-	zip --exclude=$(DOC_DIR)/\* --exclude $(DIST_DIR)/\* --exclude ".*" -r $(DIST_DIR)/$(ARCHIVE_NAME).zip *
-	tar --exclude=$(DOC_DIR) --exclude=$(DIST_DIR) --exclude=".*" -czf $(DIST_DIR)/$(ARCHIVE_NAME).tar.gz *
-
 
 # Clean centralized dist directory
 distclean:
