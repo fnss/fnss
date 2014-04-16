@@ -4,6 +4,9 @@ This module contains function to convert FNSS topologies into Mininet
 topologies and viceversa.
 """
 import re
+
+import networkx as nx
+
 from fnss.units import capacity_units, time_units
 from fnss.topologies.topology import Topology
 from fnss.netconfig import set_delays_constant
@@ -44,7 +47,7 @@ def from_mininet(topology):
     return fnss_topo
 
 
-def to_mininet(topology, switches=None, hosts=None):
+def to_mininet(topology, switches=None, hosts=None, relabel_nodes=True):
     """Convert an FNSS topology to Mininet Topo object that can be used to
     deploy a Mininet network.
     
@@ -64,6 +67,10 @@ def to_mininet(topology, switches=None, hosts=None):
         List of topology nodes acting as switches
     hosts : list, optional
         List of topology nodes acting as hosts
+    relabel_nodes : bool, optional
+        If *True*, rename node labels according to Mininet conventions. In
+        Mininet all node labels are strings whose values are "h1", "h2", ... if
+        the node is a host or "s1", "s2", ... if the node is a switch.
     
     Returns
     -------
@@ -101,10 +108,17 @@ def to_mininet(topology, switches=None, hosts=None):
     if not switches.isdisjoint(hosts):
         raise ValueError('Some nodes are labeled as both host and switch. '
                          'Switches and hosts node lists must be disjoint')
-    if not nodes == switches.union(hosts):
+    if nodes != switches.union(hosts):
         raise ValueError('Some nodes are not labeled as either host or switch '
                          'or some nodes listed as switches or hosts do not '
                          'belong to the topology')
+    if relabel_nodes:
+        mapping = dict([(v, "h%s" % str(v)) for v in hosts] + 
+                       [(v, "s%s" % str(v)) for v in switches])
+        hosts = [mapping[v] for v in hosts]
+        switches = [mapping[v] for v in switches]
+        nodes = hosts + switches
+        topology = nx.relabel_nodes(topology, mapping, copy=True)
     topo = Topo()
     for v in switches:
         topo.addSwitch(str(v))
@@ -116,19 +130,19 @@ def to_mininet(topology, switches=None, hosts=None):
                     if 'capacity_unit' in topology.graph else None
     buffer_unit = topology.graph['buffer_unit'] \
                   if 'buffer_unit' in topology.graph else None
-    if capacity_unit is not None:
+    if capacity_unit:
         capacity_conversion = float(capacity_units[capacity_unit]) \
                               / capacity_units['Mbps']
-    if delay_unit is not None:
+    if delay_unit:
         delay_conversion = float(time_units[delay_unit]) \
                               / time_units['us']
     for u, v in topology.edges_iter():
         params = {}
-        if 'capacity' in topology.edge[u][v] and capacity_unit is not None:
+        if 'capacity' in topology.edge[u][v] and capacity_unit:
             params['bw'] = topology.edge[u][v]['capacity'] * capacity_conversion
             # Use Token Bucket filter to implement rate limit
             params['use_htb'] = True 
-        if 'delay' in topology.edge[u][v] and delay_unit is not None:
+        if 'delay' in topology.edge[u][v] and delay_unit:
             params['delay'] = '%sus' % str(topology.edge[u][v]['delay'] 
                                            * delay_conversion)
         if 'buffer_size' in topology.edge[u][v] and buffer_unit == 'packets':

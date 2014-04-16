@@ -36,7 +36,7 @@ class Test(unittest.TestCase):
             t.node[n]['type'] = 'switch'
         fnss.set_capacities_constant(t, 10, 'Mbps')
         fnss.set_delays_constant(t, 10, 'ms')
-        mn_topo = fnss.to_mininet(t)
+        mn_topo = fnss.to_mininet(t, relabel_nodes=False)
         self.assertIsNotNone(mn_topo)
         hosts = mn_topo.hosts()
         switches = mn_topo.switches()
@@ -44,10 +44,21 @@ class Test(unittest.TestCase):
             self.assertIn(h, hosts)
         for s in '2', '3':
             self.assertIn(s, switches)
+        mn_topo = fnss.to_mininet(t, relabel_nodes=True)
+        self.assertIsNotNone(mn_topo)
+        hosts = mn_topo.hosts()
+        switches = mn_topo.switches()
+        for h in 'h1', 'h4':
+            self.assertIn(h, hosts)
+        for s in 's2', 's3':
+            self.assertIn(s, switches)
 
     @unittest.skipUnless(package_available('mininet'), 'Requires Mininet')
     def test_from_mininet(self):
-        from mininet.topo import Topo
+        try:
+            from mininet.topo import Topo
+        except ImportError:
+            raise ImportError('You must have Mininet installed to run this test case')
         t = Topo()
         t.addHost("h1")
         t.addHost("h4")
