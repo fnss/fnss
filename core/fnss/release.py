@@ -17,8 +17,8 @@ version = '0.4.0'
 license_short = 'BSD'
 license_long = 'BSD license'
 
-description_short = 'Fast creation and configuration of topologies, traffic'\
-                    ' matrices and event schedules for network simulations'
+description_short = 'Fast creation and configuration of topologies, traffic ' \
+                    'matrices and event schedules for network experiments'
 
 description_long = """The Fast Network Simulation Setup (FNSS) core library is
 a Python library providing a set of features allowing network researchers and

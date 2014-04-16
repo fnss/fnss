@@ -1,7 +1,5 @@
 #!/usr/bin/env python
-"""
-Run unit tests
-"""
+"""Run unit tests"""
 from os import path, getcwd, environ, mkdir
 from shutil import rmtree
 
@@ -10,11 +8,11 @@ def run(verbosity=1, doctest=False, coverage=False):
 
     Parameters
     ----------
-    verbosity: integer, optional
-      Level of detail in test reports.  Higher numbers provide more detail.  
+    verbosity: int, optional
+        Level of detail in test reports.  Higher numbers provide more detail.  
 
     doctest: bool, optional
-      True to run doctests in code modules
+        If *True* run doctests in code modules
     """
     try:
         import nose

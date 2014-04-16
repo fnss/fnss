@@ -294,7 +294,7 @@ def parse_abilene(topology_file, links_file=None):
             else:
                 raise ValueError('Invalid input file. Found a line that '\
                                  'I cannot interpret')
-    if links_file is not None:
+    if links_file:
         for line in open(links_file, "r").readlines():
             if comment_char in line:
                 # split on comment char, keep only the part before

@@ -1,4 +1,4 @@
-# Fast Network Simulator Setup (FNSS)
+# Fast Network Simulation Setup (FNSS)
 Fast Network Simulation Setup (FNSS) is a toolchain allowing network researchers and engineers to simplify the process of setting up a network experiment scenario. It allows users to execute the following tasks:
 
 * Parse a topology from a dataset, a topology generator or generate it according to a number of synthetic models
@@ -15,7 +15,7 @@ The project files are organized in the following directories:
 * core: core Python library
 * cpp: C++ API
 * java: Java API
-* ns3: ns-3 adapter
+* ns3: ns-3 API
 
 ## How to use it
 The FNSS library comprises a core Python library, which also includes adapters for ns-2, Mininet and Autonetkit and libraries for ns-3 and Java and C++ simulators/emulators.
