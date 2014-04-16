@@ -18,7 +18,6 @@ from datetime import date
 
 # This imports the FNSS package
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.pardir, os.path.pardir)))
-print sys.path
 import fnss
 
 # -- General configuration -----------------------------------------------------
