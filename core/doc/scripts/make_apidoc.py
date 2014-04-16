@@ -7,6 +7,9 @@ import os
 import sys
 import glob
 import inspect
+
+# This ensures that docs build even if FNSS is not installed 
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir, os.path.pardir)))
 import fnss
 
 
@@ -15,7 +18,6 @@ def get_subpackages(module):
     def is_package(d):
         d = os.path.join(dir, d)
         return os.path.isdir(d) and glob.glob(os.path.join(d, '__init__.py*'))
-
     return filter(is_package, os.listdir(dir))
 
     

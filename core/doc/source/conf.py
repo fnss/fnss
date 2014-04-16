@@ -17,7 +17,8 @@ from datetime import date
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 
 # This imports the FNSS package
-sys.path.insert(0, os.path.abspath(os.path.pardir))
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.pardir, os.path.pardir)))
+print sys.path
 import fnss
 
 # -- General configuration -----------------------------------------------------
