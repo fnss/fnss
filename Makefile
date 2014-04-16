@@ -19,13 +19,16 @@ all: doc dist
 
 # Build all documentation
 doc: dist docclean
+	cd $(NS3_DIR); make doc
 	mkdir -p $(DOC_DIR)
 	mkdir -p $(DOC_DIR)/core
 	mkdir -p $(DOC_DIR)/java
 	mkdir -p $(DOC_DIR)/cpp
+	mkdir -p $(DOC_DIR)/ns3
 	cp -r $(CORE_DIR)/doc/build/html/* $(DOC_DIR)/core
 	cp -r $(JAVA_DIR)/doc/* $(DOC_DIR)/java
 	cp -r $(CPP_DIR)/doc/html/* $(DOC_DIR)/cpp
+	cp -r $(NS3_DIR)/doc/html/* $(DOC_DIR)/ns3
 
 # Collect all distribution files
 dist: distclean
