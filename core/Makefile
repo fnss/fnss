@@ -1,5 +1,6 @@
 SHELL = /bin/sh
 
+BUILD_DIR = build
 DIST_DIR = dist
 TEST_DIR = test
 DOC_DIR  = doc
@@ -38,4 +39,5 @@ distclean:
 clean: docclean distclean
 	find . -name "*__pycache__" | xargs rm -rf
 	find . -name "*.pyc" | xargs rm -rf
+	rm -rf $(BUILD_DIR)
 
