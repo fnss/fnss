@@ -26,6 +26,10 @@ dist: clean doc
 install: clean
 	python setup.py install
 
+# Upload FNSS to Python Package Index (you need access credentials)
+upload: clean doc
+	python setup.py sdist upload
+
 # Clean documentation
 docclean:
 	cd $(DOC_DIR); make clean
