@@ -217,3 +217,12 @@ Functions
 
     to_ns2
     validate_ns2_stacks
+
+:mod:`omnetpp` module
+^^^^^^^^^^^^^^^^^
+
+.. automodule:: fnss.adapters.omnetpp
+.. autosummary::
+   :toctree: generated/
+
+    to_omnetpp
