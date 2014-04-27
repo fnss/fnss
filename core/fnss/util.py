@@ -71,7 +71,7 @@ def random_from_pdf(pdf, seed=None):
         raise ValueError('The parameter pdf must be a dictionary')
     if abs(sum(pdf.values()) - 1) > 0.0001:
         raise ValueError('The sum of all probabilities must be equal to 1')
-    if seed:
+    if seed is not None:
         random.seed(seed)
     r = random.random()
     w = 0.0

@@ -43,6 +43,11 @@ class Test(unittest.TestCase):
         self.assertEqual(set(a.edges()), set(c.edges()))
         self.assertNotEqual(set(a.edges()), set(b.edges()))
 
+    def test_erdos_renyi_topology_zero_seed(self):
+        a = fnss.erdos_renyi_topology(100, 0.2, seed=0)
+        b = fnss.erdos_renyi_topology(100, 0.2, seed=0)
+        self.assertEqual(set(a.edges()), set(b.edges()))
+
     def test_fast_erdos_renyi_topology_no_seed(self):
         a = fnss.erdos_renyi_topology(100, 0.2, fast=True)
         b = fnss.erdos_renyi_topology(100, 0.2, fast=True)
@@ -54,6 +59,11 @@ class Test(unittest.TestCase):
         c = fnss.erdos_renyi_topology(100, 0.2, fast=True, seed=1)
         self.assertEqual(set(a.edges()), set(c.edges()))
         self.assertNotEqual(set(a.edges()), set(b.edges()))
+
+    def test_fast_erdos_renyi_topology_zero_seed(self):
+        a = fnss.erdos_renyi_topology(100, 0.2, fast=True, seed=0)
+        b = fnss.erdos_renyi_topology(100, 0.2, fast=True, seed=0)
+        self.assertEqual(set(a.edges()), set(b.edges()))
 
     def test_waxman_1_topology(self):
         self.assertRaises(ValueError, fnss.waxman_1_topology, 0, 0.5, 0.5, 10)
@@ -77,6 +87,11 @@ class Test(unittest.TestCase):
         c = fnss.waxman_1_topology(100, alpha=0.5, beta=0.6, L=20, seed=1)
         self.assertEqual(set(a.edges()), set(c.edges()))
         self.assertNotEqual(set(a.edges()), set(b.edges()))
+
+    def test_waxman_1_topology_zero_seed(self):  
+        a = fnss.waxman_1_topology(100, alpha=0.5, beta=0.6, L=20, seed=0)
+        b = fnss.waxman_1_topology(100, alpha=0.5, beta=0.6, L=20, seed=0)
+        self.assertEqual(set(a.edges()), set(b.edges()))
     
     def test_waxman_2_topology(self):
         self.assertRaises(ValueError, fnss.waxman_2_topology, 0, 0.5, 0.6)
@@ -114,6 +129,11 @@ class Test(unittest.TestCase):
         self.assertEqual(set(a.edges()), set(c.edges()))
         self.assertNotEqual(set(a.edges()), set(b.edges()))
 
+    def test_waxman_2_topology_zero_seed(self):
+        a = fnss.waxman_2_topology(100, alpha=0.5, beta=0.6, domain=(-1, -2, 1, 2), seed=0)
+        b = fnss.waxman_2_topology(100, alpha=0.5, beta=0.6, domain=(-1, -2, 1, 2), seed=0)
+        self.assertEqual(set(a.edges()), set(b.edges()))
+
     def test_barabasi_albert_topology(self):
         self.assertRaises(ValueError, fnss.barabasi_albert_topology, 0, 20, 30)
         self.assertRaises(ValueError, fnss.barabasi_albert_topology, 50, 40, 20)
@@ -134,6 +154,11 @@ class Test(unittest.TestCase):
         c = fnss.barabasi_albert_topology(100, 11, 16, seed=1)
         self.assertEqual(set(a.edges()), set(c.edges()))
         self.assertNotEqual(set(a.edges()), set(b.edges()))  
+
+    def test_barabasi_albert_topology_zero_seed(self):
+        a = fnss.barabasi_albert_topology(100, 11, 16, seed=0)
+        b = fnss.barabasi_albert_topology(100, 11, 16, seed=0)
+        self.assertEqual(set(a.edges()), set(b.edges()))  
 
     def test_extended_barabasi_albert_topology(self):
         self.assertRaises(ValueError, fnss.extended_barabasi_albert_topology, 0, 20, 30, 0.2, 0.3)
@@ -159,6 +184,11 @@ class Test(unittest.TestCase):
         self.assertEqual(set(a.edges()), set(c.edges()))
         self.assertNotEqual(set(a.edges()), set(b.edges()))    
 
+    def test_extended_barabasi_albert_topology_zero_seed(self):
+        a = fnss.extended_barabasi_albert_topology(100, 11, 16, 0.2, 0.3, seed=0)
+        b = fnss.extended_barabasi_albert_topology(100, 11, 16, 0.2, 0.3, seed=0)
+        self.assertEqual(set(a.edges()), set(b.edges()))    
+
     def test_glp_topology(self):
         self.assertRaises(ValueError, fnss.glp_topology, 0, 20, 30, 0.4, -0.5)
         self.assertRaises(ValueError, fnss.glp_topology, 100, 30, 20, 0.4, -0.5)
@@ -180,3 +210,9 @@ class Test(unittest.TestCase):
         c = fnss.glp_topology(100, 15, 20, 0.5, 0.5, seed=1)
         self.assertEqual(set(a.edges()), set(c.edges()))
         self.assertNotEqual(set(a.edges()), set(b.edges()))
+
+    def test_glp_topology_zero_seed(self):
+        a = fnss.glp_topology(100, 15, 20, 0.5, 0.5, seed=0)
+        b = fnss.glp_topology(100, 15, 20, 0.5, 0.5, seed=0)
+        self.assertEqual(set(a.edges()), set(b.edges()))
+        

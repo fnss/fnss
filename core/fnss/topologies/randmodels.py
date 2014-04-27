@@ -112,7 +112,7 @@ def waxman_1_topology(n, alpha=0.4, beta=0.1, L=1.0,
         raise ValueError('alpha and beta must be float values in (0,1]')
     if L <= 0:
         raise ValueError('L must be a positive number')
-    if seed:
+    if seed is not None:
         random.seed(seed)
 
     G = Topology(type='waxman_1', distance_unit=distance_unit)
@@ -183,7 +183,7 @@ def waxman_2_topology(n, alpha=0.4, beta=0.1, domain=(0, 0, 1, 1),
         raise ValueError('In domain, xmin cannot be greater than xmax')
     if  ymin > ymax:
         raise ValueError('In domain, ymin cannot be greater than ymax')
-    if seed:
+    if seed is not None:
         random.seed(seed)
 
     G = Topology(type='waxman_2', distance_unit=distance_unit)
@@ -273,7 +273,7 @@ def barabasi_albert_topology(n, m, m0, seed=None):
         raise ValueError('m must be <= m0')
     if n < m0:
         raise ValueError('n must be > m0')
-    if seed:
+    if seed is not None:
         random.seed(seed)
     # Step 1: Add m0 nodes. These nodes are interconnected together 
     # because otherwise they will end up isolated at the end
@@ -365,7 +365,7 @@ def extended_barabasi_albert_topology(n, m, m0, p, q, seed=None):
         raise ValueError('q must be included between 0 and 1')
     if p + q > 1:
         raise ValueError('p + q must be <= 1')
-    if seed:
+    if seed is not None:
         random.seed(seed)
     G = Topology(type='extended_ba')
     G.name = "ext_ba_topology(%d, %d, %d, %f, %f)" % (n, m, m0, p, q)
@@ -511,7 +511,7 @@ def glp_topology(n, m, m0, p, beta, seed=None):
         raise ValueError('m must be <= m0')
     if p > 1 or p < 0:
         raise ValueError('p must be included between 0 and 1')
-    if seed:
+    if seed is not None:
         random.seed(seed)
     # step 1: create a graph of m0 nodes connected by n-1 edges
     G = Topology(nx.path_graph(m0))
