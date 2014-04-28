@@ -68,9 +68,10 @@ def to_mininet(topology, switches=None, hosts=None, relabel_nodes=True):
     hosts : list, optional
         List of topology nodes acting as hosts
     relabel_nodes : bool, optional
-        If *True*, rename node labels according to Mininet conventions. In
-        Mininet all node labels are strings whose values are "h1", "h2", ... if
-        the node is a host or "s1", "s2", ... if the node is a switch.
+        If *True*, rename node labels according to `Mininet conventions
+        <https://github.com/mininet/mininet/wiki/Introduction-to-Mininet#naming-in-mininet>`_.
+        In Mininet all node labels are strings whose values are "h1", "h2", ...
+        if the node is a host or "s1", "s2", ... if the node is a switch.
     
     Returns
     -------
@@ -90,6 +91,11 @@ def to_mininet(topology, switches=None, hosts=None, relabel_nodes=True):
     topology nodes. In other words, there cannot be nodes labeled as both
     *host* and *switch* and there cannot be nodes that are neither a *host* nor
     a *switch*.
+    
+    It is important to point out that if the topology contains loops, it will 
+    not work with the *ovs-controller* and *controller* provided by Mininet. It
+    will be necessary to use custom controllers. Further info `here
+    <https://github.com/mininet/mininet/wiki/Introduction-to-Mininet#multipath-routing>`_.
     """
     try:
         from mininet.topo import Topo
@@ -113,11 +119,13 @@ def to_mininet(topology, switches=None, hosts=None, relabel_nodes=True):
                          'or some nodes listed as switches or hosts do not '
                          'belong to the topology')
     if relabel_nodes:
-        mapping = dict([(v, "h%s" % str(v)) for v in hosts] + 
-                       [(v, "s%s" % str(v)) for v in switches])
-        hosts = [mapping[v] for v in hosts]
-        switches = [mapping[v] for v in switches]
-        nodes = hosts + switches
+        hosts = sorted(hosts)
+        switches = sorted(switches)
+        mapping = dict([(hosts[i], "h%s" % str(i+1)) for i in range(len(hosts))] +
+                       [(switches[i], "s%s" % str(i+1)) for i in range(len(switches))])
+        hosts = set(mapping[v] for v in hosts)
+        switches = set(mapping[v] for v in switches)
+        nodes = hosts.union(switches)
         topology = nx.relabel_nodes(topology, mapping, copy=True)
     topo = Topo()
     for v in switches:

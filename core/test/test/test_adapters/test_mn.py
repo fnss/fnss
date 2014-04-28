@@ -45,12 +45,17 @@ class Test(unittest.TestCase):
         for s in '2', '3':
             self.assertIn(s, switches)
         mn_topo = fnss.to_mininet(t, relabel_nodes=True)
+        # Relabeling should be:
+        # 1 -> h1
+        # 2 -> s1
+        # 3 -> s2
+        # 4 -> h2
         self.assertIsNotNone(mn_topo)
         hosts = mn_topo.hosts()
         switches = mn_topo.switches()
-        for h in 'h1', 'h4':
+        for h in 'h1', 'h2':
             self.assertIn(h, hosts)
-        for s in 's2', 's3':
+        for s in 's1', 's2':
             self.assertIn(s, switches)
 
     @unittest.skipUnless(package_available('mininet'), 'Requires Mininet')
