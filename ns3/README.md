@@ -23,8 +23,18 @@ To do so, simply open the command shell, move to the directory where this README
 
 where the `NS3_DIR` attribute is path to the ns-3 directory, i.e. the directory which contains the `waf` file.
 
+## Run
+To familiarize yourself with the ns-3 library you can run the ns-3 example
+that shows how to parse a topology and an event schedule and run a simple simulation.
+
+To do that, open a shell and move to the ns-3 installation directory, i.e. the directory which contains the `waf` file. Then type:
+
+    $ ./waf --run fnss-example
+
+However, please not that this example has been tested successfully only with version ns-3 version 3.16. It might work on 3.17 but will certainly fail with versions 3.18 and 3.19.
+
 ## Requirements
-* [ns-3](http://www.nsnam.org) (version 3.16 or later)
+* [ns-3](http://www.nsnam.org) (version 3.16)
 
 ## License
-The FNSS ns-3 adapter is released under the terms of the [GNU GPLv2 license](http://www.gnu.org/licenses/gpl-2.0.html). See LICENSE.txt.
+The FNSS ns-3 library is released under the terms of the [GNU GPLv2 license](http://www.gnu.org/licenses/gpl-2.0.html). See LICENSE.txt.
