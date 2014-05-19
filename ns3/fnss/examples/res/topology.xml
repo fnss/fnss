@@ -6,7 +6,13 @@
     <application name="ns3::UdpEchoClient" name.type="string">
       <property name="StartTime" type="string">1 s</property>
       <property name="StopTime" type="string">10 s</property>
-      <property name="RemoteAddress" type="string">03-04-0a:00:00:06</property>
+      <!-- The RemoteAddress property refers to the IPv4 address of the echo server.
+      The format is type-lenght-1stbyte:2ndbyte:3rdbyte:4thbyte, i.e.
+      3-4-0a:00:00:06 -> 10.0.0.6
+      Note however, that this address format fails to be processed starting from ns-3.18 because ns-3 thinks that the length value (4) is greater than 20, which is the max size of a network address.
+      The latest version of ns-3 on which this example ran correctly is 3.16
+      -->
+      <property name="RemoteAddress" type="string">3-4-0a:00:00:06</property>
       <property name="RemotePort" type="string">2000</property>
     </application>
   </node>
