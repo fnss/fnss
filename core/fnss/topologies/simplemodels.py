@@ -2,7 +2,7 @@
 Generate canonical deterministic topologies
 """
 import networkx as nx
-from fnss.topologies.topology import Topology
+from fnss.topologies.topology import Topology, DirectedTopology
 
 
 __all__ = [
@@ -12,6 +12,7 @@ __all__ = [
     'full_mesh_topology',
     'k_ary_tree_topology',
     'dumbbell_topology',
+    'chord_topology',
            ]
 
 
@@ -229,3 +230,61 @@ def dumbbell_topology(m1, m2):
     G.node[m1 + m2 - 1]['type'] = 'core'
     
     return G
+
+
+def chord_topology(m, r=1):
+    """Return a Chord topology, as described in [1]_:
+    
+    Chord is a Distributed Hash Table (DHT) providing guaranteed correctness.
+    In Chord, both nodes and keys are identified by sequences of :math:`m`
+    bits. Keys can be resolved in at most :math:`log(n)` steps (with :math:`n`
+    being the number of nodes) as long as each node maintains a routing table
+    o :math:`n` entries.
+    
+    In this implementation, it is possible only to generate topologies with a
+    number of nodes :math:`n = 2^m`. where :math:`m` is the length (in bits) of
+    the keys used by Chord and also corresponds the the size of the finger
+    table kept by each node.
+    
+    The :math:`r` argument is the number of nearest successors which can be
+    optionally kept at each node to guarantee correctness in case of node
+    failures.
+    
+    Parameters
+    ----------
+    m : int
+        The length of keys (in bits), which also corresponds to the length of
+        the finger table of each node
+    r : int, optional
+        The length of the nearest successors table
+    
+    Returns
+    -------
+    G : DirectedTopology
+        A Chord topology
+        
+    References
+    ----------
+    .. [1] I. Stoica, R. Morris, D. Karger, M. Frans Kaashoek, H. Balakrishnan,
+           Chord: A Scalable Peer-to-peer Lookup Service for Internet
+           Applications. Proceedings of the ACM SIGCOMM 2001 conference on Data
+           communication (SIGCOMM '09). ACM, New York, NY, USA.
+    """
+    if not isinstance(m, int) or not isinstance(r, int):
+        raise TypeError("m and r must be integers")
+    if m < 2:
+        raise ValueError("m must be an integer >= 2")
+    if  r < 1 or r > 2**m - 1:
+        raise ValueError("r must be an integer and 1 <= r <= 2^m")
+    # n is the number of nodes
+    n = 2**m
+    G = DirectedTopology()
+    for v in range(n):
+        for u in range(m):
+            G.add_edge(v, (v + 2**u) % n)
+    if r > 2:
+        for v in range(n):
+            for u in range(v + 3, v + r + 1):
+                G.add_edge(v, u % n)
+    return G
+    

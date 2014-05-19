@@ -128,3 +128,34 @@ class Test(unittest.TestCase):
         test_dumbbell_connectivity(15, 12)
         test_dumbbell_connectivity(2, 1)
         
+    def test_chord_topology(self):
+        def test_chord_connectivity(m, r):
+            G = fnss.chord_topology(m, r)
+            n = 2**m
+            self.assertEqual(len(G), n)
+            if r <= 2:
+                for i in G.nodes_iter():
+                    self.assertEqual(len(G.edge[i]), m)
+            else:
+                for i in G.nodes_iter():
+                    for j in range(i + 1, i + r + 1):
+                        self.assertTrue(G.has_edge(i, j % n))
+        test_chord_connectivity(2, 1)
+        test_chord_connectivity(3, 1)
+        test_chord_connectivity(4, 1)
+        test_chord_connectivity(5, 1)
+        test_chord_connectivity(5, 2)
+        test_chord_connectivity(5, 3)
+        test_chord_connectivity(3, 7)
+        
+        self.assertRaises(ValueError, fnss.chord_topology, 0, 3)
+        self.assertRaises(ValueError, fnss.chord_topology, 1, 3)
+        self.assertRaises(ValueError, fnss.chord_topology, -1, 3)
+        self.assertRaises(ValueError, fnss.chord_topology, 5, -1)
+        self.assertRaises(ValueError, fnss.chord_topology, 5, 0)
+        self.assertRaises(ValueError, fnss.chord_topology, 3, 8)
+        
+        self.assertRaises(TypeError, fnss.chord_topology, 5, None)
+        self.assertRaises(TypeError, fnss.chord_topology, None, 3)
+        self.assertRaises(TypeError, fnss.chord_topology, 5, "1")
+        

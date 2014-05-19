@@ -163,6 +163,7 @@ Functions
 .. autosummary::
    :toctree: generated/
 
+    chord_topology
     dumbbell_topology
     full_mesh_topology
     k_ary_tree_topology
