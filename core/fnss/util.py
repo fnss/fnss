@@ -180,7 +180,17 @@ def xml_indent(elem, level=0):
 
 
 def package_available(pkg):
-    """Tests whether a package is available or not
+    """Test whether a package is available or not
+    
+    Parameters
+    ----------
+    pkg : string
+        Name of the package to look for
+        
+    Returns
+    -------
+    pkg_available : bool
+        *True* if the package is available, *False* otherwise
     """
     try:
         exec('import %s' % pkg)

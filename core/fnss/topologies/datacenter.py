@@ -222,7 +222,7 @@ def bcube_topology(n, k):
     ----------
     .. [1] C. Guo, G. Lu, D. Li, H. Wu, X. Zhang, Y. Shi, C. Tian, Y. Zhang, 
        and S. Lu.  BCube: a high performance, host-centric network 
-       architecture for modular data centers.  Proceedings of the ACM SIGCOMM
+       architecture for modular data centers. Proceedings of the ACM SIGCOMM
        2009 conference on Data communication (SIGCOMM '09). ACM, New York, NY, 
        USA. http://doi.acm.org/10.1145/1592568.1592577
     """

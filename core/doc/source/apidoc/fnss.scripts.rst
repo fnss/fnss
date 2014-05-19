@@ -4,12 +4,14 @@ Scripts
 mn-fnss
 -------
 
-Usage:
+Usage::
+
     mn-fnss [mn-options] [--no-relabel] <topology-file>
     mn-fnss (--help | -h)
     mn-fnss (--version | -v)
 
-Options:
+Options::
+
   mn-options        Mininet mn options.
   --no-relabel      Do not relabel topology nodes to Mininet conventions.
   -h --help         Show help.
@@ -35,7 +37,8 @@ with *h* (e.g. h1, h2, h3...) and each switch label starts with *s*
 Unless used to print this help message or version information, this script
 must be run as superuser.
 
-Example usage:
+Example usage::
+
     $ python
     >>> import fnss
     >>> topo = fnss.two_tier_topology(1, 2, 2)
