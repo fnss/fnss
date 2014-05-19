@@ -36,8 +36,8 @@ all: build
 # Create distribution packages
 dist: doc
 	mkdir -p $(DIST_DIR)
-	zip --exclude=$(TEST_DIR)/\* --exclude $(DIST_DIR)/\* --exclude $(OUT_DIR)/\* --exclude ".*" -r $(DIST_DIR)/$(ARCHIVE_NAME).zip *
-	tar --exclude=$(TEST_DIR) --exclude=$(DIST_DIR) --exclude=$(OUT_DIR) --exclude=".*" -czf $(DIST_DIR)/$(ARCHIVE_NAME).tar.gz *
+	zip --exclude=$(TEST_DIR)/test --exclude $(DIST_DIR)/\* --exclude $(OUT_DIR)/\* --exclude ".*" -r $(DIST_DIR)/$(ARCHIVE_NAME).zip *
+	tar --exclude=$(TEST_DIR)/test --exclude=$(DIST_DIR) --exclude=$(OUT_DIR) --exclude=".*" -czf $(DIST_DIR)/$(ARCHIVE_NAME).tar.gz *
 
 # Build documentation
 doc: Doxyfile
