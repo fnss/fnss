@@ -15,7 +15,7 @@ ARCHIVE_NAME = fnss-$(VERSION)
 .PHONY: clean doc dist docclean distclean test
 
 # Build all components
-all: doc dist
+all: test doc dist
 
 # Build all documentation
 doc: dist docclean

@@ -5,7 +5,7 @@ DIST_DIR = dist
 TEST_DIR = test
 DOC_DIR  = doc
 
-.PHONY: clean dist doc test install
+.PHONY: clean dist doc test install upload distclean docclean
 
 all: dist
 
