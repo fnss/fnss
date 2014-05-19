@@ -12,7 +12,7 @@ DIST_DIR = dist
 
 ARCHIVE_NAME = fnss-$(VERSION)
 
-.PHONY: clean doc dist docclean distclean
+.PHONY: clean doc dist docclean distclean test
 
 # Build all components
 all: doc dist
@@ -62,3 +62,8 @@ clean: distclean docclean
 	cd $(CPP_DIR); make clean
 	cd $(NS3_DIR); make clean
 
+# Run all test cases
+test:
+	cd $(CORE_DIR); make test
+	cd $(JAVA_DIR); ant test.run
+	cd $(CPP_DIR); make test
