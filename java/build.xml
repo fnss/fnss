@@ -1,108 +1,107 @@
 <project name="fnss-java-api" default="build" basedir=".">
-	<description>Build file for the FNSS Java API</description>
-	
-	<property name="version" value="0.5.0"/>
-	<property name="jar.base" value="${ant.project.name}-${version}"/>
-	
-	<property name="src.dir" location="${basedir}/src"/>
-	<property name="lib.dir" location="${basedir}/lib"/>
-	<property name="test.dir" location="${basedir}/test"/>
-	<property name="bin.dir" location="${basedir}/bin"/>
-  	<property name="doc.dir" location="${basedir}/doc"/>
-	<property name="build.dir" location="${basedir}/dist"/>
-	<property name="test.src.dir" location="${test.dir}/src"/>
-	<property name="test.lib.dir" location="${test.dir}/lib"/>
-	<property name="test.bin.dir" location="${test.dir}/bin"/>
-	<property name="test.res.dir" location="${test.dir}/res"/>
-
-  	  
-  	<target name="init" depends="clean" description="setup project directories">
-    	<mkdir dir="${build.dir}"/>
-    	<mkdir dir="${doc.dir}"/>
-    	<mkdir dir="${bin.dir}"/>
-    	<mkdir dir="${test.bin.dir}"/>
-  	</target>
-
-  	<target name="doc" depends="init" description="generate documentation">
-  		<javadoc sourcepath="${src.dir}" 
-  		    	 destdir="${doc.dir}" 
-  		    	 Doctitle="FNSS Java API" 
-  		    	 Windowtitle="FNSS Java API">
-  		   	<link href="http://docs.oracle.com/javase/6/docs/api/"/>
-  		    <classpath>
-        		<fileset dir="${lib.dir}" includes="*.jar" />
-        	</classpath>
-  		</javadoc>
- 	</target>
-  	
-  	<target name="compile" depends="init" description="compile Java sources">
-    	<javac srcdir="${src.dir}" 
-    	       destdir="${bin.dir}" 
-    	       includeantruntime="false">
-    		<classpath>
-        		<fileset dir="${lib.dir}" includes="*.jar" />
-        	</classpath>
-    	</javac>
-  	</target>
-
-  	<target name="build" depends="compile, doc, test.run" description="make JAR files">
-      	<jar destfile="${build.dir}/${jar.base}.jar">
-         	<fileset dir="${bin.dir}"/>
-         	<metainf dir="${basedir}" includes="LICENSE*"/>
-      	</jar>
-      	<jar destfile="${build.dir}/${jar.base}-sources.jar">
-         	<fileset dir="${src.dir}"/>
-         	<metainf dir="${basedir}" includes="LICENSE*"/>
-      	</jar>
-      	<jar destfile="${build.dir}/${jar.base}-javadoc.jar">
-         	<fileset dir="${doc.dir}"/>
-         	<metainf dir="${basedir}" includes="LICENSE*"/>
-      	</jar>
-      	<zip destfile="${build.dir}/${jar.base}-all.zip">
-			<fileset dir="${build.dir}" includes="${jar.base}*.jar"/>
-			<fileset dir="${basedir}" includes="LICENSE* README*"/>
-			<zipfileset dir="${lib.dir}" prefix="lib"/>
-		</zip>
-		<tar destfile="${build.dir}/${jar.base}-all.tar.gz" compression="gzip">
-            <zipfileset src="${build.dir}/${jar.base}-all.zip"/>
-        </tar>
-  	</target>
+  <description>Build file for the FNSS Java API</description>
   
-  	<target name="test.build" depends="compile" description="compile unit tests">
-  	    <javac srcdir="${test.src.dir}" 
-  	           destdir="${test.bin.dir}" 
-  	           includeantruntime="false">
-    		<classpath>
-        		<fileset dir="${lib.dir}" includes="*.jar" />
-        		<fileset dir="${test.lib.dir}" includes="*.jar" />
-        		<pathelement path="${bin.dir}"/>
-        	</classpath>
-    	</javac>
-  	</target>
-  	
-  	<target name="test.run" depends="test.build" description="run unit tests">
-	    <junit fork="yes" haltonfailure="yes">
-	    	<sysproperty key="test.res.dir" value="${test.res.dir}"/>
-	      	<classpath>
-	      		<fileset dir="${test.lib.dir}" includes="*.jar" />
-	      		<fileset dir="${lib.dir}" includes="*.jar" />
-	      		<pathelement path="${bin.dir}"/>
-	      		<pathelement path="${test.bin.dir}"/>
-	      	</classpath>
-	      	<formatter type="brief" usefile="false" />
-	      	<test name="io.github.fnss.AllTests" />
-		</junit>
-  	</target>
-  	
-  	<target name="clean" description="clean build directories">
-    	<delete dir="${bin.dir}"/>
-	    <delete dir="${doc.dir}"/>
-	    <delete dir="${build.dir}"/>
-	    <delete dir="${test.bin.dir}"/>
-	    <delete>
-    		<fileset defaultexcludes="no" dir="${src.dir}" includes="**/*~"/>
-    		<fileset defaultexcludes="no" dir="${test.src.dir}" includes="**/*~"/>
-    	</delete>
-  	</target>
+  <property name="version" value="0.5.0"/>
+  <property name="jar.base" value="${ant.project.name}-${version}"/>
+  
+  <property name="src.dir" location="${basedir}/src"/>
+  <property name="lib.dir" location="${basedir}/lib"/>
+  <property name="test.dir" location="${basedir}/test"/>
+  <property name="bin.dir" location="${basedir}/bin"/>
+  <property name="doc.dir" location="${basedir}/doc"/>
+  <property name="build.dir" location="${basedir}/dist"/>
+  <property name="test.src.dir" location="${test.dir}/src"/>
+  <property name="test.lib.dir" location="${test.dir}/lib"/>
+  <property name="test.bin.dir" location="${test.dir}/bin"/>
+  <property name="test.res.dir" location="${test.dir}/res"/>
+
+  <target name="init" depends="clean" description="setup project directories">
+    <mkdir dir="${build.dir}"/>
+    <mkdir dir="${doc.dir}"/>
+    <mkdir dir="${bin.dir}"/>
+    <mkdir dir="${test.bin.dir}"/>
+  </target>
+
+  <target name="doc" depends="init" description="generate documentation">
+    <javadoc sourcepath="${src.dir}" 
+             destdir="${doc.dir}" 
+             Doctitle="FNSS Java API" 
+             Windowtitle="FNSS Java API">
+      <link href="http://docs.oracle.com/javase/6/docs/api/"/>
+      <classpath>
+        <fileset dir="${lib.dir}" includes="*.jar" />
+      </classpath>
+    </javadoc>
+  </target>
+    
+  <target name="compile" depends="init" description="compile Java sources">
+    <javac srcdir="${src.dir}" 
+           destdir="${bin.dir}" 
+           includeantruntime="false">
+      <classpath>
+        <fileset dir="${lib.dir}" includes="*.jar" />
+      </classpath>
+    </javac>
+  </target>
+
+  <target name="build" depends="compile, doc, test.run" description="make JAR files">
+    <jar destfile="${build.dir}/${jar.base}.jar">
+      <fileset dir="${bin.dir}"/>
+      <metainf dir="${basedir}" includes="LICENSE*"/>
+    </jar>
+    <jar destfile="${build.dir}/${jar.base}-sources.jar">
+      <fileset dir="${src.dir}"/>
+      <metainf dir="${basedir}" includes="LICENSE*"/>
+    </jar>
+    <jar destfile="${build.dir}/${jar.base}-javadoc.jar">
+      <fileset dir="${doc.dir}"/>
+      <metainf dir="${basedir}" includes="LICENSE*"/>
+    </jar>
+    <zip destfile="${build.dir}/${jar.base}-all.zip">
+      <fileset dir="${build.dir}" includes="${jar.base}*.jar"/>
+      <fileset dir="${basedir}" includes="LICENSE* README*"/>
+      <zipfileset dir="${lib.dir}" prefix="lib"/>
+    </zip>
+    <tar destfile="${build.dir}/${jar.base}-all.tar.gz" compression="gzip">
+      <zipfileset src="${build.dir}/${jar.base}-all.zip"/>
+    </tar>
+  </target>
+  
+  <target name="test.build" depends="compile" description="compile unit tests">
+    <javac srcdir="${test.src.dir}" 
+           destdir="${test.bin.dir}" 
+           includeantruntime="false">
+      <classpath>
+        <fileset dir="${lib.dir}" includes="*.jar" />
+        <fileset dir="${test.lib.dir}" includes="*.jar" />
+        <pathelement path="${bin.dir}"/>
+      </classpath>
+    </javac>
+  </target>
+    
+  <target name="test.run" depends="test.build" description="run unit tests">
+    <junit fork="yes" haltonfailure="yes">
+      <sysproperty key="test.res.dir" value="${test.res.dir}"/>
+      <classpath>
+        <fileset dir="${test.lib.dir}" includes="*.jar" />
+        <fileset dir="${lib.dir}" includes="*.jar" />
+        <pathelement path="${bin.dir}"/>
+        <pathelement path="${test.bin.dir}"/>
+      </classpath>
+      <formatter type="brief" usefile="false" />
+      <test name="io.github.fnss.AllTests" />
+    </junit>
+  </target>
+    
+  <target name="clean" description="clean build directories">
+    <delete dir="${bin.dir}"/>
+    <delete dir="${doc.dir}"/>
+    <delete dir="${build.dir}"/>
+    <delete dir="${test.bin.dir}"/>
+    <delete>
+      <fileset defaultexcludes="no" dir="${src.dir}" includes="**/*~"/>
+      <fileset defaultexcludes="no" dir="${test.src.dir}" includes="**/*~"/>
+    </delete>
+  </target>
 
 </project>
