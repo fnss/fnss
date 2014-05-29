@@ -40,7 +40,7 @@ public:
 
 	/**
 	 * Add a node to the topology.
-	 * 
+	 *
 	 * If the ID of the node already exists it is overwritten.
 	 *
 	 * @param id the id of the node to be added.
@@ -50,7 +50,7 @@ public:
 
 	/**
 	 * Remove a node from the topology.
-	 * 
+	 *
 	 * Also removes all the edges connected to the node unless explicitly told not to.
 	 * Throws an exception if the given node id isn't found.
 	 *
@@ -63,7 +63,7 @@ public:
 
 	/**
 	 * Get a copy of the node with the specified id.
-	 * 
+	 *
 	 * Throws an exception if the given node id isn't found.
 	 *
 	 * @param id the id of the requested node.
@@ -73,7 +73,7 @@ public:
 
 	/**
 	 * Check whether the topology contains the node with the specified id.
-	 * 
+	 *
 	 * @param  id the id of the node to lookup.
 	 * @return    \c true if the node was found, \c false otherwise.
 	 */
@@ -88,7 +88,7 @@ public:
 
 	/**
 	 * Add an edge between the specified nodes.
-	 * 
+	 *
 	 * If the topology is directed, the edge is created from the first specified
 	 * node to the second.
 	 * If one of the nodes doesn't exist, an exception is thrown.
@@ -101,7 +101,7 @@ public:
 
 	/**
 	 * Add an edge between the specified nodes.
-	 * 
+	 *
 	 * If the topology is directed, the edge is created from the first node in
 	 * the pair to the second.
 	 * If one of the nodes doesn't exist, an exception is thrown.
@@ -109,11 +109,11 @@ public:
 	 * @param nodes the pair of nodes.
 	 * @param edge the \c Edge object.
 	 */
-	void addEdge(const std::pair<std::string, std::string> &nodes, const Edge &edge);
+	void addEdge(const std::pair<std::string, std::string> &nodes_, const Edge &edge);
 
 	/**
 	 * Add an edge between the specified nodes.
-	 * 
+	 *
 	 * If the topology is directed, the edge is created from the first node in
 	 * the pair to the second.
 	 * If one of the nodes doesn't exist, an exception is thrown.
@@ -122,11 +122,11 @@ public:
 	 * property of the pair.
 	 * @param edge the \c Edge object.
 	 */
-	void addEdge(const Pair<std::string, std::string> &nodes, const Edge &edge);
+	void addEdge(const Pair<std::string, std::string> &nodes_, const Edge &edge);
 
 	/**
 	 * Remove an edge from the topology.
-	 * 
+	 *
 	 * If the topology is directed, the edge from the first specified node to
 	 * the second is removed.
 	 * Throws an exception if the edge is not found.
@@ -139,7 +139,7 @@ public:
 
 	/**
 	 * Remove an edge from the topology.
-	 * 
+	 *
 	 * If the topology is directed, the edge from the first node in the pair to
 	 * the second is removed.
 	 * Throws an exception if the edge is not found.
@@ -147,11 +147,11 @@ public:
 	 * @param nodes the pair of nodes.
 	 * @return a copy of the removed \c Edge object.
 	 */
-	Edge removeEdge(const std::pair <std::string, std::string> &nodes);
+	Edge removeEdge(const std::pair <std::string, std::string> &nodes_);
 
 	/**
 	 * Remove an edge from the topology.
-	 * 
+	 *
 	 * If the topology is directed, the edge from the first node in the pair to
 	 * the second is removed.
 	 * Throws an exception if the edge is not found.
@@ -160,11 +160,11 @@ public:
 	 * property of the pair.
 	 * @return a copy of the removed \c Edge object.
 	 */
-	Edge removeEdge(const Pair <std::string, std::string> &nodes);
+	Edge removeEdge(const Pair <std::string, std::string> &nodes_);
 
 	/**
 	 * Get a copy of the edge between the specified nodes.
-	 * 
+	 *
 	 * If the topology is directed, the edge from the first specified node to
 	 * the second is returned.
 	 * Throws an exception if the edge is not found.
@@ -177,20 +177,20 @@ public:
 
 	/**
 	 * Get a copy of the edge between the specified nodes.
-	 * 
-	 * If the topology is directed, the edge from the first node in the pair 
+	 *
+	 * If the topology is directed, the edge from the first node in the pair
 	 * to the second is returned.
 	 * Throws an exception if the edge is not found.
 	 *
 	 * @param nodes the pair of nodes.
 	 * @retun a copy of the requested edge.
 	 */
-	Edge getEdge(const std::pair <std::string, std::string> &nodes) const;
+	Edge getEdge(const std::pair <std::string, std::string> &nodes_) const;
 
 	/**
 	 * Get a copy of the edge between the specified nodes.
-	 * 
-	 * If the topology is directed, the edge from the first node in the pair 
+	 *
+	 * If the topology is directed, the edge from the first node in the pair
 	 * to the second is returned.
 	 * Throws an exception if the edge is not found.
 	 *
@@ -198,11 +198,11 @@ public:
 	 * property of the pair.
 	 * @retun a copy of the requested edge.
 	 */
-	Edge getEdge(const Pair <std::string, std::string> &nodes) const;
+	Edge getEdge(const Pair <std::string, std::string> &nodes_) const;
 
 	/**
 	 * Check whether the topology contains an edge between the specified nodes.
-	 * 
+	 *
 	 * If the topology is directed, the edge from the first specified node to
 	 * the second is checked.
 	 *
@@ -214,18 +214,18 @@ public:
 
 	/**
 	 * Check whether the topology contains an edge between the specified nodes.
-	 * 
+	 *
 	 * If the topology is directed, the edge from the first node in the pair to
 	 * the second is checked.
 	 *
 	 * @param nodes the pair of nodes.
 	 * @return \c true if an edge exists, \c false otherwise.
 	 */
-	bool hasEdge(const std::pair <std::string, std::string> &nodes) const;
+	bool hasEdge(const std::pair <std::string, std::string> &nodes_) const;
 
 	/**
 	 * Check whether the topology contains an edge between the specified nodes.
-	 * 
+	 *
 	 * If the topology is directed, the edge from the first node in the pair to
 	 * the second is checked.
 	 *
@@ -233,7 +233,7 @@ public:
 	 * property of the pair.
 	 * @return \c true if an edge exists, \c false otherwise.
 	 */
-	bool hasEdge(const Pair <std::string, std::string> &nodes) const;
+	bool hasEdge(const Pair <std::string, std::string> &nodes_) const;
 
 	/**
 	 * Get a \c std::set containing all the edges in the topology, represented
@@ -259,9 +259,9 @@ public:
 
 	class EdgeNotFoundException : public std::exception {
 	public:
-		EdgeNotFoundException(const Pair<std::string, std::string> nodes) throw() {
-			this->exceptionStr = "The edge between nodes with IDs " + nodes.first + " and "
-								+ nodes.second + " was not found.";
+		EdgeNotFoundException(const Pair<std::string, std::string> nodes_) throw() {
+			this->exceptionStr = "The edge between nodes with IDs " + nodes_.first + " and "
+								+ nodes_.second + " was not found.";
 		}
 
 		~EdgeNotFoundException() throw() {

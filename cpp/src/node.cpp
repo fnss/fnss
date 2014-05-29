@@ -2,23 +2,21 @@
 
 namespace fnss {
 
-Node::Node(const ProtocolStack &stack) : stack(stack) {
-
-}
+Node::Node(const ProtocolStack &stack_) : stack(stack_) {}
 
 ProtocolStack Node::getProtocolStack() const {
 	return this->stack;
 }
 
-void Node::setProtocolStack(const ProtocolStack &stack) {
-	this->stack = stack;
+void Node::setProtocolStack(const ProtocolStack &stack_) {
+	this->stack = stack_;
 }
 
 Application Node::getApplication(const std::string &name) const {
 	ApplicationsType::const_iterator it;
 	it = this->applications.find(name);
 
-	if(it != this->applications.end()) 
+	if(it != this->applications.end())
 		return Application(it->second);
 	else
 		throw ApplicationNotFoundException(name);

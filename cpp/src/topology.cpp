@@ -4,9 +4,7 @@
 
 namespace fnss {
 
-Topology::Topology(bool directed) {
-	this->directed = directed;
-}
+Topology::Topology(bool directed_) : directed(directed_) {}
 
 bool Topology::isDirected() const {
 	return this->directed;
@@ -17,12 +15,12 @@ void Topology::addNode(const std::string &id, const Node &node) {
 }
 
 Node Topology::removeNode(const std::string &id, bool pruneEdges) {
-	nodesType::iterator it = this->nodes.find(id);
-	if(it == this->nodes.end())
+	nodesType::iterator it_nodes = this->nodes.find(id);
+	if(it_nodes == this->nodes.end())
 		throw NodeNotFoundException(id);
 
-	Node ret = it->second;
-	this->nodes.erase(it);
+	Node ret = it_nodes->second;
+	this->nodes.erase(it_nodes);
 
 	if(pruneEdges) {
 		std::queue<edgesType::iterator> eraseQueue;
@@ -45,8 +43,8 @@ Node Topology::getNode(const std::string &id) const {
 	nodesType::const_iterator it = this->nodes.find(id);
 	if(it == this->nodes.end())
 		throw NodeNotFoundException(id);
-	
-	return it->second;	
+
+	return it->second;
 }
 
 bool Topology::hasNode(const std::string &id) const {
@@ -71,61 +69,61 @@ void Topology::addEdge(const std::string &id1, const std::string &id2, const Edg
 	this->addEdge(Pair<std::string, std::string>(id1, id2), edge);
 }
 
-void Topology::addEdge(const Pair <std::string, std::string> &nodes, const Edge &edge) {
-	if(! this->hasNode(nodes.first)) 
-		throw NodeNotFoundException(nodes.first);
-	else if(! this->hasNode(nodes.second))
-		throw NodeNotFoundException(nodes.second);
+void Topology::addEdge(const Pair <std::string, std::string> &nodes_, const Edge &edge) {
+	if(! this->hasNode(nodes_.first))
+		throw NodeNotFoundException(nodes_.first);
+	else if(! this->hasNode(nodes_.second))
+		throw NodeNotFoundException(nodes_.second);
 
 	//Create a fnss::Pair that is commutative if the topology is not directed
-	Pair<std::string, std::string> key(nodes);
+	Pair<std::string, std::string> key(nodes_);
 	key.setCommutative(! this->directed);
 
 	this->edges[key] = edge;
 }
 
-void Topology::addEdge(const std::pair <std::string, std::string> &nodes, const Edge &edge) {
-	this->addEdge(Pair<std::string, std::string>(nodes), edge);
+void Topology::addEdge(const std::pair <std::string, std::string> &nodes_, const Edge &edge) {
+	this->addEdge(Pair<std::string, std::string>(nodes_), edge);
 }
 
-Edge Topology::removeEdge(const Pair <std::string, std::string> &nodes) {
-	edgesType::iterator it = this->edges.find(nodes);
+Edge Topology::removeEdge(const Pair <std::string, std::string> &nodes_) {
+	edgesType::iterator it = this->edges.find(nodes_);
 
 	if(it == this->edges.end())
-		throw EdgeNotFoundException(nodes);
-	
+		throw EdgeNotFoundException(nodes_);
+
 	Edge ret = it->second;
 	this->edges.erase(it);
-	return ret;	
-} 
+	return ret;
+}
 
-Edge Topology::removeEdge(const std::pair <std::string, std::string> &nodes) {
-	return this->removeEdge(Pair<std::string, std::string>(nodes));
+Edge Topology::removeEdge(const std::pair <std::string, std::string> &nodes_) {
+	return this->removeEdge(Pair<std::string, std::string>(nodes_));
 }
 
 Edge Topology::removeEdge(const std::string &id1, const std::string &id2) {
 	return this->removeEdge(Pair<std::string, std::string>(id1, id2));
 }
 
-Edge Topology::getEdge(const Pair <std::string, std::string> &nodes) const {
-	edgesType::const_iterator it = this->edges.find(nodes);
+Edge Topology::getEdge(const Pair <std::string, std::string> &nodes_) const {
+	edgesType::const_iterator it = this->edges.find(nodes_);
 
 	if(it == this->edges.end())
-		throw EdgeNotFoundException(nodes);
+		throw EdgeNotFoundException(nodes_);
 
 	return it->second;
 }
 
-Edge Topology::getEdge(const std::pair <std::string, std::string> &nodes) const {
-	return this->getEdge(Pair<std::string, std::string>(nodes));
+Edge Topology::getEdge(const std::pair <std::string, std::string> &nodes_) const {
+	return this->getEdge(Pair<std::string, std::string>(nodes_));
 }
 
 Edge Topology::getEdge(const std::string &id1, const std::string &id2) const {
 	return this->getEdge(Pair<std::string, std::string>(id1, id2));
 }
 
-bool Topology::hasEdge(const Pair <std::string, std::string> &nodes) const {
-	edgesType::const_iterator it = this->edges.find(nodes);
+bool Topology::hasEdge(const Pair <std::string, std::string> &nodes_) const {
+	edgesType::const_iterator it = this->edges.find(nodes_);
 
 	if(it == this->edges.end())
 		return false;
@@ -133,8 +131,8 @@ bool Topology::hasEdge(const Pair <std::string, std::string> &nodes) const {
 		return true;
 }
 
-bool Topology::hasEdge(const std::pair <std::string, std::string> &nodes) const {
-	return this->hasEdge(Pair<std::string, std::string>(nodes));
+bool Topology::hasEdge(const std::pair <std::string, std::string> &nodes_) const {
+	return this->hasEdge(Pair<std::string, std::string>(nodes_));
 }
 
 bool Topology::hasEdge(const std::string &id1, const std::string &id2) const {

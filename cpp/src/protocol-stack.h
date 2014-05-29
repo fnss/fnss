@@ -9,9 +9,9 @@ namespace fnss {
 
 /**
  * Represent a protocol stack deployed on a node.
- * 
+ *
  * A protocol stack is identified by a name and contains a set of properties.
- * 
+ *
  * @author Cosmin Cocora
  *
  */
@@ -19,10 +19,10 @@ class ProtocolStack : public PropertyContainer {
 public:
 	/**
 	 * Constructor.
-	 * 
+	 *
 	 * @param name name of the protocol stack.
 	 */
-	ProtocolStack(const std::string &name = "");
+	ProtocolStack(const std::string &name_ = "");
 
 	/**
 	 * Get method for the protocol stack name.
@@ -33,10 +33,10 @@ public:
 
 	/**
 	 * Set method for the protocol stack name.
-	 * 
+	 *
 	 * @param name name of the protocol stack.
 	 */
-	void setName(const std::string &name);
+	void setName(const std::string &name_);
 
 private:
 	/**

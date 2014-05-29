@@ -2,19 +2,17 @@
 
 namespace fnss {
 
-MeasurementUnit::MeasurementUnit(const std::string &base) : base(base) {
+MeasurementUnit::MeasurementUnit(const std::string &base_) : base(base_) {
 	this->conversions[base] = 1;
 }
 
-MeasurementUnit::MeasurementUnit(const std::string &base,
-								const conversionsMapType &conversions) :
-									base(base), 
-									conversions(appendBase(conversions, base)) {
-}
+MeasurementUnit::MeasurementUnit(const std::string &base_,
+								const conversionsMapType &conversions_) :
+	base(base_), conversions(appendBase(conversions_, base_)) {}
 
 double MeasurementUnit::convert(const std::string &unit) const {
 	conversionsMapType::const_iterator it = this->conversions.find(unit);
-	
+
 	if(it == this->conversions.end())
 		throw UnknownConversionException(unit, this->base);
 	return it->second;
@@ -50,8 +48,8 @@ void MeasurementUnit::addConversion(std::string unit, double multiplier) {
 	this->conversions[unit] = multiplier;
 }
 
-void MeasurementUnit::addConversions(const conversionsMapType &conversions) {
-	this->conversions.insert(conversions.begin(), conversions.end());
+void MeasurementUnit::addConversions(const conversionsMapType &conversions_) {
+	this->conversions.insert(conversions_.begin(), conversions_.end());
 }
 
 MeasurementUnit& MeasurementUnit::combine(const MeasurementUnit &other) {
@@ -63,7 +61,7 @@ MeasurementUnit& MeasurementUnit::combine(const MeasurementUnit &other) {
 MeasurementUnit& MeasurementUnit::operator=(const MeasurementUnit &other) {
 	if(this->base != other.base)
 		throw BaseMismatchException(this->base, other.base);
-	
+
 	this->conversions = other.conversions;	//std::map operator= checks for
 											//self-assignment.
 

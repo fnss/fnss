@@ -14,7 +14,7 @@ namespace fnss {
 /**
  * Represent a schedule of events. Each event is represented by a time and a set
  * of properties.
- * 
+ *
  * @author Cosmin Cocora
  *
  */
@@ -26,33 +26,33 @@ public:
 	 * @param startTime the start time of the schedule.
 	 * @param endTime the end time of the schedule.
 	 */
-	EventSchedule(const Quantity &startTime = Quantity("0s", Units::Time),
-					const Quantity &endTime = Quantity("0s", Units::Time));
+	EventSchedule(const Quantity &startTime_ = Quantity("0s", Units::Time),
+					const Quantity &endTime_ = Quantity("0s", Units::Time));
 
 	/**
 	 * Get the start time of the schedule.
-	 * 
+	 *
 	 * @return the start time of the schedule.
 	 */
 	Quantity getStartTime() const;
 
 	/**
 	 * Get the start time of the schedule.
-	 * 
+	 *
 	 * @param time the start time of the schedule.
 	 */
 	void setStartTime(const Quantity &time);
 
 	/**
 	 * Get the end time of the schedule.
-	 * 
+	 *
 	 * @return the end time of the schedule.
 	 */
 	Quantity getEndTime() const;
 
 	/**
 	 * Get the end time of the schedule.
-	 * 
+	 *
 	 * @param time the end time of the schedule.
 	 */
 	void setEndTime(const Quantity &time);
@@ -66,7 +66,7 @@ public:
 
 	/**
 	 * Get a copy of the i-th \c Event in the schedule.
-	 * 
+	 *
 	 * The events are sorted in ascending order by time.
 	 * Throws an exception if the index is out-of-bounds.
 	 *
@@ -84,10 +84,10 @@ public:
 
 	/**
 	 * Remove the i-th \c Event from the schedule.
-	 * 
+	 *
 	 * The events are sorted in ascending order by time.
 	 * The method does nothing if the given index is out of bounds.
-	 * 
+	 *
 	 * @param index the index of the \c Event to remove.
 	 */
 	void removeEvent(unsigned int index);

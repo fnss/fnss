@@ -2,17 +2,15 @@
 
 namespace fnss {
 
-TrafficMatrixSequence::TrafficMatrixSequence(const Quantity &interval) :
-												interval(interval) {
-
-}
+TrafficMatrixSequence::TrafficMatrixSequence(const Quantity &interval_) :
+	interval(interval_) {}
 
 Quantity TrafficMatrixSequence::getInterval() const {
 	return this->interval;
 }
 
-void TrafficMatrixSequence::setInterval(const Quantity &interval) {
-	this->interval = interval;
+void TrafficMatrixSequence::setInterval(const Quantity &interval_) {
+	this->interval = interval_;
 }
 
 unsigned int TrafficMatrixSequence::size() const {

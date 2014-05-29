@@ -11,7 +11,7 @@ namespace fnss {
 
 /**
  * Represent an event of an event schedule
- * 
+ *
  * @author Cosmin Cocora
  *
  */
@@ -22,7 +22,7 @@ public:
 	 *
 	 * @param time the time at which the event occurs.
 	 */
-	Event(const Quantity &time = Quantity("0sec", Units::Time));
+	Event(const Quantity &time_ = Quantity("0sec", Units::Time));
 
 	/**
 	 * Get method for the scheduled time of the event.
@@ -36,7 +36,7 @@ public:
 	 *
 	 * @param time the time at which the event occurs.
 	 */
-	void setTime(const Quantity &time);
+	void setTime(const Quantity &time_);
 
 	bool operator>(const Event &other) const;
 	bool operator>=(const Event &other) const;

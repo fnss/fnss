@@ -4,10 +4,8 @@
 
 namespace fnss {
 
-EventSchedule::EventSchedule(const Quantity &startTime, const Quantity &endTime) :
-				startTime(startTime), endTime(endTime) {
-
-}
+EventSchedule::EventSchedule(const Quantity &startTime_, const Quantity &endTime_) :
+	startTime(startTime_), endTime(endTime_) {}
 
 Quantity EventSchedule::getStartTime() const {
 	return this->startTime;

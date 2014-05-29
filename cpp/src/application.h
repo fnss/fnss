@@ -9,9 +9,9 @@ namespace fnss {
 
 /**
  * Represent an application deployed on a node.
- * 
+ *
  * An application is identified by a name and contains a set of properties.
- * 
+ *
  * @author Cosmin Cocora
  *
  */
@@ -20,10 +20,10 @@ class Application : public PropertyContainer {
 public:
 	/**
 	 * Constructor.
-	 * 
+	 *
 	 * @param name name of the application.
 	 */
-	Application(const std::string &name = "");
+	Application(const std::string &name_ = "");
 
 	/**
 	 * Get method for the application name.
@@ -34,10 +34,10 @@ public:
 
 	/**
 	 * Set method for the application name.
-	 * 
+	 *
 	 * @param name name of the application.
 	 */
-	void setName(const std::string &name);
+	void setName(const std::string &name_);
 
 private:
 	/**

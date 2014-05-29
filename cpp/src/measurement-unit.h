@@ -21,7 +21,7 @@ public:
 	 *
 	 * @param the base the unit base(eg. sec, m).
 	 */
-	MeasurementUnit(const std::string &base);
+	MeasurementUnit(const std::string &base_);
 
 	/**
 	 * Constructor.
@@ -29,8 +29,8 @@ public:
 	 * @param the base the unit base(eg. sec, m).
 	 * @param the conversion map.
 	 */
-	MeasurementUnit(const std::string &base,
-					const conversionsMapType &conversions);
+	MeasurementUnit(const std::string &base_,
+					const conversionsMapType &conversions_);
 
 	/**
 	 * Convert the given unit to the base unit.
@@ -54,7 +54,7 @@ public:
 	 * @return the base unit.
 	 */
 	std::string getBaseUnit() const;
-	
+
 	/**
 	 * Get a \c std::set of all known units for this measure(eg. ms, us, mm).
 	 *
@@ -75,13 +75,13 @@ public:
 	 *
 	 * @param conversions \c conversionsMapType object to add.
 	 */
-	void addConversions(const conversionsMapType &conversions);
+	void addConversions(const conversionsMapType &conversions_);
 
 	/**
 	 * Insert all the units from \c other into \c this. Does not overwrite
 	 * existing units. Does not change \c this->base and \c other->base is just
 	 * added to the conversions map.
-	 * 
+	 *
 	 * @param  other the object to add the units from.
 	 * @return       reference to \this for chaining.
 	 */
@@ -93,9 +93,9 @@ public:
 	 * \c this->base.
 	 */
 	MeasurementUnit& operator=(const MeasurementUnit &other);
-	
+
 	/**
-	 * Get an object with units constructed by applying all the units in the 
+	 * Get an object with units constructed by applying all the units in the
 	 * \c prefix object to all the units in the \c target object.
 	 *
 	 * @param prefix the prefix unit.
@@ -106,9 +106,9 @@ public:
 
 	/**
 	 * Get an object with all the combinations of \c numerator over \c denominator
-	 * units possible. The created unit string representation is "numerator + 
+	 * units possible. The created unit string representation is "numerator +
 	 * separator + denominator".
-	 * 
+	 *
 	 * @param  numerator   the numerator unit.
 	 * @param  denominator the denominator unit.
 	 * @param  separator   the separator used in the string representation.

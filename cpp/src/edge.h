@@ -10,7 +10,7 @@ namespace fnss {
 
 /**
  * Represent an edge of a topology
- * 
+ *
  * @author Cosmin Cocora
  */
 class Edge {
@@ -18,10 +18,10 @@ public:
 	/**
 	 * Constructor.
 	 */
-	Edge(const Quantity &capacity = Quantity("1Mbps", Units::Bandwidth),
-		const Quantity &delay = Quantity("1ms", Units::Time),
-		const float &weight = 0,
-		const Quantity &bufferSize = Quantity("10 packets", Units::BufferSize));
+	Edge(const Quantity &capacity_ = Quantity("1Mbps", Units::Bandwidth),
+		const Quantity &delay_ = Quantity("1ms", Units::Time),
+		const float &weight_ = 0,
+		const Quantity &bufferSize_ = Quantity("10 packets", Units::BufferSize));
 
 	/**
 	 * Get the capacity of the link.
@@ -35,7 +35,7 @@ public:
 	 *
 	 * @param capacity the link's capacity.
 	 */
-	void setCapacity(const Quantity &capacity);
+	void setCapacity(const Quantity &capacity_);
 
 	/**
 	 * Get the weight of the link.
@@ -49,7 +49,7 @@ public:
 	 *
 	 * @param weight the weight of the link.
 	 */
-	void setWeight(float weight);
+	void setWeight(float weight_);
 
 	/**
 	 * Get the delay of the link.
@@ -63,7 +63,7 @@ public:
 	 *
 	 * @param delay the link's delay.
 	 */
-	void setDelay(const Quantity &delay);
+	void setDelay(const Quantity &delay_);
 
 	/**
 	 * Get the size of the buffer associated with this link.
@@ -77,7 +77,7 @@ public:
 	 *
 	 * @param bufferSize the buffer's size.
 	 */
-	void setBufferSize(const Quantity &bufferSize);
+	void setBufferSize(const Quantity &bufferSize_);
 
 private:
 	Quantity capacity;

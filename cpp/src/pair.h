@@ -34,7 +34,8 @@ private:
 /**
  * Wrapper class for std::pair that adds optional commutativity to the pair,
  * eg. the pairs <1, 2> and <2, 1> will return true for operator==(..) if the
- * commutative flag is set. You _can_ use T1 != T2, but operators == and <,
+ * commutative flag is set. You _can_ use T1 != T2, but operators == and < must
+ * be defined for (T1, T1), (T2, T2) and (T1, T2).
  *
  * @author Cosmin Cocora
  */
@@ -44,25 +45,20 @@ public:
 	T2 &second;
 
 	Pair(bool commutative_ = false) :
-		first(stlPair.first), second(stlPair.second), stlPair(), commutative(commutative_) {}
+		first(stlPair.first), second(stlPair.second), stlPair(),
+		commutative(commutative_) {}
 
-	Pair(const T1 &first, const T2 &second, bool commutative = false) :
-		first(stlPair.first), second(stlPair.second), stlPair(first, second) {
+	Pair(const T1 &first_, const T2 &second_, bool commutative_ = false) :
+		first(stlPair.first), second(stlPair.second), stlPair(first_, second_),
+		commutative(commutative_) {}
 
-		this->commutative = commutative;
-	}
-
-	Pair(const std::pair <T1, T2> &p, bool commutative = false) :
-		first(stlPair.first), second(stlPair.second), stlPair(p) {
-
-		this->commutative = commutative;
-	}
+	Pair(const std::pair <T1, T2> &p, bool commutative_ = false) :
+		first(stlPair.first), second(stlPair.second), stlPair(p),
+		commutative(commutative_) {}
 
 	Pair(const Pair<T1, T2> &other) :
-		first(stlPair.first), second(stlPair.second), stlPair(other.stlPair) {
-
-		this->commutative = other.commutative;
-	}
+		first(stlPair.first), second(stlPair.second), stlPair(other.stlPair),
+		commutative(other.commutative) {}
 
 	std::pair<T1, T2> getStlPair() const {
 		return this->stlPair;
@@ -72,8 +68,8 @@ public:
 		return this->commutative;
 	}
 
-	void setCommutative(bool commutative) {
-		this->commutative = commutative;
+	void setCommutative(bool commutative_) {
+		this->commutative = commutative_;
 	}
 
 	Pair& operator=(const Pair &rhs) {
@@ -94,6 +90,8 @@ public:
 		}
 	}
 
+	// Non-commutative pair: lexicographic order.
+	// Commutative pair: behaves as if first and second were sorted inside the pair.
 	bool operator<(const Pair &rhs) const {
 		if (this->commutative || rhs.commutative) {
 			if (this->first < this->second) {

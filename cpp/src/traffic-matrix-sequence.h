@@ -14,7 +14,7 @@ namespace fnss {
 /**
  * Represent a sequence of traffic matrices, containing traffic matrices
  * referring to a sequence of time intervals.
- * 
+ *
  * @author Cosmin Cocora
  */
 class TrafficMatrixSequence {
@@ -24,11 +24,11 @@ public:
 	 *
 	 * @param interval the time interval between traffic matrices.
 	 */
-	TrafficMatrixSequence(const Quantity &interval = Quantity("1s", Units::Time));
+	TrafficMatrixSequence(const Quantity &interval_ = Quantity("1s", Units::Time));
 
 	/**
 	 * Get the time interval between traffic matrices.
-	 * 
+	 *
 	 * @return the time interval between traffic matrices.
 	 */
 	Quantity getInterval() const;
@@ -38,7 +38,7 @@ public:
 	 *
 	 * @param interval the time interval between traffic matrices.
 	 */
-	void setInterval(const Quantity &interval);
+	void setInterval(const Quantity &interval_);
 
 	/**
 	 * The size of the sequence.
@@ -49,25 +49,25 @@ public:
 
 	/**
 	 * Add a \c TrafficMatrix to the end of the sequence.
-	 * 
+	 *
 	 * @param matrix the \c TrafficMatrix to add.
 	 */
 	void addMatrix(const TrafficMatrix &matrix);
 
 	/**
 	 * Add a \c TrafficMatrix at the specified index.
-	 * 
+	 *
 	 * If the index exceeds already defined matrices, the sequence is resized to
 	 * accommodate the new required size.
-	 * 
+	 *
 	 * @param matrix the \c TrafficMatrix to add.
-	 * @param index the position in the sequence. 
+	 * @param index the position in the sequence.
 	 */
 	void addMatrix(const TrafficMatrix &matrix, unsigned int index);
 
 	/**
 	 * Remove the \c TrafficMatrix at the specified index.
-	 * 
+	 *
 	 * Throws an exception if the index is out-of-bounds.
 	 * Does not change the sequence index of already existing matrices.
 	 *
@@ -77,7 +77,7 @@ public:
 
 	/**
 	 * Get a copy of the \c TrafficMatrix at the specified index.
-	 * 
+	 *
 	 * Throws an exception if the index is out-of-bounds.
 	 *
 	 * @param index the position in the sequence.

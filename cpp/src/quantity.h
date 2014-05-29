@@ -23,12 +23,12 @@ public:
 	 * @param converter the \c MeasurementUnit object used for conversions. The
 	 *                  object is not copied, only the reference is stored.
 	 */
-	Quantity(const double &value, const std::string &unit,
-				const MeasurementUnit &converter);
+	Quantity(const double &value_, const std::string &unit_,
+				const MeasurementUnit &converter_);
 
 	/**
 	 * Constructor with explicit numerical value.
-	 * 
+	 *
 	 * The unit is assigned to the base of \c this->converter.
 	 * Mainly declared to avoid calls of the type
 	 * Quantity(0, someUnit) that would otherwise match the string constructor.
@@ -37,11 +37,11 @@ public:
 	 * @param converter the \c MeasurementUnit object used for conversions. The
 	 *                  object is not copied, only the reference is stored.
 	 */
-	Quantity(const double &value, const MeasurementUnit &converter);
+	Quantity(const double &value_, const MeasurementUnit &converter_);
 
 	/**
 	 * Constructor that parses a string to obtain the numerical value and unit.
-	 * 
+	 *
 	 * If not provided in the input, the unit is assumed to be the base of
 	 * \c this->converter.
 	 *
@@ -49,7 +49,7 @@ public:
 	 * @param converter the \c MeasurementUnit object used for conversions. The
 	 *                  object is not copied, only the reference is stored.
 	 */
-	Quantity(const std::string &str, const MeasurementUnit &converter);
+	Quantity(const std::string &str, const MeasurementUnit &converte_);
 
 	/**
 	 * Constructor.
@@ -57,19 +57,19 @@ public:
 	 * @param converter the \c MeasurementUnit object used for conversions. The
 	 *                  object is not copied, only the reference is stored.
 	 */
-	Quantity(const MeasurementUnit &converter);
+	Quantity(const MeasurementUnit &converter_);
 
 	/**
 	 * Parse a string to obtain the numerical value and unit. The previously stored
 	 * data is discarded.
-	 * 
+	 *
 	 * @param str the \c std::string to be parsed for value and unit data.
 	 */
 	void fromString(const std::string &str);
 
 	/**
 	 * Obtain a string representation of the object(eg. "5 GB/s").
-	 * 
+	 *
 	 * If not provided in the input, the unit is assumed to be the base of
 	 * \c this->converter.
 	 *
@@ -118,13 +118,13 @@ public:
 	 * Get a \c const reference to the \c MeasurementUnit object that \this is
 	 * using for conversions.
 	 *
-	 * @return the \c const reference to the \c MeasurementUnit object being used. 
+	 * @return the \c const reference to the \c MeasurementUnit object being used.
 	 */
 	const MeasurementUnit& getMeasurementUnit() const;
 
 	/**
 	 * Assignment operator.
-	 * 
+	 *
 	 * Throws an exception if the \c MeasurementUnit reference
 	 * of the \c other object has a different base from the \c MeasurementUnit
 	 * reference of \this.
