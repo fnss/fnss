@@ -26,8 +26,11 @@ sudo pip install -U fnss
 # Note: NetworkX must be installed via pip3 instead of Aptitude because of a
 # bug that crashes the installation of python3-network apt package if
 # python-networkx is installed
-if type "lsb_release" > /dev/null; then 
-	if [type "lsb_release" > /dev/null -a `lsb_release -r | awk '{print $2}'` = "14.04"]; then
+
+VERSION=$(lsb_release -r 2>/dev/null | awk '{print $2}')
+type "lsb_release" > /dev/null
+if [ $? -eq 0 ]; then
+	if [ $VERSION = "14.04" ]; then
 		sudo apt-get install python3-pip python3-setuptools python3-numpy python3-scipy python3-mako python3-nose
 		sudo pip3 install -U sphinx numpydoc networkx fnss
 	fi
