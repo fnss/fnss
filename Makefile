@@ -19,6 +19,7 @@ all: test doc dist
 
 # Build all documentation
 doc: dist docclean
+	cd $(CPP_DIR); make doc
 	cd $(NS3_DIR); make doc
 	mkdir -p $(DOC_DIR)
 	mkdir -p $(DOC_DIR)/core

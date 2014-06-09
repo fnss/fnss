@@ -28,9 +28,11 @@ java/bin
 
 # Ignore C++ built files
 cpp/bin
+cpp/build
 cpp/doc
 cpp/dist
-cpp/examples/bin
+cpp/include
+cpp/lib
 
 # Ignore ns3 built files
 ns3/dist

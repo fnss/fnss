@@ -22,11 +22,13 @@ sudo pip install sphinx numpydoc
 # Install FNSS core library
 sudo pip install -U fnss
 
+# Install C++ and Java dependencies
+sudo apt-get install clang doxygen ant
+
 # Install FNSS and all dependencies for Python 3 (only on Ubuntu 14.04)
 # Note: NetworkX must be installed via pip3 instead of Aptitude because of a
 # bug that crashes the installation of python3-network apt package if
 # python-networkx is installed
-
 VERSION=$(lsb_release -r 2>/dev/null | awk '{print $2}')
 type "lsb_release" > /dev/null
 if [ $? -eq 0 ]; then
