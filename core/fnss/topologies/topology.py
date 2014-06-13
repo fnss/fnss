@@ -91,22 +91,26 @@ class BaseTopology(object):
 
 
 class Topology(nx.Graph, BaseTopology):
-    """
-    Base class for undirected topology
+    """Base class for undirected topology"""
     
-    Parameters
-    ----------
-    G : NetworkX Graph, optional
-        A graph that can be used to initialize the topology
-    **attr : attributes
-        Attributes of the graph
-    """
-    
-    def __init__(self, G=None, **attr):
+    def __init__(self, data=None, name="", **kwargs):
         """
         Initialize the topology
+        
+        Parameters
+        ----------
+        data : input graph
+            Data to initialize the topology.  If data=None (default) an empty
+            topology is created. The data can be an edge list, or any
+            FNSS Topology or NetworkX graph object.  If the corresponding
+            optional Python packages are installed the data can also be a NumPy
+            matrix or 2d ndarray, a SciPy sparse matrix, or a PyGraphviz graph.
+        name : string, optional
+            An optional name for the graph. Default is ""
+        **kwargs : keyword arguments, optional
+            Attributes to add to graph as key=value pairs.
         """
-        super(Topology, self).__init__(data=G, **attr)
+        super(Topology, self).__init__(data=data, name=name, **kwargs)
 
     def copy(self):
         """
@@ -258,15 +262,26 @@ class Topology(nx.Graph, BaseTopology):
 
 
 class DirectedTopology(nx.DiGraph, BaseTopology):
-    """
-    Base class for directed topology
+    """Base class for directed topology
     """
     
-    def __init__(self, G=None, **attr):
+    def __init__(self, data=None, name="", **kwargs):
+        """Initialize the topology
+        
+        Parameters
+        ----------
+        data : input graph
+            Data to initialize the topology.  If data=None (default) an empty
+            topology is created. The data can be an edge list, or any
+            FNSS Topology or NetworkX graph object.  If the corresponding
+            optional Python packages are installed the data can also be a NumPy
+            matrix or 2d ndarray, a SciPy sparse matrix, or a PyGraphviz graph.
+        name : string, optional
+            An optional name for the graph. Default is ""
+        **kwargs : keyword arguments, optional
+            Attributes to add to graph as key=value pairs.
         """
-        Initialize the topology
-        """
-        super(DirectedTopology, self).__init__(data=G, **attr)
+        super(DirectedTopology, self).__init__(data=data, name=name, **kwargs)
 
     def copy(self):
         """
