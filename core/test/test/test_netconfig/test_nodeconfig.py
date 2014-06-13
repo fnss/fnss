@@ -31,6 +31,26 @@ class Test(unittest.TestCase):
         fnss.clear_stacks(self.topo)
         fnss.clear_applications(self.topo)
 
+    def test_add_stack_no_attr(self):
+        fnss.add_stack(self.topo, 1, 's_name')
+        self.assertEqual(fnss.get_stack(self.topo, 1, data=False), 's_name')
+        self.assertEqual(fnss.get_stack(self.topo, 1, data=True), ('s_name', {}))
+    
+    def test_add_stack_attr_dict(self):
+        fnss.add_stack(self.topo, 1, 's_name', {'att1': 'val1'})
+        self.assertEqual(fnss.get_stack(self.topo, 1, data=False), 's_name')
+        self.assertEqual(fnss.get_stack(self.topo, 1, data=True), ('s_name', {'att1': 'val1'}))
+    
+    def test_add_stack_kw_attr(self):
+        fnss.add_stack(self.topo, 1, 's_name', att1='val1')
+        self.assertEqual(fnss.get_stack(self.topo, 1, data=False), 's_name')
+        self.assertEqual(fnss.get_stack(self.topo, 1, data=True), ('s_name', {'att1': 'val1'}))
+
+    def test_add_stack_mixed_attr(self):
+        fnss.add_stack(self.topo, 1, 's_name', {'att1': 'val1'}, att2='val2')
+        self.assertEqual(fnss.get_stack(self.topo, 1, data=False), 's_name')
+        self.assertEqual(fnss.get_stack(self.topo, 1, data=True), ('s_name', {'att1': 'val1', 'att2': 'val2'}))
+    
     def test_add_get_remove_stack(self):
         for v in self.topo.nodes_iter():
             self.assertIsNone(fnss.get_stack(self.topo, v))
