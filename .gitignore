@@ -4,9 +4,10 @@ __pycache__
 *~ 
 *.class
 
-# Ignore all files starting with . (e.g. .classpath, .*project) but not .gitignore
+# Ignore all files starting with . (e.g. .classpath, .*project) but not .gitignore and .travis.yml
 .*
 !.gitignore
+!.travis.yml
 
 # Ignore aggregated built files
 /doc

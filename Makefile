@@ -12,7 +12,7 @@ DIST_DIR = dist
 
 ARCHIVE_NAME = fnss-$(VERSION)
 
-.PHONY: clean doc dist docclean distclean test
+.PHONY: clean doc dist docclean distclean install test
 
 # Build all components
 all: test doc dist
@@ -62,6 +62,11 @@ clean: distclean docclean
 	cd $(CORE_DIR); make clean
 	cd $(CPP_DIR); make clean
 	cd $(NS3_DIR); make clean
+
+# Install core and C++ libraries
+install:
+	cd $(CORE_DIR); make install
+	cd $(CPP_DIR); make install
 
 # Run all test cases
 test:
