@@ -7,7 +7,7 @@
 #   bin:       built from files in $(SRC_DIR) that only have a .$(SRC_EXT)
 #   doc:       build documentation using Doxygen and place it in $(DOC_DIR)
 #   install:   install library, headers and executable files in *nix /usr/* dirs.
-#	uninstall: revert install actions
+#   uninstall: revert install actions
 #   examples:  compile examples in $(EXAMPLES_SRC_DIR) and put binaries in $(EXAMPLES_BUILD_DIR)
 #   test:      built from *.$(SRC_EXT) in $(TEST_DIR) and executed in $(TEST_EXEC_DIR)
 #              other files in $(TEST_DIR) are copied to $(TEST_EXEC_DIR) (resources, etc.)

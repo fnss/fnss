@@ -9,7 +9,7 @@ DOC_DIR   = doc
 
 all: dist
 
-# Run all test cases using both version 2 and 3 of Python
+# Run all test cases
 test:
 	cd $(TEST_DIR); python test.py
 
