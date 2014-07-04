@@ -198,6 +198,16 @@ Functions
     from_autonetkit
     to_autonetkit
 
+:mod:`jfed` module
+^^^^^^^^^^^^^^^^^
+
+.. automodule:: fnss.adapters.omnetpp
+.. autosummary::
+   :toctree: generated/
+
+	from_jfed
+    to_jfed
+
 :mod:`mn` module
 ^^^^^^^^^^^^^^^^
 

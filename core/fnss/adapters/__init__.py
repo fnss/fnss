@@ -5,3 +5,4 @@ from fnss.adapters.autonetkit import *
 from fnss.adapters.mn import *
 from fnss.adapters.ns2 import *
 from fnss.adapters.omnetpp import *
+from fnss.adapters.jfed import *
