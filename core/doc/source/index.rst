@@ -12,8 +12,8 @@ These features include the ability to:
 * Generate traffic matrices
 * Generate event schedules
 
-The core libary in addition to the features listed above, contains adapters to export generated scnearios to a the following network simulators or emulators: `ns-2 <http://www.isi.edu/nsnam/ns/>`_, `Mininet <http://www.mininet.org/>`_ and `Autonetkit <http://www.autonetkit.org/>`_.
-Generated expriment scenarios (i.e. topologies, event schedules and traffic matrices) can be saved into XML files and then imported by libraries written in other languages. Currently, FNSS provides generic Java and C++ libraries as well as a C++ library specific for the `ns-3 <http://www.nsnam.org/>`_ simulator.
+The core library in addition to the features listed above, contains adapters to export generated scenarios to a the following network simulators or emulators: `ns-2 <http://www.isi.edu/nsnam/ns/>`_, `Mininet <http://www.mininet.org/>`_, `Omnet++ <http://www.omnetpp.org/>`_, `jFed <http://jfed.iminds.be/>_` and `Autonetkit <http://www.autonetkit.org/>`_.
+Generated experiment scenarios (i.e. topologies, event schedules and traffic matrices) can be saved into XML files and then imported by libraries written in other languages. Currently, FNSS provides generic Java and C++ libraries as well as a C++ library specific for the `ns-3 <http://www.nsnam.org/>`_ simulator.
 These libraries can be downloaded from the `FNSS website <http://fnss.github.io/>`_.
 
 The FNSS core library is released under the terms of the `BSD license <https://raw.github.com/fnss/fnss/master/core/LICENSE.txt>`_.
