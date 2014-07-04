@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<rspec generated="2014-07-03T15:22:48.153+02:00" generated_by="Experimental jFed Rspec Editor" type="request" xsi:schemaLocation="http://www.geni.net/resources/rspec/3 http://www.geni.net/resources/rspec/3/request.xsd" xmlns="http://www.geni.net/resources/rspec/3" xmlns:jFed="http://jfed.iminds.be/rspec/ext/jfed/1" xmlns:jFedBonfire="http://jfed.iminds.be/rspec/ext/jfed-bonfire/1" xmlns:delay="http://www.protogeni.net/resources/rspec/ext/delay/1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <node client_id="node0" component_manager_id="urn:publicid:IDN+wall1.ilabt.iminds.be+authority+cm" exclusive="true">
+        <sliver_type name="raw-pc"/>
+        <jFed:location x="920.0" y="213.0"/>
+        <interface client_id="node0:if0"/>
+        <interface client_id="node0:if1"/>
+    </node>
+    <node client_id="node1" component_manager_id="urn:publicid:IDN+wall1.ilabt.iminds.be+authority+cm" exclusive="true">
+        <sliver_type name="raw-pc"/>
+        <jFed:location x="863.558888435" y="97.6581200957"/>
+        <interface client_id="node1:if0"/>
+        <interface client_id="node1:if1"/>
+    </node>
+    <node client_id="node2" component_manager_id="urn:publicid:IDN+wall1.ilabt.iminds.be+authority+cm" exclusive="true">
+        <sliver_type name="raw-pc"/>
+        <jFed:location x="378.0" y="74.0"/>
+        <interface client_id="node2:if0"/>
+        <interface client_id="node2:if1"/>
+        <interface client_id="node2:if2"/>
+        <interface client_id="node2:if3"/>
+    </node>
+    <node client_id="node3" component_manager_id="urn:publicid:IDN+wall1.ilabt.iminds.be+authority+cm" exclusive="true">
+        <sliver_type name="raw-pc"/>
+        <jFed:location x="63.0" y="111.0"/>
+        <jFed:nodeDescription>physical-node</jFed:nodeDescription>
+        <interface client_id="node3:if0"/>
+        <interface client_id="node3:if1"/>
+    </node>
+    <node client_id="node4" component_manager_id="urn:publicid:IDN+wall1.ilabt.iminds.be+authority+cm" exclusive="true">
+        <sliver_type name="raw-pc"/>
+        <jFed:location x="248.0" y="323.0"/>
+        <jFed:nodeDescription>simple-node</jFed:nodeDescription>
+        <interface client_id="node4:if0"/>
+        <interface client_id="node4:if1"/>
+    </node>
+    <node client_id="node5" component_manager_id="urn:publicid:IDN+wall1.ilabt.iminds.be+authority+cm" exclusive="true">
+        <sliver_type name="raw-pc"/>
+        <jFed:location x="547.0" y="417.0"/>
+        <jFed:nodeDescription>simple-node</jFed:nodeDescription>
+    </node>
+    <link client_id="link3">
+        <component_manager name="urn:publicid:IDN+wall1.ilabt.iminds.be+authority+cm"/>
+        <interface_ref client_id="node0:if0"/>
+        <interface_ref client_id="node1:if0"/>
+    </link>
+    <link client_id="link4">
+        <component_manager name="urn:publicid:IDN+wall1.ilabt.iminds.be+authority+cm"/>
+        <property source_id="node1:if1" dest_id="node2:if0" capacity="200" latency="20" packet_loss="1.0"/>
+        <property source_id="node2:if0" dest_id="node1:if1" capacity="200" latency="20" packet_loss="1.0"/>
+        <interface_ref client_id="node1:if1"/>
+        <interface_ref client_id="node2:if0"/>
+    </link>
+    <link client_id="link5">
+        <component_manager name="urn:publicid:IDN+wall1.ilabt.iminds.be+authority+cm"/>
+        <link_type name="lan"/>
+        <interface_ref client_id="node2:if1"/>
+        <interface_ref client_id="node0:if1"/>
+    </link>
+    <link client_id="link6">
+        <component_manager name="urn:publicid:IDN+wall1.ilabt.iminds.be+authority+cm"/>
+        <link_type name="lan"/>
+        <interface_ref client_id="node3:if0"/>
+        <interface_ref client_id="node2:if2"/>
+    </link>
+    <link client_id="link7">
+        <component_manager name="urn:publicid:IDN+wall1.ilabt.iminds.be+authority+cm"/>
+        <link_type name="lan"/>
+        <interface_ref client_id="node4:if0"/>
+        <interface_ref client_id="node3:if1"/>
+    </link>
+    <link client_id="link8">
+        <component_manager name="urn:publicid:IDN+wall1.ilabt.iminds.be+authority+cm"/>
+        <link_type name="lan"/>
+        <interface_ref client_id="node2:if3"/>
+        <interface_ref client_id="node4:if1"/>
+    </link>
+</rspec>
