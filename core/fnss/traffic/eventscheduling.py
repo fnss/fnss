@@ -24,9 +24,8 @@ __all__ = [
            ]
 
 class EventSchedule(object):
-    """
-    Class representing an event schedule. This class is simply a wrapper for a 
-    list of events.
+    """Class representing an event schedule. This class is simply a wrapper for
+    a list of events.
     """
     
     # NOTE: This class doesn't have a __setitem__ method because the insertion
@@ -35,8 +34,7 @@ class EventSchedule(object):
     # position of the schedule.
     
     def __init__(self, t_start=0, t_unit='ms'):
-        """
-        Initialize the event schedule
+        """Initialize the event schedule
         
         Parameters
         ----------
@@ -56,36 +54,31 @@ class EventSchedule(object):
         self.event = []
         
     def __len__(self):
-        """
-        Return the number of events in the schedule. Use the expression 
+        """Return the number of events in the schedule. Use the expression 
         'len(schedule)'
         """
         return len(self.event)
     
     def __iter__(self):
-        """
-        Iterates over the events of the schedule. Use the expression
+        """Iterates over the events of the schedule. Use the expression
         'for event in event_schedule'
         """
         return iter(self.event)
     
     def __getitem__(self, key):
-        """
-        Return the event in a specific position of the schedule. Use the
+        """Return the event in a specific position of the schedule. Use the
         expression 'event_schedule[i]'
         """
         return self.event[key]
     
     def __delitem__(self, key):
-        """
-        Remove the event in a specific position of the schedule. Use the
+        """Remove the event in a specific position of the schedule. Use the
         expression 'del event_schedule[i]'
         """
         self.event.pop(key)   
        
     def __add__(self, other):
-        """
-        Merge two events schedules.
+        """Merge two events schedules.
         
         This method takes all the events of the schedule passed as argument,
         add them to the event schedule it belongs to and returned the merged
@@ -102,8 +95,7 @@ class EventSchedule(object):
         return es
     
     def __radd__(self, other):
-        """
-        Merge two events schedules.
+        """Merge two events schedules.
         
         This method takes all the events of the schedule passed as argument,
         add them to the event schedule it belongs to and returned the merged
@@ -118,8 +110,7 @@ class EventSchedule(object):
         return self.__add__(other)
     
     def add(self, time, event, absolute_time=False):
-        """
-        Adds an event to the schedule. 
+        """Adds an event to the schedule. 
         
         Events are inserted so that the schedule is always chronologically 
         sorted.
@@ -165,14 +156,17 @@ class EventSchedule(object):
         return self.event.pop(i)
     
     def number_of_events(self):
-        """
-        Return the number of events in the schedule
+        """Return the number of events in the schedule
+        
+        Returns
+        -------
+        number_of_events : int
+            The number of events of the schedule
         """
         return len(self.event)
 
     def add_schedule(self, event_schedule):
-        """
-        Merge with another event schedule.
+        """Merge with another event schedule.
         
         This method takes all the events of the schedule passed as argument
         and add them to the event schedule it belongs to. The events of the
@@ -194,8 +188,7 @@ class EventSchedule(object):
             self.add(time * conv_factor, event_props, absolute_time=True)
     
     def events_between(self, t_start, t_end):
-        """
-        Return an event schedule comprising all events scheduled between a 
+        """Return an event schedule comprising all events scheduled between a 
         start time (included) and an end time (excluded).
         
         Parameters
@@ -223,8 +216,7 @@ class EventSchedule(object):
 
 def deterministic_process_event_schedule(interval, t_start, duration, t_unit, 
                                          event_generator, *args, **kwargs):
-    """
-    Return a schedule of events separated by a fixed time interval
+    """Return a schedule of events separated by a fixed time interval
     
     Parameters
     ----------
@@ -244,11 +236,11 @@ def deterministic_process_event_schedule(interval, t_start, duration, t_unit,
         List of non-keyworded arguments for event_generator function
     **kwargs : keyworded argument list
         List of keyworded arguments for event_generator function
+
     Returns
     -------
     event_schedule : EventSchedule
         An EventSchedule object
-    
     """
     t_end = t_start + duration
     t_last_event = t_start
@@ -265,8 +257,7 @@ def deterministic_process_event_schedule(interval, t_start, duration, t_unit,
 
 def poisson_process_event_schedule(avg_interval, t_start, duration, t_unit, 
                                    event_generator, *args, **kwargs):
-    """
-    Return a schedule of Poisson-distributed events
+    """Return a schedule of Poisson-distributed events
     
     Parameters
     ----------
@@ -281,13 +272,14 @@ def poisson_process_event_schedule(avg_interval, t_start, duration, t_unit,
         The unit in which time values are expressed (e.g. 'ms', 's')
     seed : int, long or hashable type, optional
         The seed to be used by the random generator.
-    event_generator : function
+    event_generator : callable
         A function that when called returns an event, i.e. a dictionary of 
         event properties
     *args : argument list
         List of non-keyworded arguments for event_generator function
     **kwargs : keyworded argument list
         List of keyworded arguments for event_generator function
+    
     Returns
     -------
     event_schedule : EventSchedule
@@ -296,17 +288,17 @@ def poisson_process_event_schedule(avg_interval, t_start, duration, t_unit,
     Example
     -------
     >>> import random, fnss
-    >>> def my_event_gen():
+    >>> def my_event_gen(p):
     ...     event_props = {}
     ...     r = random.random()
-    ...     if r > 0.5:
+    ...     if r > p:
     ...         event_props['action']='send_email'
     ...     else:
     ...         event_props['action']='watch_video'
     ...     return event_props
     ... 
     >>> schedule = fnss.schedule_dynamic_poisson_events(15, 0, 8000, 'ms', 
-    ... my_event_gen)
+    ... my_event_gen, p=0.5)
     """
     t_end = t_start + duration
     t_last_event = t_start
@@ -322,8 +314,17 @@ def poisson_process_event_schedule(avg_interval, t_start, duration, t_unit,
 
 
 def read_event_schedule(path):
-    """
-    Read event schedule from an XML file
+    """Read event schedule from an XML file
+    
+    Parameters
+    ----------
+    path : str
+        The path to the event schedule XML file
+        
+    Returns
+    -------
+    event_schedule : EventSchedule
+        The parsed event schedule
     """
     event_schedule = EventSchedule()
     tree = ET.parse(path)
@@ -347,8 +348,19 @@ def read_event_schedule(path):
 
 def write_event_schedule(event_schedule, path, 
                          encoding='utf-8', prettyprint=True):
-    """
-    Write an event schedule object to an XML file.
+    """Write an event schedule object to an XML file.
+    
+    Parameters
+    ----------
+    event_schedule : EventSchedule
+        The event schedule to write
+    path : str
+        The path of the output XML file
+    encoding : str, optional
+        The desired encoding of the output file
+    prettyprint : bool, optional
+        Specify whether the XML file should be written with indentation for
+        improved human readability
     """
     head = ET.Element("event-schedule")
     for name, value in event_schedule.attrib.items():

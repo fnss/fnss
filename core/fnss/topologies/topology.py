@@ -1,6 +1,4 @@
-"""
-Provides basic functions and classes for operating on network topologies.
-"""
+"""Provides basic functions and classes for operating on network topologies."""
 import xml.etree.cElementTree as ET
 import networkx as nx
 import fnss.util as util
@@ -19,14 +17,12 @@ __all__ = [
 
 
 class BaseTopology(object):
-    """
-    Base class for generic topology. Provides utility methods for listing nodes
-    and edge properties. 
+    """Base class for generic topology. Provides utility methods for listing
+    nodes and edge properties. 
     """
     
     def capacities(self):
-        """
-        Return a dictionary of all link capacities, keyed by link
+        """Return a dictionary of all link capacities, keyed by link
         
         Returns
         -------
@@ -47,14 +43,17 @@ class BaseTopology(object):
         return nx.get_edge_attributes(self, 'delay')
     
     def weights(self):
-        """
-        Return a dictionary of all link weights, keyed by link
+        """Return a dictionary of all link weights, keyed by link
+        
+        Returns
+        -------
+        weights : dict
+            A dictionary of all link weights, keyed by link
         """
         return nx.get_edge_attributes(self, 'weight')
     
     def buffers(self):
-        """
-        Return a dictionary of all buffer sizes, keyed by interface
+        """Return a dictionary of all buffer sizes, keyed by interface
 
         Returns
         -------
@@ -66,8 +65,7 @@ class BaseTopology(object):
         return nx.get_edge_attributes(self, 'buffer')
     
     def stacks(self):
-        """
-        Return a dictionary of all node stacks, keyed by node
+        """Return a dictionary of all node stacks, keyed by node
 
         Returns
         -------
@@ -79,8 +77,7 @@ class BaseTopology(object):
         return nx.get_node_attributes(self, 'stack')
     
     def applications(self):
-        """
-        Return a dictionary of all applications deployed, keyed by node
+        """Return a dictionary of all applications deployed, keyed by node
         
         Returns
         -------
@@ -94,8 +91,7 @@ class Topology(nx.Graph, BaseTopology):
     """Base class for undirected topology"""
     
     def __init__(self, data=None, name="", **kwargs):
-        """
-        Initialize the topology
+        """Initialize the topology
         
         Parameters
         ----------
@@ -113,8 +109,7 @@ class Topology(nx.Graph, BaseTopology):
         super(Topology, self).__init__(data=data, name=name, **kwargs)
 
     def copy(self):
-        """
-        Return a copy of the topology.
+        """Return a copy of the topology.
 
         Returns
         -------
@@ -140,8 +135,7 @@ class Topology(nx.Graph, BaseTopology):
         return Topology(super(Topology, self).copy())
         
     def subgraph(self, nbunch):
-        """
-        Return the subgraph induced on nodes in nbunch.
+        """Return the subgraph induced on nodes in nbunch.
 
         The induced subgraph of the graph contains the nodes in nbunch
         and the edges between those nodes.
@@ -182,8 +176,7 @@ class Topology(nx.Graph, BaseTopology):
         return Topology(super(Topology, self).subgraph(nbunch))
         
     def to_directed(self):
-        """
-        Return a directed representation of the topology.
+        """Return a directed representation of the topology.
 
         Returns
         -------
@@ -223,8 +216,7 @@ class Topology(nx.Graph, BaseTopology):
         return DirectedTopology(super(Topology, self).to_directed())
     
     def to_undirected(self):
-        """
-        Return an undirected copy of the topology.
+        """Return an undirected copy of the topology.
 
         Returns
         -------
@@ -262,8 +254,7 @@ class Topology(nx.Graph, BaseTopology):
 
 
 class DirectedTopology(nx.DiGraph, BaseTopology):
-    """Base class for directed topology
-    """
+    """Base class for directed topology"""
     
     def __init__(self, data=None, name="", **kwargs):
         """Initialize the topology
@@ -284,8 +275,7 @@ class DirectedTopology(nx.DiGraph, BaseTopology):
         super(DirectedTopology, self).__init__(data=data, name=name, **kwargs)
 
     def copy(self):
-        """
-        Return a copy of the topology.
+        """Return a copy of the topology.
 
         Returns
         -------
@@ -310,8 +300,7 @@ class DirectedTopology(nx.DiGraph, BaseTopology):
         return DirectedTopology(super(DirectedTopology, self).copy())
         
     def subgraph(self, nbunch):
-        """
-        Return the subgraph induced on nodes in nbunch.
+        """Return the subgraph induced on nodes in nbunch.
 
         The induced subgraph of the graph contains the nodes in nbunch
         and the edges between those nodes.
@@ -352,8 +341,7 @@ class DirectedTopology(nx.DiGraph, BaseTopology):
         return DirectedTopology(super(DirectedTopology, self).subgraph(nbunch))
         
     def to_directed(self):
-        """
-        Return a directed representation of the topology.
+        """Return a directed representation of the topology.
 
         Returns
         -------
@@ -393,8 +381,7 @@ class DirectedTopology(nx.DiGraph, BaseTopology):
         return DirectedTopology(super(DirectedTopology, self).to_directed())
     
     def to_undirected(self):
-        """
-        Return an undirected copy of the topology.
+        """Return an undirected copy of the topology.
 
         Returns
         -------
@@ -432,8 +419,7 @@ class DirectedTopology(nx.DiGraph, BaseTopology):
 
 
 def od_pairs_from_topology(topology):
-    """
-    Calculate all possible origin-destination pairs of the topology. 
+    """Calculate all possible origin-destination pairs of the topology. 
     This function does not simply calculate all possible pairs of the topology
     nodes. Instead, it only returns pairs of nodes connected by at least
     a path. 
@@ -464,10 +450,11 @@ def od_pairs_from_topology(topology):
 
 
 def fan_in_out_capacities(topology):
-    """
-    Calculate fan-in and fan-out capacities for all nodes of the topology. The
-    fan-in capacity of a node is the sum of capacities of all incoming links,
-    while the fan-out capacity is the sum of capacities of all outgoing links.
+    """Calculate fan-in and fan-out capacities for all nodes of the topology.
+    
+    The fan-in capacity of a node is the sum of capacities of all incoming
+    links, while the fan-out capacity is the sum of capacities of all outgoing
+    links.
     
     Parameters
     ----------
@@ -515,8 +502,7 @@ def fan_in_out_capacities(topology):
 
 
 def rename_edge_attribute(topology, old_attr, new_attr):
-    """
-    Rename all edges attributes with a specific name to a new name
+    """Rename all edges attributes with a specific name to a new name
     
     Parameters
     ----------
@@ -546,8 +532,7 @@ def rename_edge_attribute(topology, old_attr, new_attr):
 
 
 def rename_node_attribute(topology, old_attr, new_attr):
-    """
-    Rename all nodes attributes with a specific name to a new name
+    """Rename all nodes attributes with a specific name to a new name
     
     Parameters
     ----------
@@ -577,8 +562,7 @@ def rename_node_attribute(topology, old_attr, new_attr):
 
 
 def read_topology(path, encoding='utf-8'):
-    """
-    Read a topology from an XML file and returns either a Topology or a 
+    """Read a topology from an XML file and returns either a Topology or a 
     DirectedTopology object
     
     Parameters
@@ -591,6 +575,7 @@ def read_topology(path, encoding='utf-8'):
     Returns
     -------
     topology: Topology or DirectedTopology
+        The parsed topology
     """
     tree = ET.parse(path)
     head = tree.getroot()
@@ -645,8 +630,7 @@ def read_topology(path, encoding='utf-8'):
 
 
 def write_topology(topology, path, encoding='utf-8', prettyprint=True):
-    """
-    Writes a topology object on an XML file
+    """Write a topology object on an XML file
     
     Parameters
     ----------

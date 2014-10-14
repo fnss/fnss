@@ -7,7 +7,7 @@ Fast Network Simulation Setup (FNSS) is a toolchain allowing network researchers
 * Generate traffic matrices
 * Generate event schedules
 
-The core library, which provides the features listed above, is written in Python. In addition, FNSS provides adapters for importing scenarios in [ns-2](http://www.isi.edu/nsnam/ns/), [ns-3](http://www.nsnam.org/), [Mininet](http://www.mininet.org/) and [Autonetkit](http://www.autonetkit.org/) as well in other simulators or emulators through the Python core library itself or the provided Java and C++ libraries.
+The core library, which provides the features listed above, is written in Python. In addition, FNSS provides adapters for importing scenarios in [ns-2](http://www.isi.edu/nsnam/ns/), [ns-3](http://www.nsnam.org/), [Mininet](http://www.mininet.org/), [Omnet++](http://www.omnetpp.org/), [Autonetkit](http://www.autonetkit.org/) and [jFed](http://jfed.iminds.be/) as well in other simulators or emulators through the Python core library itself or the provided Java and C++ libraries.
 
 ## Project directory structure
 The project files are organized in the following directories:

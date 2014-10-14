@@ -68,8 +68,9 @@ class TrafficMatrix(object):
 
     def __iter__(self):
         """
-        Iterates over the flows. Use the expression 
-        'for flow in traffic_matrix'
+        Iterates over the flows.
+        
+        Use the expression 'for flow in traffic_matrix'
         """
         return iter(self.flows())
     
@@ -1076,9 +1077,9 @@ def write_traffic_matrix(traffic_matrix, path, encoding='utf-8',
         The traffic matrix to save
     path : str
         The path where the file will be saved
-    encoding : str (optional)
+    encoding : str, optional
         The desired encoding of the output file
-    prettyprint : bool (optional)
+    prettyprint : bool, optional
         Specify whether the XML file should be written with indentation for
         improved human readability
     """

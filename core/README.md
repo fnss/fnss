@@ -8,7 +8,7 @@ These features include the ability to:
  * Generate traffic matrices
  * Generate event schedules
 
-The core library provides function to export created topologies to [ns-2](http://www.isi.edu/nsnam/ns/), [Mininet](http://www.mininet.org), [Omnet++](http://www.omnetpp.org/), [jFed](http://jfed.iminds.be/) and [Autonetkit](http://www.autonetkit.org).
+The core library provides function to export created topologies to [ns-2](http://www.isi.edu/nsnam/ns/), [Mininet](http://www.mininet.org), [Omnet++](http://www.omnetpp.org/), [Autonetkit](http://www.autonetkit.org) and [jFed](http://jfed.iminds.be/).
 It can also be used in conjunction with the FNSS Java, C++ API or [ns-3](http://www.nsnam.org/) libraries to import topologies, traffic matrices and event schedules in the desired target simulator or emulator. 
 
 ## Project directory structure
