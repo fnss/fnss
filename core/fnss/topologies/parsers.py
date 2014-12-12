@@ -13,6 +13,7 @@ from fnss.util import geographical_distance
 
 __all__ = [
     'parse_rocketfuel_isp_map',
+    'parse_rocketfuel_isp_latency',
     'parse_caida_as_relationships',
     'parse_inet',
     'parse_abilene',
@@ -117,6 +118,83 @@ def parse_rocketfuel_isp_map(path):
                         topology.add_edge(node, link, type='external')
     return topology
 
+def parse_rocketfuel_isp_latency(path):
+    """
+    Parse a network topology from rocketfuel ISP topology file (latency.intra)
+    with inferred link latencies.
+
+    Parameters
+    ----------
+    path : str
+        The path of the file containing the RocketFuel map. It should have 
+        extension .intra
+
+    Returns
+    -------
+    topology : DirectedTopology
+        The object containing the parsed topology.
+
+    Notes
+    -----
+    The returned topology is directed. It can be converted using the
+    DirectedTopology.to_undirected() method if an undirected topology
+    is desired.
+
+    Each node of the returned graph has the following attributes:
+     * **name**: string
+     * **location**: string
+
+    Each edge of the returned graph has the following attribute:
+     * **delay** : int
+
+    Raises:
+    -------
+    ValueError
+        If the provided file cannot be parsed correctly
+
+    Examples
+    --------
+    >>> import fnss
+    >>> topology = fnss.parse_rocketfuel_isp_latency('1221.latencies.intra')
+    """
+    topology = DirectedTopology(type='rocket_fuel')
+    node_dictionary = dict()
+    node_id_generator = 0
+
+    for line in open(path, "r").readlines():
+        if len(line) > 0:
+            tokens = line.split()
+            try:
+                # Edges endpoints and delay are separated by a space.
+                # An edge endpoing has the formant <location>,<router-name>
+                u_attr = tokens[0].split(',')
+                u_location = u_attr[0]
+                u_name = u_attr[1]
+
+                v_attr = tokens[1].split(',')
+                v_location = v_attr[0]
+                v_name = v_attr[1]
+
+                delay = tokens[2]
+                if not delay.isdigit():
+                    raise ValueError('Invalid value at delay index')
+            except IndexError:
+                raise ValueError('Invalid input file. Parsing failed '\
+                                 'while trying to parse an edge')
+
+            if tokens[0] not in node_dictionary:
+                node_dictionary[tokens[0]] = node_id_generator
+                topology.add_node(node_id_generator, location=u_location, name=u_name)
+                node_id_generator = node_id_generator + 1
+            if tokens[1] not in node_dictionary:
+              node_dictionary[tokens[1]] = node_id_generator
+              topology.add_node(node_id_generator, location=v_location, name=v_name)
+              node_id_generator = node_id_generator + 1
+
+            u = node_dictionary[tokens[0]]
+            v = node_dictionary[tokens[1]]
+            topology.add_edge(u, v, delay=delay)
+    return topology
 
 # Parser for CAIDA AS-relationships dataset
 # Data from http://www.caida.org/data/active/as-relationships/
