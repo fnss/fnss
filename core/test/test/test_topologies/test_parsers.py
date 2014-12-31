@@ -47,12 +47,14 @@ class Test(unittest.TestCase):
         self.assertEquals(10961, topology.number_of_nodes())
         self.assertEquals(26070, topology.number_of_edges())
 
+
     @unittest.skipIf(RES_DIR is None, "Resources folder not present")
     def test_parse_rocketfuel_isp_latency(self):
         rocketfuel_file = path.join(RES_DIR, 'rocketfuel-1221.latencies.intra')
         topology = fnss.parse_rocketfuel_isp_latency(rocketfuel_file)
         self.assertEquals(108, topology.number_of_nodes())
         self.assertEquals(306, topology.number_of_edges())
+
 
     @unittest.skipIf(RES_DIR is None, "Resources folder not present")
     def test_parse_ashiip(self):

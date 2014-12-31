@@ -118,6 +118,7 @@ def parse_rocketfuel_isp_map(path):
                         topology.add_edge(node, link, type='external')
     return topology
 
+
 def parse_rocketfuel_isp_latency(path):
     """
     Parse a network topology from rocketfuel ISP topology file (latency.intra)
@@ -166,7 +167,7 @@ def parse_rocketfuel_isp_latency(path):
             tokens = line.split()
             try:
                 # Edges endpoints and delay are separated by a space.
-                # An edge endpoing has the formant <location>,<router-name>
+                # An edge endpoint has the format <location>,<router-name>
                 u_attr = tokens[0].split(',')
                 u_location = u_attr[0]
                 u_name = u_attr[1]
@@ -187,9 +188,9 @@ def parse_rocketfuel_isp_latency(path):
                 topology.add_node(node_id_generator, location=u_location, name=u_name)
                 node_id_generator = node_id_generator + 1
             if tokens[1] not in node_dictionary:
-              node_dictionary[tokens[1]] = node_id_generator
-              topology.add_node(node_id_generator, location=v_location, name=v_name)
-              node_id_generator = node_id_generator + 1
+                node_dictionary[tokens[1]] = node_id_generator
+                topology.add_node(node_id_generator, location=v_location, name=v_name)
+                node_id_generator = node_id_generator + 1
 
             u = node_dictionary[tokens[0]]
             v = node_dictionary[tokens[1]]

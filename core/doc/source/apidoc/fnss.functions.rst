@@ -140,6 +140,7 @@ Functions
     parse_caida_as_relationships
     parse_inet
     parse_rocketfuel_isp_map
+    parse_rocketfuel_isp_latency
     parse_topology_zoo
 
 :mod:`randmodels` module
