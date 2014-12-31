@@ -474,7 +474,16 @@ def _set_capacities_proportionally(topology, capacities, metric,
         raise ValueError("The capacity_unit argument is not valid")
     if any((capacity < 0 for capacity in capacities)):
         raise ValueError('All capacities must be positive')
+    if len(capacities) == 0:
+        raise ValueError('The list of capacities cannot be empty')
+    
     topology.graph['capacity_unit'] = capacity_unit
+
+    # If there is only one capacity the capacities list then all links are
+    # assigned the same capacity
+    if len(capacities) == 1:
+        set_capacities_constant(topology, capacities[0], capacity_unit)
+        return
     
     # get min and max of selected edge metric
     min_metric = min(metric.values())

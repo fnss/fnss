@@ -55,7 +55,12 @@ class Test(unittest.TestCase):
         fnss.set_capacities_edge_communicability(self.topo, self.capacities)
         self.assertTrue(all(self.topo.edge[u][v]['capacity'] in self.capacities 
                          for (u, v) in self.topo.edges_iter()))
-            
+    
+    def test_capacities_edge_communicability_one_capacity(self):
+        fnss.set_capacities_edge_communicability(self.topo, [10])
+        self.assertTrue(all(self.topo.edge[u][v]['capacity'] == 10 
+                         for (u, v) in self.topo.edges_iter()))
+    
     def test_capacities_betweenness_gravity(self):
         fnss.set_capacities_betweenness_gravity(self.topo, self.capacities)
         self.assertTrue(all(self.topo.edge[u][v]['capacity'] in self.capacities 
@@ -75,7 +80,12 @@ class Test(unittest.TestCase):
         fnss.set_capacities_eigenvector_gravity(self.topo, self.capacities)
         self.assertTrue(all(self.topo.edge[u][v]['capacity'] in self.capacities 
                          for (u, v) in self.topo.edges_iter()))
-            
+
+    def test_capacities_eigenvector_gravity_one_capacity(self):
+        fnss.set_capacities_eigenvector_gravity(self.topo, [10])
+        self.assertTrue(all(self.topo.edge[u][v]['capacity'] == 10 
+                         for (u, v) in self.topo.edges_iter()))
+          
     def test_capacities_pagerank_gravity(self):
         fnss.set_capacities_pagerank_gravity(self.topo, self.capacities)
         self.assertTrue(all(self.topo.edge[u][v]['capacity'] in self.capacities 
@@ -89,7 +99,6 @@ class Test(unittest.TestCase):
         fnss.set_capacities_random(self.topo, {10: 0.3, 20: 0.7})
         self.assertTrue(all(self.topo.edge[u][v]['capacity'] in (10, 20) 
                          for (u, v) in self.topo.edges_iter()))
-        
         
     def test_capacities_random_uniform(self):
         fnss.set_capacities_random_uniform(self.topo, self.capacities)
