@@ -28,6 +28,23 @@ def parse_rocketfuel_isp_map(path):
     """
     Parse a network topology from RocketFuel ISP map file.
     
+    The ASes provided by the RocketFuel dataset are the following:
+
+    +------+---------------------+-------+--------+------------+------------+
+    | ASN  | Name                | Span  | Region | Nodes (r1) | Nodes (r0) |
+    +======+=====================+=======+========+============+============+
+    | 1221 | Telstra (Australia) | world | AUS    |  2999      |  378 (318) |
+    | 1239 | Sprintlink (US)     | world | US     |  8352      |  700 (604) |
+    | 1755 | EBONE (Europe)      | world | Europe |   609      |  172       |
+    | 2914 | Verio (US)          | world | US     |  7109      | 1013       |
+    | 3257 | Tiscali (Europe)    | world | Europe |   855      |  248 (240) |
+    | 3356 | Level 3 (US)        | world | US     |  3447      |  652       |
+    | 3967 | Exodus (US)         | world | US     |   917      |  215 (201) |
+    | 4755 | VSNL (India)        | world | India  |   121      |   12       |
+    | 6461 | Abovenet (US)       | world | US     |     0      |  202       |
+    | 7018 | AT&T (US)           | world | US     | 10152      |  656 (631) |
+    +------+---------------------+-------+--------+------------+------------+
+    
     Parameters
     ----------
     path : str
@@ -75,60 +92,78 @@ def parse_rocketfuel_isp_map(path):
             # split on comment char, keep only the part before
             line, _ = line.split(comment_char, 1)
             line = line.strip()
-        if len(line) > 0:
-            #Parse line.
-            if line.startswith("-"):
-                # Case external node     
-                # -euid =externaladdress rn
-                try:
-                    node = int(re.findall("-\d+", line)[0])
-                    address = (re.findall("=\S+", line)[0])[1:]  # .strip("=")
-                    r = int(re.findall("r\d$", line)[0][1:])  # .strip("r"))
-                except IndexError:
-                    raise ValueError('Invalid input file. Parsing failed '\
-                                     'while trying to parse an external node')
-                topology.add_node(node, type='external', address=address, r=r)
-            else:
-                # Case internal node
-                # uid @loc [+] [bb] (num_neigh) [&ext] -> <nuid-1> <nuid-2> 
-                # ... {-euid} ... =name[!] rn
-                try:
-                    node = int(re.findall("\d+", line)[0])
-                    node_location = re.findall("@\S*", line)[0]
-                    node_location = re.sub("[\+@]", "", node_location)
-                    r = int(re.findall("r\d$", line)[0][1:])# .strip("r"))
-                    address = (re.findall("=\S+", line)[0])[1:]  # .strip("=")
-                except IndexError:
-                    raise ValueError('Invalid input file. Parsing failed '\
-                                     'while trying to parse an internal node')
-                internal_links = re.findall("<(\d+)>", line)
-                external_links = re.findall("{(-?\d+)}", line)
-                backbone = True if len(re.findall("\sbb\s", line)) > 0 \
-                           else False
-                topology.add_node(node, type='internal', 
-                                  location=node_location, 
-                                  address=address, r=r, backbone=backbone)
-                for link in internal_links:
-                    link = int(link)
-                    if node != link:
-                        topology.add_edge(node, link, type='internal')
-                for link in external_links:
-                    link = int(link)
-                    if node != link:
-                        topology.add_edge(node, link, type='external')
+        if len(line) == 0:
+            continue
+        #Parse line.
+        if line.startswith("-"):
+            # Case external node     
+            # -euid =externaladdress rn
+            try:
+                node = int(re.findall("-\d+", line)[0])
+                address = (re.findall("=\S+", line)[0])[1:]  # .strip("=")
+                r = int(re.findall("r\d$", line)[0][1:])  # .strip("r"))
+            except IndexError:
+                raise ValueError('Invalid input file. Parsing failed '\
+                                 'while trying to parse an external node')
+            topology.add_node(node, type='external', address=address, r=r)
+        else:
+            # Case internal node
+            # uid @loc [+] [bb] (num_neigh) [&ext] -> <nuid-1> <nuid-2> 
+            # ... {-euid} ... =name[!] rn
+            try:
+                node = int(re.findall("\d+", line)[0])
+                node_location = re.findall("@\S*", line)[0]
+                node_location = re.sub("[\+@]", "", node_location)
+                r = int(re.findall("r\d$", line)[0][1:])# .strip("r"))
+                address = (re.findall("=\S+", line)[0])[1:]  # .strip("=")
+            except IndexError:
+                raise ValueError('Invalid input file. Parsing failed '\
+                                 'while trying to parse an internal node')
+            internal_links = re.findall("<(\d+)>", line)
+            external_links = re.findall("{(-?\d+)}", line)
+            backbone = True if len(re.findall("\sbb\s", line)) > 0 \
+                       else False
+            topology.add_node(node, type='internal', 
+                              location=node_location, 
+                              address=address, r=r, backbone=backbone)
+            for link in internal_links:
+                link = int(link)
+                if node != link:
+                    topology.add_edge(node, link, type='internal')
+            for link in external_links:
+                link = int(link)
+                if node != link:
+                    topology.add_edge(node, link, type='external')
     return topology
 
 
-def parse_rocketfuel_isp_latency(path):
+def parse_rocketfuel_isp_latency(latencies_path, weights_path=None):
     """
-    Parse a network topology from rocketfuel ISP topology file (latency.intra)
-    with inferred link latencies.
+    Parse a network topology from RocketFuel ISP topology file (latency.intra)
+    with inferred link latencies and optionally annotate the topology with
+    inferred weights (weights.infra).
+
+    The ASes provided by the RocketFuel dataset are the following:
+
+    +------+---------------------+-------+--------+-------+-------------------+
+    | ASN  | Name                | Span  | Region | Nodes | Lrgst conn. comp. |
+    +======+=====================+=======+========+=======+===================+
+    | 1221 | Telstra (Australia) | world | AUS    |  108  |        104        |
+    | 1239 | Sprintlink (US)     | world | US     |  315  |        315        |
+    | 1755 | EBONE (Europe)      | world | Europe |  161  |        161        |
+    | 3257 | Tiscali (Europe)    | world | Europe |   87  |         87        |
+    | 3967 | Exodus (US)         | world | US     |  141  |        138        |
+    | 6461 | Abovenet (US)       | world | US     |  79   |         79        |
+    +------+---------------------+-------+--------+-------+-------------------+
 
     Parameters
     ----------
-    path : str
-        The path of the file containing the RocketFuel map. It should have 
-        extension .intra
+    latencies_path : str
+        The path of the file containing the RocketFuel latencies file.
+        It should have extension .intra
+    weights_path : str, optional
+        The path of the file containing the RocketFuel weights file.
+        It should have extension .intra
 
     Returns
     -------
@@ -145,8 +180,9 @@ def parse_rocketfuel_isp_latency(path):
      * **name**: string
      * **location**: string
 
-    Each edge of the returned graph has the following attribute:
+    Each edge of the returned graph has the following attributes:
      * **delay** : int
+     * **wdights** : float (only if a weights file was specified)
 
     Raises:
     -------
@@ -158,48 +194,93 @@ def parse_rocketfuel_isp_latency(path):
     >>> import fnss
     >>> topology = fnss.parse_rocketfuel_isp_latency('1221.latencies.intra')
     """
-    topology = DirectedTopology(type='rocket_fuel')
-    node_dictionary = dict()
-    node_id_generator = 0
+    topology = DirectedTopology(type='rocket_fuel', delay_unit='ms')
+    comment_char = '#'
+    node_dict = dict()
+    node_count = 0
 
-    for line in open(path, "r").readlines():
-        if len(line) > 0:
-            tokens = line.split()
+    for line in open(latencies_path, "r").readlines():
+        if comment_char in line:
+            # split on comment char, keep only the part before
+            line, _ = line.split(comment_char, 1)
+            line = line.strip()
+        if len(line) == 0:
+            continue
+        u_str, v_str, delay = line.split()
+        try:
+            # Edges endpoints and delay are separated by a space.
+            # An edge endpoint generally has the format <location>,<router-name>
+            # but there are some endpoints which don't, e.g. London4083 in
+            # topology 1239. This function tries first to parse by splitting
+            # at the comma. If it fails, then separates number from location.
+            # If this also fails, it just keeps the node name as it is.
+            try: 
+                u_location, u_name = u_str.split(',')
+            except ValueError:
+                match = re.match(r"([a-z]+)([0-9]+)", u_str, re.I)
+                if match:
+                    u_location, u_name = match.groups()
+                else:
+                    u_location = u_name = u_str
+           
+            try: 
+                v_location, v_name = v_str.split(',')
+            except ValueError:
+                match = re.match(r"([a-z]+)([0-9]+)", v_str, re.I)
+                if match:
+                    v_location, v_name = match.groups()
+                else:
+                    v_location = v_name = v_str
+            
+            if delay.isdigit():
+                delay = int(delay)
+            else:
+                raise ValueError('Invalid delay value: %s' % delay)
+        except ValueError:
+            raise ValueError('Invalid latencies file. Parsing failed '\
+                             'while trying to parse an edge')
+
+        if u_str not in node_dict:
+            node_dict[u_str] = node_count
+            topology.add_node(node_count, location=u_location, name=u_name)
+            node_count += 1
+        if v_str not in node_dict:
+            node_dict[v_str] = node_count
+            topology.add_node(node_count, location=v_location, name=v_name)
+            node_count += 1
+
+        u = node_dict[u_str]
+        v = node_dict[v_str]
+        topology.add_edge(u, v, delay=delay)
+    
+    if weights_path:
+        for line in open(latencies_path, "r").readlines():
+            if comment_char in line:
+                # split on comment char, keep only the part before
+                line, _ = line.split(comment_char, 1)
+                line = line.strip()
+            if len(line) == 0:
+                continue
             try:
-                # Edges endpoints and delay are separated by a space.
-                # An edge endpoint has the format <location>,<router-name>
-                u_attr = tokens[0].split(',')
-                u_location = u_attr[0]
-                u_name = u_attr[1]
-
-                v_attr = tokens[1].split(',')
-                v_location = v_attr[0]
-                v_name = v_attr[1]
-
-                delay = tokens[2]
-                if not delay.isdigit():
-                    raise ValueError('Invalid value at delay index')
-            except IndexError:
-                raise ValueError('Invalid input file. Parsing failed '\
+                u_str, v_str, weight = line.split()
+            except ValueError:
+                raise ValueError('Invalid weight file. Parsing failed '\
                                  'while trying to parse an edge')
-
-            if tokens[0] not in node_dictionary:
-                node_dictionary[tokens[0]] = node_id_generator
-                topology.add_node(node_id_generator, location=u_location, name=u_name)
-                node_id_generator = node_id_generator + 1
-            if tokens[1] not in node_dictionary:
-                node_dictionary[tokens[1]] = node_id_generator
-                topology.add_node(node_id_generator, location=v_location, name=v_name)
-                node_id_generator = node_id_generator + 1
-
-            u = node_dictionary[tokens[0]]
-            v = node_dictionary[tokens[1]]
-            topology.add_edge(u, v, delay=delay)
+            if weight.isdigit():
+                weight = float(weight)
+            else:
+                raise ValueError('Invalid weight value: %s' % weight)
+            try:
+                u = node_dict[u_str]
+                v = node_dict[v_str]
+            except KeyError:
+                raise ValueError("The weight file includes edge (%s, %s), "
+                                 "which was not included in the latencies file"
+                                 % (u_str, v_str))
+            topology.edge[u][v]['weight'] = weight
     return topology
 
-# Parser for CAIDA AS-relationships dataset
-# Data from http://www.caida.org/data/active/as-relationships/
-# http://as-rank.caida.org/data/
+
 def parse_caida_as_relationships(path):
     """
     Parse a topology from the CAIDA AS relationships dataset
@@ -218,7 +299,12 @@ def parse_caida_as_relationships(path):
     The node names of the returned topology are the the ASN of the of the AS 
     they represent and edges are annotated with the relationship between ASes 
     they connect. The relationship values can either be *customer*, *peer* or
-    *sibling*.     
+    *sibling*.
+    
+    References
+    ----------
+    http://www.caida.org/data/active/as-relationships/
+    http://as-rank.caida.org/data/
     """
     topology = DirectedTopology(type='caida_as_relationships')
     comment_char = '#'
@@ -310,15 +396,15 @@ def parse_inet(path):
 # Ignore external links
 # Node parameters: city, latitude, longitude
 # Link parameters: capacity, weight[, link_index, link_type]
-def parse_abilene(topology_file, links_file=None):
+def parse_abilene(topology_path, links_path=None):
     """
     Parse the Abilene topology.
     
     Parameters
     ----------
-    topology_file : str
+    topology_path : str
         The path of the Abilene topology file
-    links_file : str, optional
+    links_path : str, optional
         The path of the Abilene links file
     
     Returns
@@ -331,7 +417,7 @@ def parse_abilene(topology_file, links_file=None):
     comment_char = '#'
     link_type_dict = {0: 'internal', 1: 'inbound', 2: 'outbound'}
     line_type = None
-    for line in open(topology_file, "r").readlines():
+    for line in open(topology_path, "r").readlines():
         if comment_char in line:
             # split on comment char, keep only the part before
             line, _ = line.split(comment_char, 1)
@@ -373,8 +459,8 @@ def parse_abilene(topology_file, links_file=None):
             else:
                 raise ValueError('Invalid input file. Found a line that '\
                                  'I cannot interpret')
-    if links_file:
-        for line in open(links_file, "r").readlines():
+    if links_path:
+        for line in open(links_path, "r").readlines():
             if comment_char in line:
                 # split on comment char, keep only the part before
                 line, _ = line.split(comment_char, 1)
@@ -591,7 +677,7 @@ def parse_topology_zoo(path):
     return topology
 
 
-def parse_ashiip(file_name):
+def parse_ashiip(path):
     """
     Parse a topology from an output file generated by the aShiip topology 
     generator
@@ -607,7 +693,7 @@ def parse_ashiip(file_name):
     """
     topology = Topology(type='ashiip')
     
-    for line in open(file_name, "r").readlines():
+    for line in open(path, "r").readlines():
         # There is no documented aShiip format but we assume that if the line
         # does not start with a number it is not part of the topology
         if line[0].isdigit():

@@ -54,7 +54,50 @@ class Test(unittest.TestCase):
         topology = fnss.parse_rocketfuel_isp_latency(rocketfuel_file)
         self.assertEquals(108, topology.number_of_nodes())
         self.assertEquals(306, topology.number_of_edges())
+        for _, _, data in topology.edges_iter(data=True):
+            self.assertTrue('delay' in data)
+            self.assertIsInstance(data['delay'], int)
+            self.assertGreaterEqual(data['delay'], 0)
 
+    @unittest.skipIf(RES_DIR is None, "Resources folder not present")
+    def test_parse_rocketfuel_isp_latency_with_weights(self):
+        latencies_file = path.join(RES_DIR, 'rocketfuel-1221.latencies.intra')
+        weights_file = path.join(RES_DIR, 'rocketfuel-1221.weights.intra')
+        topology = fnss.parse_rocketfuel_isp_latency(latencies_file, weights_file)
+        self.assertEquals(108, topology.number_of_nodes())
+        self.assertEquals(306, topology.number_of_edges())
+        for _, _, data in topology.edges_iter(data=True):
+            self.assertTrue('delay' in data)
+            self.assertTrue('weight' in data)
+            self.assertIsInstance(data['delay'], int)
+            self.assertIsInstance(data['weight'], float)
+            self.assertGreaterEqual(data['delay'], 0)
+            self.assertGreater(data['weight'], 0)
+
+    def test_parse_rocketfuel_isp_latency_overseas_nodes(self):
+        rocketfuel_file = path.join(RES_DIR, 'rocketfuel-1239.latencies.intra')
+        topology = fnss.parse_rocketfuel_isp_latency(rocketfuel_file)
+        self.assertEquals(315, topology.number_of_nodes())
+        self.assertEquals(1944, topology.number_of_edges())
+        for _, _, data in topology.edges_iter(data=True):
+            self.assertTrue('delay' in data)
+            self.assertIsInstance(data['delay'], int)
+            self.assertGreaterEqual(data['delay'], 0)
+
+    @unittest.skipIf(RES_DIR is None, "Resources folder not present")
+    def test_parse_rocketfuel_isp_latency_with_weights_overseas_nodes(self):
+        latencies_file = path.join(RES_DIR, 'rocketfuel-1239.latencies.intra')
+        weights_file = path.join(RES_DIR, 'rocketfuel-1239.weights.intra')
+        topology = fnss.parse_rocketfuel_isp_latency(latencies_file, weights_file)
+        self.assertEquals(315, topology.number_of_nodes())
+        self.assertEquals(1944, topology.number_of_edges())
+        for _, _, data in topology.edges_iter(data=True):
+            self.assertTrue('delay' in data)
+            self.assertTrue('weight' in data)
+            self.assertIsInstance(data['delay'], int)
+            self.assertIsInstance(data['weight'], float)
+            self.assertGreaterEqual(data['delay'], 0)
+            self.assertGreater(data['weight'], 0)
 
     @unittest.skipIf(RES_DIR is None, "Resources folder not present")
     def test_parse_ashiip(self):
