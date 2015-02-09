@@ -5,27 +5,31 @@ python:
   - "2.7"
   - "3.2"
   - "3.3"
+  - "3.4"
 
 env:
   global:
-    - PIP_WHEEL_INSTALL="pip install --quiet --use-wheel --no-index --find-links=http://sunpy.cadair.com/wheelhouse/"
     - PIP_INSTALL="pip install --quiet --upgrade"
 
 before_install:
-  - $PIP_INSTALL setuptools
-  - $PIP_INSTALL pip
-  - $PIP_INSTALL wheel
-
-install:
   # For Ubuntu 12.04 VMs
   - sudo apt-get update -qq
   - sudo apt-get install -qq libatlas-dev libatlas-base-dev liblapack-dev gfortran clang ant doxygen
-  - $PIP_WHEEL_INSTALL numpy scipy matplotlib
+  - $PIP_INSTALL setuptools
+  - $PIP_INSTALL pip
+  # Install Miniconda: it's the simplest way to get up-to-date versions of NumPy, SciPy and Matplotlib
+  - wget http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O miniconda.sh
+  - chmod +x miniconda.sh
+  - ./miniconda.sh -b
+  - export PATH=/home/travis/miniconda/bin:$PATH
+  - conda update --yes conda
+  # The next couple lines fix a crash with multiprocessing on Travis
+  - sudo rm -rf /dev/shm
+  - sudo ln -s /run/shm /dev/shm
+
+install:
+  - conda install --yes python=$TRAVIS_PYTHON_VERSION atlas numpy scipy matplotlib nose dateutil pandas statsmodels
   - $PIP_INSTALL networkx
 
-before_script:
-  - $PIP_WHEEL_INSTALL nose
-
-# command to run tests
 script:
   - make test
