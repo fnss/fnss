@@ -303,10 +303,10 @@ void testEdge() {
 
 	Edge e;
 	// test default values
-	assert(e.getCapacity().toString() == "1Mbps");
-	assert(e.getDelay().toString() == "1ms");
-	assert(e.getWeight() == 0);
-	assert(e.getBufferSize().toString() == "10packets");
+	assert(e.getCapacity().toString() == DEFAULT_CAPACITY);
+	assert(e.getDelay().toString() == DEFAULT_DELAY);
+	assert(e.getWeight() == DEFAULT_WEIGHT);
+	assert(e.getBufferSize().toString() == DEFAULT_BUFFER_SIZE);
 
 	e.setCapacity(Quantity("5kb/s", Units::Bandwidth));
 	e.setDelay(Quantity("0.5s", Units::Time));
@@ -528,6 +528,17 @@ void testQuantity() {
 	assert(t2 == t3);
 	assert(t4 > t2);
 
+	// test value and unit parsing
+	assert(t1.getValue() == 2);
+	assert(t1.getUnit() == "days");
+	assert(t2.getValue() == 1);
+	assert(t2.getUnit() == "h");
+	assert(t3.getValue() == 60);
+	assert(t3.getUnit() == "min");
+	assert(t4.getValue() == 3601);
+	assert(t4.getUnit() == "sec");
+
+	// test conversion
 	t1.convert("h");
 	t2.convert("h");
 	t3.convert("h");

@@ -9,6 +9,26 @@
 namespace fnss {
 
 /**
+ * Default link capacity, set if no capacity is specified in the constructor
+ */
+#define DEFAULT_CAPACITY "1Mbps"
+
+/**
+ * Default link delay, set if no delay is specified in the constructor
+ */
+#define DEFAULT_DELAY "1ms"
+
+/**
+ * Default link weight, set if no link weight is specified in the constructor
+ */
+#define DEFAULT_WEIGHT 1
+
+/**
+ * Default buffer size, set if no buffer size is specified in the constructor
+ */
+#define DEFAULT_BUFFER_SIZE "100packets"
+
+/**
  * Represent an edge of a topology
  *
  * @author Cosmin Cocora
@@ -18,10 +38,10 @@ public:
 	/**
 	 * Constructor.
 	 */
-	Edge(const Quantity &capacity_ = Quantity("1Mbps", Units::Bandwidth),
-		const Quantity &delay_ = Quantity("1ms", Units::Time),
-		const float &weight_ = 0,
-		const Quantity &bufferSize_ = Quantity("10 packets", Units::BufferSize));
+	Edge(const Quantity &capacity_ = Quantity(DEFAULT_CAPACITY, Units::Bandwidth),
+		const Quantity &delay_ = Quantity(DEFAULT_DELAY, Units::Time),
+		const float &weight_ = DEFAULT_WEIGHT,
+		const Quantity &bufferSize_ = Quantity(DEFAULT_BUFFER_SIZE, Units::BufferSize));
 
 	/**
 	 * Get the capacity of the link.

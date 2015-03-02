@@ -32,9 +32,27 @@ Topology Parser::parseTopology(const std::string &file) {
 	Topology t(directed);
  	
  	PropertyContainer topologyProperties = Parser::parseProperties(rootNode);
- 	std::string capacityUnit = topologyProperties.getProperty("capacity_unit");
- 	std::string delayUnit = topologyProperties.getProperty("delay_unit");
- 	std::string bufferUnit = topologyProperties.getProperty("buffer_unit");
+
+ 	std::string capacityUnit;
+ 	if (topologyProperties.hasProperty("capacity_unit")) {
+ 		capacityUnit = topologyProperties.getProperty("capacity_unit");
+ 	} else {
+ 		capacityUnit = Quantity(DEFAULT_CAPACITY, Units::Bandwidth).getUnit();
+ 	}
+
+ 	std::string delayUnit;
+ 	if (topologyProperties.hasProperty("delay_unit")) {
+ 		delayUnit = topologyProperties.getProperty("delay_unit");
+	} else {
+		delayUnit = Quantity(DEFAULT_DELAY, Units::Time).getUnit();
+	}
+
+ 	std::string bufferUnit;
+	if (topologyProperties.hasProperty("buffer_unit")) {
+		bufferUnit = topologyProperties.getProperty("buffer_unit");
+	} else {
+		bufferUnit = Quantity(DEFAULT_DELAY, Units::BufferSize).getUnit();
+	}
 
  	curNode = rootNode->first_node("node");
  	while(curNode) {

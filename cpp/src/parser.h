@@ -2,6 +2,8 @@
 #define PARSER_H
 
 #include "topology.h"
+#include "edge.h"
+#include "quantity.h"
 #include "event-schedule.h"
 #include "traffic-matrix-sequence.h"
 

@@ -49,7 +49,7 @@ public:
 	 * @param converter the \c MeasurementUnit object used for conversions. The
 	 *                  object is not copied, only the reference is stored.
 	 */
-	Quantity(const std::string &str, const MeasurementUnit &converte_);
+	Quantity(const std::string &str, const MeasurementUnit &converter_);
 
 	/**
 	 * Constructor.
