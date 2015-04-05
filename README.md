@@ -1,13 +1,14 @@
 # Fast Network Simulation Setup (FNSS)
-Fast Network Simulation Setup (FNSS) is a toolchain allowing network researchers and engineers to simplify the process of setting up a network experiment scenario. It allows users to execute the following tasks:
+Fast Network Simulation Setup (FNSS) is a toolchain allowing network researchers and engineers to simplify the process of setting up a network experiment scenario. It allows users to:
 
-* Parse a topology from a dataset, a topology generator or generate it according to a number of synthetic models
-* Apply link capacity, link weights, link delays and buffer sizes
-* Deploy application stacks
+* Parse a topology from a dataset or a topology generator or generate it according to a number of synthetic models
+* Configure links with capacity, weights, delays and buffer sizes
+* Deploy applications and protocol stacks on nodes
 * Generate traffic matrices
 * Generate event schedules
+* Deploy network and workload configuration to a number of simulators and emulators
 
-The core library, which provides the features listed above, is written in Python. In addition, FNSS provides adapters for importing scenarios in [ns-2](http://www.isi.edu/nsnam/ns/), [ns-3](http://www.nsnam.org/), [Mininet](http://www.mininet.org/), [Omnet++](http://www.omnetpp.org/), [Autonetkit](http://www.autonetkit.org/) and [jFed](http://jfed.iminds.be/) as well in other simulators or emulators through the Python core library itself or the provided Java and C++ libraries.
+FNSS comprises a core library (written in Python) and a set of adapters. The core library provides all capabilities for generating the experiment scenario. The adapters allow users to export scenarios generated with the core library to [ns-2](http://www.isi.edu/nsnam/ns/), [ns-3](http://www.nsnam.org/), [Mininet](http://www.mininet.org/), [Omnet++](http://www.omnetpp.org/), [Autonetkit](http://www.autonetkit.org/) and [jFed](http://jfed.iminds.be/) as well other simulators or emulators through the Python core library itself or the provided Java and C++ libraries.
 
 ## Project directory structure
 The project files are organized in the following directories:
@@ -49,12 +50,8 @@ When reporting an issue, please try to provide a reproducible example of the pro
 ## Contributions
 Any contributions to the project (either bug fixes or new features) are very much welcome. To submit your code, please send a pull request on the [GitHub project page](https://github.com/fnss/fnss/).
 
-If you wish to contribute please follow these guidelines:
+If you wish to contribute please try to follow these guidelines:
 
  * Write commit messages conforming to [Git convention](http://365git.tumblr.com/post/3308646748/writing-git-commit-messages)
- * If you are sending a fix to open issue, feel free to send a pull request directly,
-   but make sure to reference the issue ID that you are fixing in the commit message.
- * If you wish to implement a new feature, we would appreciate if you could contact us first, 
-   just in case we are already implementing that same feature, so that we can avoid you a waste of time.
- * Think about writing test cases for your feature or bug fix, if relevant.
-   If you can't, don't worry: send your code anyway and we'll work it out.
+ * If you are sending a fix to an open issue, feel free to send a pull request directly, but make sure to reference the issue ID that you are fixing in the commit message.
+ * Think about writing test cases for your feature or bug fix, if relevant. If you can't, don't worry: send your code anyway.
