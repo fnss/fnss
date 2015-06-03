@@ -1,4 +1,4 @@
-Copyright (c) 2014, Lorenzo Saino and Cosmin Cocora
+Copyright (c) 2015, Lorenzo Saino and Cosmin Cocora
 Contacts: http://fnss.github.io
 All rights reserved.
 

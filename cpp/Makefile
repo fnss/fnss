@@ -28,7 +28,7 @@
 # Config
 SHELL = /bin/sh
 
-VERSION = 0.6.0
+VERSION = 0.6.1
 
 # NAME is used for lib$(NAME).a/.so
 NAME = fnss
