@@ -985,7 +985,7 @@ def link_loads(topology, traffic_matrix, routing_matrix=None):
                                else topology.to_directed()
     capacity_unit = capacity_units[topology.graph['capacity_unit']]
     volume_unit = capacity_units[traffic_matrix.attrib['volume_unit']]
-    norm_factor = float(capacity_unit)/float(volume_unit)
+    norm_factor = float(volume_unit)/float(capacity_unit)
     if routing_matrix == None:
         routing_matrix = nx.all_pairs_dijkstra_path(topology, weight='weight')
     for u, v in topology.edges_iter():
