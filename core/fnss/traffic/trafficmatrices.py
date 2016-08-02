@@ -971,9 +971,14 @@ def link_loads(topology, traffic_matrix, routing_matrix=None, ecmp=False):
         from origin to destination (both included). For example, if the
         path from node 1 to node 4 is 1 -> 2 -> 3 -> 4, then
         routing_matrix[1][4] = [1, 2, 3, 4].
+        If ecmp is set to True, the values of the nested dictionary are lists
+        of lists of nodes, each representing a path, among which the load will
+        be equally divided.
         The networkx all_pairs_dijkstra_path function returns shortest paths
         in this format.
         If this parameter is None, then Dijkstra shortest paths are used.
+    ecmp: bool
+        Enables the usage of Equal-Cost Multi Path Routing.
 
     Returns
     -------
