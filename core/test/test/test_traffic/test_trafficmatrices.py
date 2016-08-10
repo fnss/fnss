@@ -94,6 +94,63 @@ class Test(unittest.TestCase):
         self.assertAlmostEqual(0.0, load[(2, 1)])
         self.assertAlmostEqual(0.7, load[(0, 4)])
         self.assertAlmostEqual(0.5, load[(4, 3)])
+
+    def test_link_loads_ecmp(self):
+        topo = fnss.ring_topology(5)
+        topo.add_edge(1,3)
+        fnss.set_capacities_constant(topo, 100, capacity_unit='Mbps')
+        tm = fnss.TrafficMatrix(volume_unit='Mbps')
+        tm.add_flow(0, 1, 20)
+        tm.add_flow(1, 0, 30)
+        tm.add_flow(0, 2, 40)
+        tm.add_flow(1, 4, 70)
+        rm = {0 :
+                { 0: [[0]],
+                  1: [[0,1]],
+                  2: [[0,1,2]],
+                  3: [[0,1,3],[0,4,3]],
+                  4: [[0,4]]
+                },
+              1 :
+                { 0: [[1,0]],
+                  1: [[1]],
+                  2: [[1,2]],
+                  3: [[1,3]],
+                  4: [[1,3,4],[1,0,4]]
+                },
+              2 :
+                { 0: [[2,1,0]],
+                  1: [[2,1]],
+                  2: [[2]],
+                  3: [[2,3]],
+                  4: [[2,3,4]]
+                },
+              3 :
+                { 0: [[3,1,0],[3,4,0]],
+                  1: [[3,1]],
+                  2: [[3,2]],
+                  3: [[3]],
+                  4: [[3,4]]
+                },
+              4 :
+                { 0: [[4,0]],
+                  1: [[4,0,1],[4,3,1]],
+                  2: [[4,3,2]],
+                  3: [[4,3]],
+                  4: [[4]]
+                }}
+
+        load = fnss.link_loads(topo, tm, routing_matrix=rm, ecmp=True)
+        self.assertAlmostEqual(0.6, load[(0, 1)])
+        self.assertAlmostEqual(0.65, load[(1, 0)])
+        self.assertAlmostEqual(0.4, load[(1, 2)])
+        self.assertAlmostEqual(0.0, load[(2, 1)])
+        self.assertAlmostEqual(0.35, load[(0, 4)])
+        self.assertAlmostEqual(0.35, load[(3, 4)])
+        self.assertAlmostEqual(0.0, load[(4, 3)])
+        self.assertAlmostEqual(0.0, load[(4, 0)])
+        self.assertAlmostEqual(0.0, load[(2, 1)])
+        self.assertAlmostEqual(0.0, load[(2, 3)])
         
     def test_static_traffic_matrix(self):
         tm = fnss.static_traffic_matrix(self.G, 10, 8, max_u=0.9)
