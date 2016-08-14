@@ -239,7 +239,7 @@ def barabasi_albert_topology(n, m, m0, seed=None):
     m : int
         Number of edges to attach from a new node to existing nodes
     m0 : int
-        Number of edges initially attached to the network
+        Number of nodes initially attached to the network
     seed : int, optional
         Seed for random number generator (default=None). 
 
