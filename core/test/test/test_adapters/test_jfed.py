@@ -5,7 +5,7 @@ else:
     try:
         import unittest2 as unittest
     except ImportError:
-        raise ImportError("The unittest2 package is needed to run the tests.") 
+        raise ImportError("The unittest2 package is needed to run the tests.")
 del sys
 from os import environ, path
 import fnss
@@ -23,9 +23,9 @@ class Test(unittest.TestCase):
 
     @unittest.skipIf(TMP_DIR is None, "Temp folder not present")
     def test_to_from(self):
-        f = path.join(TMP_DIR,'jfed-tofrom.rspec')
+        f = path.join(TMP_DIR, 'jfed-tofrom.rspec')
         t_in = fnss.Topology()
-        t_in.add_path([1,2,3,4])
+        t_in.add_path([1, 2, 3, 4])
         fnss.to_jfed(t_in, f)
         t_out = fnss.from_jfed(f)
         self.assertEqual(t_in.number_of_nodes(), t_out.number_of_nodes())
@@ -36,12 +36,12 @@ class Test(unittest.TestCase):
     @unittest.skipIf(TMP_DIR is None, "Temp folder not present")
     def test_to_jfed(self):
         t = fnss.Topology()
-        t.add_path([1,2,3,4])
-        fnss.to_jfed(t, path.join(TMP_DIR,'jfed-to.rspec'))
+        t.add_path([1, 2, 3, 4])
+        fnss.to_jfed(t, path.join(TMP_DIR, 'jfed-to.rspec'))
         pass
 
     @unittest.skipIf(RES_DIR is None, "Resources folder not present")
     def test_from_jfed(self):
-        rspec = path.join(RES_DIR,'jfed-success.rspec')
+        rspec = path.join(RES_DIR, 'jfed-success.rspec')
         t = fnss.from_jfed(rspec)
         self.assertTrue(len(t) > 0)

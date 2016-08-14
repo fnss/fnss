@@ -1,11 +1,11 @@
-"""Provides basic functions and classes for operating on network topologies."""
+"""Basic functions and classes for operating on network topologies."""
 import xml.etree.cElementTree as ET
 import networkx as nx
 import fnss.util as util
 
 
 __all__ = [
-    'Topology', 
+    'Topology',
     'DirectedTopology',
     'od_pairs_from_topology',
     'fan_in_out_capacities',
@@ -18,40 +18,40 @@ __all__ = [
 
 class BaseTopology(object):
     """Base class for generic topology. Provides utility methods for listing
-    nodes and edge properties. 
+    nodes and edge properties.
     """
-    
+
     def capacities(self):
         """Return a dictionary of all link capacities, keyed by link
-        
+
         Returns
         -------
         capacities : dict
             A dictionary of link capacity, keyed by link
         """
         return nx.get_edge_attributes(self, 'capacity')
-    
+
     def delays(self):
         """
         Return a dictionary of all link delays, keyed by link
-        
+
         Returns
         -------
         delays : dict
             A dictionary of link delays, keyed by link
         """
         return nx.get_edge_attributes(self, 'delay')
-    
+
     def weights(self):
         """Return a dictionary of all link weights, keyed by link
-        
+
         Returns
         -------
         weights : dict
             A dictionary of all link weights, keyed by link
         """
         return nx.get_edge_attributes(self, 'weight')
-    
+
     def buffers(self):
         """Return a dictionary of all buffer sizes, keyed by interface
 
@@ -63,7 +63,7 @@ class BaseTopology(object):
             outputting
         """
         return nx.get_edge_attributes(self, 'buffer')
-    
+
     def stacks(self):
         """Return a dictionary of all node stacks, keyed by node
 
@@ -75,10 +75,10 @@ class BaseTopology(object):
             properties is a the dictionary
         """
         return nx.get_node_attributes(self, 'stack')
-    
+
     def applications(self):
         """Return a dictionary of all applications deployed, keyed by node
-        
+
         Returns
         -------
         applications : dict
@@ -89,10 +89,10 @@ class BaseTopology(object):
 
 class Topology(nx.Graph, BaseTopology):
     """Base class for undirected topology"""
-    
+
     def __init__(self, data=None, name="", **kwargs):
         """Initialize the topology
-        
+
         Parameters
         ----------
         data : input graph
@@ -133,7 +133,7 @@ class Topology(nx.Graph, BaseTopology):
 
         """
         return Topology(super(Topology, self).copy())
-        
+
     def subgraph(self, nbunch):
         """Return the subgraph induced on nodes in nbunch.
 
@@ -174,7 +174,7 @@ class Topology(nx.Graph, BaseTopology):
         [(0, 1), (1, 2)]
         """
         return Topology(super(Topology, self).subgraph(nbunch))
-        
+
     def to_directed(self):
         """Return a directed representation of the topology.
 
@@ -191,7 +191,7 @@ class Topology(nx.Graph, BaseTopology):
         graph attributes which attempts to completely copy
         all of the data and references.
 
-        This is in contrast to the similar D=DirectedTopology(G) which returns 
+        This is in contrast to the similar D=DirectedTopology(G) which returns
         a shallow copy of the data.
 
         See the Python copy module for more information on shallow
@@ -214,7 +214,7 @@ class Topology(nx.Graph, BaseTopology):
         [(0, 1)]
         """
         return DirectedTopology(super(Topology, self).to_directed())
-    
+
     def to_undirected(self):
         """Return an undirected copy of the topology.
 
@@ -255,10 +255,10 @@ class Topology(nx.Graph, BaseTopology):
 
 class DirectedTopology(nx.DiGraph, BaseTopology):
     """Base class for directed topology"""
-    
+
     def __init__(self, data=None, name="", **kwargs):
         """Initialize the topology
-        
+
         Parameters
         ----------
         data : input graph
@@ -298,7 +298,7 @@ class DirectedTopology(nx.DiGraph, BaseTopology):
         >>> copied_topo = topo.copy()
         """
         return DirectedTopology(super(DirectedTopology, self).copy())
-        
+
     def subgraph(self, nbunch):
         """Return the subgraph induced on nodes in nbunch.
 
@@ -339,7 +339,7 @@ class DirectedTopology(nx.DiGraph, BaseTopology):
         [(0, 1), (1, 2)]
         """
         return DirectedTopology(super(DirectedTopology, self).subgraph(nbunch))
-        
+
     def to_directed(self):
         """Return a directed representation of the topology.
 
@@ -356,7 +356,7 @@ class DirectedTopology(nx.DiGraph, BaseTopology):
         graph attributes which attempts to completely copy
         all of the data and references.
 
-        This is in contrast to the similar D=DirectedTopology(G) which returns 
+        This is in contrast to the similar D=DirectedTopology(G) which returns
         a shallow copy of the data.
 
         See the Python copy module for more information on shallow
@@ -379,7 +379,7 @@ class DirectedTopology(nx.DiGraph, BaseTopology):
         [(0, 1)]
         """
         return DirectedTopology(super(DirectedTopology, self).to_directed())
-    
+
     def to_undirected(self):
         """Return an undirected copy of the topology.
 
@@ -419,10 +419,10 @@ class DirectedTopology(nx.DiGraph, BaseTopology):
 
 
 def od_pairs_from_topology(topology):
-    """Calculate all possible origin-destination pairs of the topology. 
+    """Calculate all possible origin-destination pairs of the topology.
     This function does not simply calculate all possible pairs of the topology
     nodes. Instead, it only returns pairs of nodes connected by at least
-    a path. 
+    a path.
 
     Parameters
     ----------
@@ -433,7 +433,7 @@ def od_pairs_from_topology(topology):
     -------
     od_pair : list
         List containing all origin destination tuples.
-    
+
     Examples
     --------
     >>> import fnss
@@ -451,29 +451,29 @@ def od_pairs_from_topology(topology):
 
 def fan_in_out_capacities(topology):
     """Calculate fan-in and fan-out capacities for all nodes of the topology.
-    
+
     The fan-in capacity of a node is the sum of capacities of all incoming
     links, while the fan-out capacity is the sum of capacities of all outgoing
     links.
-    
+
     Parameters
     ----------
     topology : Topology
         The topology object whose fan-in and fan-out capacities are calculated.
         This topology must be annotated with link capacities.
-    
+
     Returns
     -------
     fan_in_out_capacities : tuple (fan_in, fan_out)
-        A tuple of two dictionaries, representing, respectively the fan-in and 
+        A tuple of two dictionaries, representing, respectively the fan-in and
         fan-out capacities keyed by node.
-        
+
     Notes
     -----
     This function works correctly for both directed and undirected topologies.
     If the topology is undirected, the returned dictionaries of fan-in and
     fan-out capacities are identical.
-    
+
     Examples
     --------
     >>> import fnss
@@ -503,7 +503,7 @@ def fan_in_out_capacities(topology):
 
 def rename_edge_attribute(topology, old_attr, new_attr):
     """Rename all edges attributes with a specific name to a new name
-    
+
     Parameters
     ----------
     topology : Topology
@@ -512,7 +512,7 @@ def rename_edge_attribute(topology, old_attr, new_attr):
         Old attribute name
     new_attr : any hashable type
         New attribute name
-    
+
     Example
     -------
     >>> import fnss
@@ -533,7 +533,7 @@ def rename_edge_attribute(topology, old_attr, new_attr):
 
 def rename_node_attribute(topology, old_attr, new_attr):
     """Rename all nodes attributes with a specific name to a new name
-    
+
     Parameters
     ----------
     topology : Topology
@@ -542,7 +542,7 @@ def rename_node_attribute(topology, old_attr, new_attr):
         Old attribute name
     new_attr : any hashable type
         New attribute name
-    
+
     Example
     -------
     >>> import fnss
@@ -562,16 +562,16 @@ def rename_node_attribute(topology, old_attr, new_attr):
 
 
 def read_topology(path, encoding='utf-8'):
-    """Read a topology from an XML file and returns either a Topology or a 
+    """Read a topology from an XML file and returns either a Topology or a
     DirectedTopology object
-    
+
     Parameters
     ----------
     path : str
         The path of the topology XML file to parse
     encoding : str, optional
         The encoding of the file
-    
+
     Returns
     -------
     topology: Topology or DirectedTopology
@@ -597,7 +597,7 @@ def read_topology(path, encoding='utf-8'):
                 raise ET.ParseError('Invalid topology. ' \
                                     'A node has more than one stack.')
             stack = node.findall('stack')[0]
-            stack_name = util.xml_cast_type(stack.attrib['name.type'], 
+            stack_name = util.xml_cast_type(stack.attrib['name.type'],
                                         stack.attrib['name'])
             stack_props = {}
             for prop in stack.findall('property'):
@@ -608,7 +608,7 @@ def read_topology(path, encoding='utf-8'):
         if len(node.findall('application')) > 0:
             topology.node[v]['application'] = {}
             for application in node.findall('application'):
-                app_name = util.xml_cast_type(application.attrib['name.type'], 
+                app_name = util.xml_cast_type(application.attrib['name.type'],
                                           application.attrib['name'])
                 app_props = {}
                 for prop in application.findall('property'):
@@ -617,9 +617,9 @@ def read_topology(path, encoding='utf-8'):
                     app_props[name] = value
                 topology.node[v]['application'][app_name] = app_props
     for edge in head.findall('link'):
-        u = util.xml_cast_type(edge.find('from').attrib['type'], 
+        u = util.xml_cast_type(edge.find('from').attrib['type'],
                            edge.find('from').text)
-        v = util.xml_cast_type(edge.find('to').attrib['type'], 
+        v = util.xml_cast_type(edge.find('to').attrib['type'],
                            edge.find('to').text)
         topology.add_edge(u, v)
         for prop in edge.findall('property'):
@@ -631,7 +631,7 @@ def read_topology(path, encoding='utf-8'):
 
 def write_topology(topology, path, encoding='utf-8', prettyprint=True):
     """Write a topology object on an XML file
-    
+
     Parameters
     ----------
     topology : Topology
@@ -645,7 +645,7 @@ def write_topology(topology, path, encoding='utf-8', prettyprint=True):
     """
     head = ET.Element('topology')
     head.attrib['linkdefault'] = 'directed' if topology.is_directed() \
-                                            else 'undirected' 
+                                            else 'undirected'
     for name, value in topology.graph.items():
         prop = ET.SubElement(head, 'property')
         prop.attrib['name'] = name

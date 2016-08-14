@@ -64,7 +64,7 @@ network ${name} {
 
 def to_omnetpp(topology, path=None):
     """Convert an FNSS topology into an Omnet++ NED script.
-    
+
     Parameters
     ----------
     topology : Topology

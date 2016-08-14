@@ -5,7 +5,7 @@ else:
     try:
         import unittest2 as unittest
     except ImportError:
-        raise ImportError("The unittest2 package is needed to run the tests.") 
+        raise ImportError("The unittest2 package is needed to run the tests.")
 del sys
 from os import environ, path
 import random
@@ -18,7 +18,7 @@ class Test(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         pass
-        
+
     @classmethod
     def tearDownClass(cls):
         pass
@@ -28,7 +28,7 @@ class Test(unittest.TestCase):
 
     def tearDown(self):
         pass
-    
+
     def event_gen(self, threshold, action):
         event_props = {}
         r = random.random()
@@ -44,8 +44,8 @@ class Test(unittest.TestCase):
         self.assertEqual({'add_order': 2}, es[0][1])
         self.assertEqual(8, es[1][0])
         self.assertEqual({'add_order': 1}, es[1][1])
-        
-    
+
+
     def test_event_schedule_pop(self):
         es = fnss.EventSchedule()
         es.add(8, {'add_order': 1}, absolute_time=True)
@@ -57,8 +57,8 @@ class Test(unittest.TestCase):
         self.assertEqual({'add_order': 2}, e0)
         self.assertEqual({'add_order': 1}, e1)
         self.assertEqual(0, es.number_of_events())
-    
-    
+
+
     def test_event_schedule_events_between(self):
         es = fnss.EventSchedule()
         es.add(5, {'event_order': 3}, absolute_time=True)
@@ -121,36 +121,36 @@ class Test(unittest.TestCase):
             t, _ = ev
             self.assertGreaterEqual(t, es.attrib['t_start'])
             self.assertLessEqual(t, es.attrib['t_end'])
-            
-    
+
+
     def test_deterministic_process_event_schedule(self):
         action = ['read_email', 'watch_video']
-        schedule = fnss.deterministic_process_event_schedule(20, 0, 80001, 'ms', 
-                                                             self.event_gen, 
+        schedule = fnss.deterministic_process_event_schedule(20, 0, 80001, 'ms',
+                                                             self.event_gen,
                                                              0.5, action=action)
         self.assertIsNotNone(schedule)
         self.assertEqual(4000, len(schedule))
-        for time, event in schedule: 
+        for time, event in schedule:
             self.assertTrue(event['action'] in action)
             self.assertTrue(time >= 0)
             self.assertTrue(time <= 80001)
-    
-    
+
+
     def test_poisson_process_event_schedule(self):
         action = ['read_email', 'watch_video']
         schedule = fnss.poisson_process_event_schedule(15, 0, 8000, 'ms',
                                                        self.event_gen,
                                                        0.5, action=action)
         self.assertIsNotNone(schedule)
-        for time, event in schedule: 
+        for time, event in schedule:
             self.assertTrue(event['action'] in action)
             self.assertTrue(time >= 0)
             self.assertTrue(time <= 8000)
-            
+
     @unittest.skipIf(TMP_DIR is None, "Temp folder not present")
     def test_read_write_event_schedule(self):
         action = ['read_email', 'watch_video']
-        schedule = fnss.deterministic_process_event_schedule(20, 0, 801, 'ms', 
+        schedule = fnss.deterministic_process_event_schedule(20, 0, 801, 'ms',
                                                              self.event_gen,
                                                              0.5, action=action)
         time, event = schedule[2]
@@ -161,11 +161,11 @@ class Test(unittest.TestCase):
         read_time, read_event = read_schedule[2]
         self.assertEqual(time, read_time)
         self.assertEqual(event, read_event)
-        
+
     @unittest.skipIf(TMP_DIR is None, "Temp folder not present")
     def test_read_write_event_schedule_special_type(self):
         schedule = fnss.EventSchedule()
-        event = {'tuple_param': (1,2,3),
+        event = {'tuple_param': (1, 2, 3),
                  'dict_param': {'a': 1, 'b': 2},
                  'list_param':[1, 'hello', 0.3]}
         schedule.add(1, event)
@@ -178,6 +178,6 @@ class Test(unittest.TestCase):
         self.assertEqual(tuple, type(read_event['tuple_param']))
         self.assertEqual(list, type(read_event['list_param']))
         self.assertEqual(dict, type(read_event['dict_param']))
-        self.assertEqual(event['dict_param'], read_event['dict_param'])    
-        self.assertEqual(event['list_param'], read_event['list_param'])  
-        self.assertEqual(event['tuple_param'], read_event['tuple_param'])  
+        self.assertEqual(event['dict_param'], read_event['dict_param'])
+        self.assertEqual(event['list_param'], read_event['list_param'])
+        self.assertEqual(event['tuple_param'], read_event['tuple_param'])

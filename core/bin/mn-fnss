@@ -27,7 +27,7 @@ discarded and values provided with the link attributes are used instead.
 Unless the option *--no-relabel* is provided, this script relabels all nodes of
 the FNSS topology to match Mininet's conventions, i.e. each host label starts
 with *h* (e.g. h1, h2, h3...) and each switch label starts with *s*
-(e.g. s1, s2, s3...). 
+(e.g. s1, s2, s3...).
 
 Unless used to print this help message or version information, this script
 must be run as superuser.
@@ -59,7 +59,7 @@ def usage():
 
 def run_mn(path, argv, relabel_nodes=True):
     """Run Mininet given with a given FNSS topology
-    
+
     Mininet's *mn* script only accepts custom topologies passed in the form of
     a Python source file that contains the code for generating a Mininet
     topology on the fly. For this reason, this function, given an FNSS topology
@@ -67,7 +67,7 @@ def run_mn(path, argv, relabel_nodes=True):
     such FNSS topology file and convert it to Mininet format. It then launches
     *mn* passing this temporary file as argument and destroys it after *mn*
     terminates.
-    
+
     Parameters
     ----------
     path : str
@@ -78,7 +78,7 @@ def run_mn(path, argv, relabel_nodes=True):
         If *True*, rename node labels according to Mininet conventions. In
         Mininet all node labels are strings whose values are "h1", "h2", ... if
         the node is a host or "s1", "s2", ... if the node is a switch.
-    
+
     Returns
     -------
     retcode : int
@@ -107,7 +107,7 @@ def main():
     """Main function"""
     if len(sys.argv) < 2:
         usage()
-    args = sys.argv[1:] 
+    args = sys.argv[1:]
     arg = args.pop()
     if arg in ('--help', '-h'):
         usage()
@@ -123,6 +123,6 @@ def main():
         relabel_nodes = True
     return run_mn(arg, args, relabel_nodes)
 
-        
+
 if __name__ == '__main__':
     sys.exit(main())

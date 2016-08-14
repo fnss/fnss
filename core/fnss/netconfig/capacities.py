@@ -1,5 +1,4 @@
-"""
-Provides functions to assign and manipulate link capacities of a topology.
+"""Functions to assign and manipulate link capacities of a topology.
 
 Link capacities can be assigned either deterministically or randomly, according
 to various models.

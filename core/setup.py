@@ -22,7 +22,7 @@ optional_packages = [('nose', '>=', '1.1'),
                      ('sphinx', '>=', '1.1')]
 
 # Python 2.6 version of unittest does not include features required by
-# FNSS's tests: unittest2 is needed 
+# FNSS's tests: unittest2 is needed
 if sys.version_info[:2] == (2, 6):
     optional_packages.append(('unittest2', '>=', '0.4'))
 
@@ -47,10 +47,10 @@ except ImportError:
         try:
             exec('import %s' % package)
             installed_version = eval('%s.__version__' % package)
-            if not eval('LooseVersion(\'%s\') %s LooseVersion(\'%s\')' 
+            if not eval('LooseVersion(\'%s\') %s LooseVersion(\'%s\')'
                         % (installed_version, condition, req_version)):
                 print('FNSS requires package %s, version %s %s '
-                      '(%s detected). Update package and try again' 
+                      '(%s detected). Update package and try again'
                       % (package, condition, req_version, installed_version))
                 sys.exit(-1)
         except ImportError:
@@ -119,7 +119,7 @@ if __name__ == "__main__":
             'network',
             'simulation',
             'topology',
-            'traffic matrix', 
+            'traffic matrix',
             'link capacity',
             'delay',
             'protocol stack'

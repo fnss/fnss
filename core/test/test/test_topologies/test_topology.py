@@ -5,7 +5,7 @@ else:
     try:
         import unittest2 as unittest
     except ImportError:
-        raise ImportError("The unittest2 package is needed to run the tests.") 
+        raise ImportError("The unittest2 package is needed to run the tests.")
 del sys
 from os import path, environ
 import fnss
@@ -19,17 +19,17 @@ class Test(unittest.TestCase):
     def setUpClass(cls):
         # set up topology used for all traffic matrix tests
         cls.G = fnss.glp_topology(n=50, m=1, m0=10, p=0.2, beta=-2, seed=1)
-        fnss.set_capacities_random(cls.G, {10: 0.5, 20: 0.3, 40: 0.2}, 
+        fnss.set_capacities_random(cls.G, {10: 0.5, 20: 0.3, 40: 0.2},
                               capacity_unit='Mbps')
         fnss.set_delays_constant(cls.G, 2, delay_unit='ms')
         fnss.set_weights_inverse_capacity(cls.G)
         for node in [2, 4, 6]:
-            fnss.add_stack(cls.G, node, 'tcp', 
+            fnss.add_stack(cls.G, node, 'tcp',
                           {'protocol': 'cubic', 'rcvwnd': 1024})
         for node in [2, 4]:
-            fnss.add_application(cls.G, node, 'client', 
+            fnss.add_application(cls.G, node, 'client',
                                 {'rate': 100, 'user-agent': 'fnss'})
-        fnss.add_application(cls.G, 2, 'server', 
+        fnss.add_application(cls.G, 2, 'server',
                            {'port': 80, 'active': True, 'user-agent': 'fnss'})
 
     @classmethod
@@ -72,7 +72,7 @@ class Test(unittest.TestCase):
         topology.add_edge('1', '2')
         topology.add_edge('2', '1')
         self.assertEqual(2, topology.number_of_edges())
-    
+
     def test_directed_topology_class(self):
         topology = fnss.DirectedTopology()
         topology.add_edge(1, 2)
@@ -94,7 +94,7 @@ class Test(unittest.TestCase):
 
     def test_od_pairs_from_topology_undirected(self):
         topology = fnss.ring_topology(3)
-        topology.add_path([7, 8, 9]) # isolated node: no flows from/to this node 
+        topology.add_path([7, 8, 9])  # isolated node: no flows from/to this node
         od_pairs = fnss.od_pairs_from_topology(topology)
         expected_od_pairs = [(0, 1), (0, 2), (1, 0), (1, 2), (2, 0), (2, 1),
                              (7, 8), (7, 9), (8, 7), (8, 9), (9, 7), (9, 8)]
@@ -112,7 +112,7 @@ class Test(unittest.TestCase):
         in_cap, out_cap = fnss.fan_in_out_capacities(dir_topology)
         self.assertEquals({0: 10, 1: 10, 2: 20, 3: 0}, in_cap)
         self.assertEquals({0: 10, 1: 20, 2: 0, 3: 10}, out_cap)
-        
+
     def test_fan_in_out_capacities_undirected(self):
         topology = fnss.star_topology(3)
         fnss.set_capacities_constant(topology, 10, 'Mbps')
@@ -132,7 +132,7 @@ class Test(unittest.TestCase):
         self.assertEquals('tcp', fnss.get_stack(read_topo, 2)[0])
         self.assertEquals(1024, fnss.get_stack(read_topo, 2)[1]['rcvwnd'])
         self.assertEquals('cubic', fnss.get_stack(read_topo, 2)[1]['protocol'])
-        self.assertEquals(len(fnss.get_application_names(self.G, 2)), 
+        self.assertEquals(len(fnss.get_application_names(self.G, 2)),
                       len(fnss.get_application_names(read_topo, 2)))
         self.assertEquals('fnss', fnss.get_application_properties(read_topo, 2, 'server')['user-agent'])
         self.assertEquals([2, 4, 6], [ v for v in read_topo.nodes_iter()

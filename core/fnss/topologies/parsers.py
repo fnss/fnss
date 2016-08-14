@@ -1,7 +1,4 @@
-"""
-Provides functions to parse topologies from datasets or from outputs of
-other generators.
-"""
+"""Functions to parse topologies from datasets or from other generators."""
 import re
 import math
 
@@ -27,7 +24,7 @@ __all__ = [
 def parse_rocketfuel_isp_map(path):
     """
     Parse a network topology from RocketFuel ISP map file.
-    
+
     The ASes provided by the RocketFuel dataset are the following:
 
     +------+---------------------+-------+--------+------------+------------+
@@ -44,41 +41,41 @@ def parse_rocketfuel_isp_map(path):
     | 6461 | Abovenet (US)       | world | US     |     0      |  202       |
     | 7018 | AT&T (US)           | world | US     | 10152      |  656 (631) |
     +------+---------------------+-------+--------+------------+------------+
-    
+
     Parameters
     ----------
     path : str
-        The path of the file containing the RocketFuel map. It should have 
+        The path of the file containing the RocketFuel map. It should have
         extension .cch
 
     Returns
     -------
     topology : DirectedTopology
         The object containing the parsed topology.
-    
+
     Notes
     -----
     The returned topology is always directed. If an undirected topology is
     desired, convert it using the DirectedTopology.to_undirected() method.
-    
+
     Each node of the returned graph has the following attributes:
      * **type**: string
      * **location**: string (optional)
-     * **address**: string 
+     * **address**: string
      * **r**: int
      * **backbone**: boolean (optional)
-        
+
     Each edge of the returned graph has the following attributes:
      * type : string, which can either be *internal* or *external*
-     
+
     If the topology contains self-loops (links starting and ending in the same
     node) they are stripped from the topology.
-    
+
     Raises
     ------
     ValueError
         If the provided file cannot be parsed correctly.
-        
+
     Examples
     --------
     >>> import fnss
@@ -86,7 +83,7 @@ def parse_rocketfuel_isp_map(path):
     """
     topology = DirectedTopology(type='rocket_fuel')
     comment_char = '#'
-    
+
     for line in open(path, "r").readlines():
         if comment_char in line:
             # split on comment char, keep only the part before
@@ -94,9 +91,9 @@ def parse_rocketfuel_isp_map(path):
             line = line.strip()
         if len(line) == 0:
             continue
-        #Parse line.
+        # Parse line.
         if line.startswith("-"):
-            # Case external node     
+            # Case external node
             # -euid =externaladdress rn
             try:
                 node = int(re.findall("-\d+", line)[0])
@@ -108,13 +105,13 @@ def parse_rocketfuel_isp_map(path):
             topology.add_node(node, type='external', address=address, r=r)
         else:
             # Case internal node
-            # uid @loc [+] [bb] (num_neigh) [&ext] -> <nuid-1> <nuid-2> 
+            # uid @loc [+] [bb] (num_neigh) [&ext] -> <nuid-1> <nuid-2>
             # ... {-euid} ... =name[!] rn
             try:
                 node = int(re.findall("\d+", line)[0])
                 node_location = re.findall("@\S*", line)[0]
                 node_location = re.sub("[\+@]", "", node_location)
-                r = int(re.findall("r\d$", line)[0][1:])# .strip("r"))
+                r = int(re.findall("r\d$", line)[0][1:])  # .strip("r"))
                 address = (re.findall("=\S+", line)[0])[1:]  # .strip("=")
             except IndexError:
                 raise ValueError('Invalid input file. Parsing failed '\
@@ -123,8 +120,8 @@ def parse_rocketfuel_isp_map(path):
             external_links = re.findall("{(-?\d+)}", line)
             backbone = True if len(re.findall("\sbb\s", line)) > 0 \
                        else False
-            topology.add_node(node, type='internal', 
-                              location=node_location, 
+            topology.add_node(node, type='internal',
+                              location=node_location,
                               address=address, r=r, backbone=backbone)
             for link in internal_links:
                 link = int(link)
@@ -214,7 +211,7 @@ def parse_rocketfuel_isp_latency(latencies_path, weights_path=None):
             # topology 1239. This function tries first to parse by splitting
             # at the comma. If it fails, then separates number from location.
             # If this also fails, it just keeps the node name as it is.
-            try: 
+            try:
                 u_location, u_name = u_str.split(',')
             except ValueError:
                 match = re.match(r"([a-z]+)([0-9]+)", u_str, re.I)
@@ -222,8 +219,8 @@ def parse_rocketfuel_isp_latency(latencies_path, weights_path=None):
                     u_location, u_name = match.groups()
                 else:
                     u_location = u_name = u_str
-           
-            try: 
+
+            try:
                 v_location, v_name = v_str.split(',')
             except ValueError:
                 match = re.match(r"([a-z]+)([0-9]+)", v_str, re.I)
@@ -231,7 +228,7 @@ def parse_rocketfuel_isp_latency(latencies_path, weights_path=None):
                     v_location, v_name = match.groups()
                 else:
                     v_location = v_name = v_str
-            
+
             if delay.isdigit():
                 delay = int(delay)
             else:
@@ -252,7 +249,7 @@ def parse_rocketfuel_isp_latency(latencies_path, weights_path=None):
         u = node_dict[u_str]
         v = node_dict[v_str]
         topology.add_edge(u, v, delay=delay)
-    
+
     if weights_path:
         for line in open(latencies_path, "r").readlines():
             if comment_char in line:
@@ -284,23 +281,23 @@ def parse_rocketfuel_isp_latency(latencies_path, weights_path=None):
 def parse_caida_as_relationships(path):
     """
     Parse a topology from the CAIDA AS relationships dataset
-    
+
     Parameters
     ----------
     path : str
         The path to the CAIDA AS relationships file
-    
+
     Returns
     -------
     topology : DirectedTopology
-    
+
     Notes
     -----
-    The node names of the returned topology are the the ASN of the of the AS 
-    they represent and edges are annotated with the relationship between ASes 
+    The node names of the returned topology are the the ASN of the of the AS
+    they represent and edges are annotated with the relationship between ASes
     they connect. The relationship values can either be *customer*, *peer* or
     *sibling*.
-    
+
     References
     ----------
     http://www.caida.org/data/active/as-relationships/
@@ -309,7 +306,7 @@ def parse_caida_as_relationships(path):
     topology = DirectedTopology(type='caida_as_relationships')
     comment_char = '#'
     relationships_dict = {-1: 'customer', 0: 'peer', 2: 'sibling'}
-    
+
     for line in open(path, "r").readlines():
         if comment_char in line:
             # split on comment char, keep only the part before
@@ -334,16 +331,16 @@ def parse_inet(path):
     """
     Parse a topology from an output file generated by the Inet topology
     generator
-    
+
     Parameters
     ----------
     path : str
         The path to the Inet output file
-        
+
     Returns
     -------
     topology : Topology
-    
+
     Notes
     -----
     Each node of the returned topology object is labeled with *latitude* and
@@ -385,7 +382,7 @@ def parse_inet(path):
                 y_u = topology.node[u]['latitude']
                 x_v = topology.node[v]['longitude']
                 y_v = topology.node[v]['latitude']
-                length = float(math.sqrt((x_v - x_u)**2 + (y_v - y_u)**2))
+                length = float(math.sqrt((x_v - x_u) ** 2 + (y_v - y_u) ** 2))
             except (ValueError, IndexError):
                 raise ValueError('Invalid input file. Parsing failed while '\
                                  'trying to parse a link')
@@ -399,20 +396,20 @@ def parse_inet(path):
 def parse_abilene(topology_path, links_path=None):
     """
     Parse the Abilene topology.
-    
+
     Parameters
     ----------
     topology_path : str
         The path of the Abilene topology file
     links_path : str, optional
         The path of the Abilene links file
-    
+
     Returns
     -------
     topology : DirectedTopology
     """
-    topology = DirectedTopology(type='abilene', 
-                         capacity_unit='kbps', 
+    topology = DirectedTopology(type='abilene',
+                         capacity_unit='kbps',
                          distance_unit='Km')
     comment_char = '#'
     link_type_dict = {0: 'internal', 1: 'inbound', 2: 'outbound'}
@@ -426,7 +423,7 @@ def parse_abilene(topology_path, links_path=None):
             if line == 'router' or line == 'link':
                 line_type = line
                 continue
-            if line_type == 'router': 
+            if line_type == 'router':
                 node_entry = line.split('\t')
                 try:
                     name = node_entry[0]
@@ -436,7 +433,7 @@ def parse_abilene(topology_path, links_path=None):
                 except (ValueError, IndexError):
                     raise ValueError('Invalid input file. Parsing failed '\
                                      'while trying to parse a router')
-                topology.add_node(name, city=city, latitude=latitude, 
+                topology.add_node(name, city=city, latitude=latitude,
                            longitude=longitude)
             elif line_type == 'link':
                 sep = re.compile('[\s\t]')
@@ -454,7 +451,7 @@ def parse_abilene(topology_path, links_path=None):
                 except (ValueError, IndexError):
                     raise ValueError('Invalid input file. Parsing failed '\
                                      'while trying to parse a link')
-                topology.add_edge(u, v, capacity=capacity, 
+                topology.add_edge(u, v, capacity=capacity,
                            weight=weight, length=length)
             else:
                 raise ValueError('Invalid input file. Found a line that '\
@@ -470,7 +467,7 @@ def parse_abilene(topology_path, links_path=None):
                 link_entry = sep.split(line)
                 try:
                     u, v = link_entry[0].split(',', 1)
-                    if u == '*' or v == '*': # ignore external links
+                    if u == '*' or v == '*':  # ignore external links
                         continue
                     link_index = int(link_entry[1])
                     link_type = link_type_dict[int(link_entry[2])]
@@ -479,20 +476,20 @@ def parse_abilene(topology_path, links_path=None):
                                      'Parsing failed while trying to '\
                                      'parse a link from links_file')
                 topology.edge[u][v]['link_index'] = link_index
-                topology.edge[u][v]['link_type'] = link_type        
+                topology.edge[u][v]['link_type'] = link_type
     return topology
 
 
 def parse_brite(path, capacity_unit='Mbps', delay_unit='ms',
                 distance_unit='Km', directed=True):
     """
-    Parse a topology from an output file generated by the BRITE topology 
+    Parse a topology from an output file generated by the BRITE topology
     generator
-    
+
     Parameters
     ----------
     path : str
-        The path to the BRITE output file    
+        The path to the BRITE output file
     capacity_unit : str, optional
         The unit in which link capacity values are expresses in the BRITE file
     delay_unit : str, optional
@@ -501,11 +498,11 @@ def parse_brite(path, capacity_unit='Mbps', delay_unit='ms',
         The unit in which node coordinates are expresses in the BRITE file
     directed : bool, optional
         If True, the topology is parsed as directed topology.
-        
+
     Returns
     -------
     topology : Topology or DirectedTopology
-    
+
     Notes
     -----
     Each node of the returned topology object is labeled with *latitude* and
@@ -515,7 +512,7 @@ def parse_brite(path, capacity_unit='Mbps', delay_unit='ms',
     # BRITE output format:
     # http://www.cs.bu.edu/brite/user_manual/node29.html
     topology = DirectedTopology() if directed else Topology()
-    topology.graph = {'type':'brite', 'capacity_unit':capacity_unit, 
+    topology.graph = {'type':'brite', 'capacity_unit':capacity_unit,
                'delay_unit':delay_unit, 'distance_unit': distance_unit}
     line_type = None
     for line in open(path, "r").readlines():
@@ -531,8 +528,8 @@ def parse_brite(path, capacity_unit='Mbps', delay_unit='ms',
                     node_id = int(elements[0])
                     longitude = float(elements[1])
                     latitude = float(elements[2])
-                    #indegree = int(elements[3])
-                    #outdegree = int(elements[4])
+                    # indegree = int(elements[3])
+                    # outdegree = int(elements[4])
                     as_id = int(elements[5])
                     # Node type can be:
                     # AS-only: AS_NODE
@@ -543,7 +540,7 @@ def parse_brite(path, capacity_unit='Mbps', delay_unit='ms',
                 except (ValueError, IndexError):
                     raise ValueError('Invalid input file. Parsing failed '\
                                      'while trying to parse a node')
-                topology.add_node(node_id, latitude=latitude, 
+                topology.add_node(node_id, latitude=latitude,
                                   longitude=longitude, type=node_type)
                 if as_id > 0:
                     topology.node[node_id]['AS'] = as_id
@@ -556,8 +553,8 @@ def parse_brite(path, capacity_unit='Mbps', delay_unit='ms',
                     length = float(elements[3])
                     delay = float(elements[4])
                     capacity = float(elements[5])
-                    #from_as = elements[6]
-                    #to_as = elements[7]
+                    # from_as = elements[6]
+                    # to_as = elements[7]
                     # Link type can be:
                     # AS-only: E_AS
                     # Router-only: E_RT
@@ -567,8 +564,8 @@ def parse_brite(path, capacity_unit='Mbps', delay_unit='ms',
                 except (ValueError, IndexError):
                     raise ValueError('Invalid input file. Parsing failed '\
                                      'while trying to parse a link')
-                topology.add_edge(from_node, to_node, id=edge_id, 
-                                  length=length, delay=delay, 
+                topology.add_edge(from_node, to_node, id=edge_id,
+                                  length=length, delay=delay,
                                   capacity=capacity, type=link_type)
             else:
                 continue
@@ -578,17 +575,17 @@ def parse_brite(path, capacity_unit='Mbps', delay_unit='ms',
 def parse_topology_zoo(path):
     """
     Parse a topology from the Topology Zoo dataset.
-    
+
     Parameters
     ----------
     path : str
         The path to the Topology Zoo file
-    
+
     Returns
     -------
     topology : Topology or DirectedTopology
         The parsed topology.
-    
+
     Notes
     -----
     If the parsed topology contains bundled links, i.e. multiple links between
@@ -599,12 +596,12 @@ def parse_topology_zoo(path):
     is True if the topology contains at list one bundled link or False
     otherwise. If the topology contains bundled links, then each link has an
     additional boolean attribute named *bundle* which is True if that specific
-    link was bundled in the original topology or False otherwise. 
+    link was bundled in the original topology or False otherwise.
     """
     def try_convert_int(value):
         """
         Try to convert a string to an int. If not possible, returns the given
-        value unchanged 
+        value unchanged
         """
         if type(value) != int:
             try:
@@ -647,9 +644,9 @@ def parse_topology_zoo(path):
                 'Longitude' in topo_zoo_graph.node[tv] and \
                 'Latitude' in topo_zoo_graph.node[tu] and \
                 'Longitude' in topo_zoo_graph.node[tu]:
-            lat_v = topo_zoo_graph.node[tv]['Latitude'] 
-            lon_v = topo_zoo_graph.node[tv]['Longitude'] 
-            lat_u = topo_zoo_graph.node[tu]['Latitude']  
+            lat_v = topo_zoo_graph.node[tv]['Latitude']
+            lon_v = topo_zoo_graph.node[tv]['Longitude']
+            lat_u = topo_zoo_graph.node[tu]['Latitude']
             lon_u = topo_zoo_graph.node[tu]['Longitude']
             length = geographical_distance(lat_v, lon_v, lat_u, lon_u)
             topology.edge[v][u]['length'] = length
@@ -679,20 +676,20 @@ def parse_topology_zoo(path):
 
 def parse_ashiip(path):
     """
-    Parse a topology from an output file generated by the aShiip topology 
+    Parse a topology from an output file generated by the aShiip topology
     generator
-    
+
     Parameters
     ----------
     path : str
         The path to the aShiip output file
-    
+
     Returns
     -------
     topology : Topology
     """
     topology = Topology(type='ashiip')
-    
+
     for line in open(path, "r").readlines():
         # There is no documented aShiip format but we assume that if the line
         # does not start with a number it is not part of the topology

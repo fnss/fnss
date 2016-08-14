@@ -97,7 +97,7 @@ class Test(unittest.TestCase):
 
     def test_link_loads_ecmp(self):
         topo = fnss.ring_topology(5)
-        topo.add_edge(1,3)
+        topo.add_edge(1, 3)
         fnss.set_capacities_constant(topo, 100, capacity_unit='Mbps')
         tm = fnss.TrafficMatrix(volume_unit='Mbps')
         tm.add_flow(0, 1, 20)
@@ -106,37 +106,37 @@ class Test(unittest.TestCase):
         tm.add_flow(1, 4, 70)
         rm = {0 :
                 { 0: [[0]],
-                  1: [[0,1]],
-                  2: [[0,1,2]],
-                  3: [[0,1,3],[0,4,3]],
-                  4: [[0,4]]
+                  1: [[0, 1]],
+                  2: [[0, 1, 2]],
+                  3: [[0, 1, 3], [0, 4, 3]],
+                  4: [[0, 4]]
                 },
               1 :
-                { 0: [[1,0]],
+                { 0: [[1, 0]],
                   1: [[1]],
-                  2: [[1,2]],
-                  3: [[1,3]],
-                  4: [[1,3,4],[1,0,4]]
+                  2: [[1, 2]],
+                  3: [[1, 3]],
+                  4: [[1, 3, 4], [1, 0, 4]]
                 },
               2 :
-                { 0: [[2,1,0]],
-                  1: [[2,1]],
+                { 0: [[2, 1, 0]],
+                  1: [[2, 1]],
                   2: [[2]],
-                  3: [[2,3]],
-                  4: [[2,3,4]]
+                  3: [[2, 3]],
+                  4: [[2, 3, 4]]
                 },
               3 :
-                { 0: [[3,1,0],[3,4,0]],
-                  1: [[3,1]],
-                  2: [[3,2]],
+                { 0: [[3, 1, 0], [3, 4, 0]],
+                  1: [[3, 1]],
+                  2: [[3, 2]],
                   3: [[3]],
-                  4: [[3,4]]
+                  4: [[3, 4]]
                 },
               4 :
-                { 0: [[4,0]],
-                  1: [[4,0,1],[4,3,1]],
-                  2: [[4,3,2]],
-                  3: [[4,3]],
+                { 0: [[4, 0]],
+                  1: [[4, 0, 1], [4, 3, 1]],
+                  2: [[4, 3, 2]],
+                  3: [[4, 3]],
                   4: [[4]]
                 }}
 
@@ -158,8 +158,8 @@ class Test(unittest.TestCase):
         self.assertLessEqual(0, min(fnss.link_loads(self.G, tm).values()))
 
     def test_static_traffic_matrix_partial_od_pairs(self):
-        origin_nodes = [1,2,3]
-        destination_nodes=[3,4,5]
+        origin_nodes = [1, 2, 3]
+        destination_nodes = [3, 4, 5]
         od_pairs = [(o, d) for o in origin_nodes for d in destination_nodes if o != d]
         tm = fnss.static_traffic_matrix(self.G, 10, 8,
                                         origin_nodes=origin_nodes,
@@ -240,7 +240,7 @@ class Test(unittest.TestCase):
         flows_valid_load = {1: {3: 0.4}, 2: {4: 0.3}}
         flows_invalid_load = {1: {3: 0.4}, 2: {4: 0.7}}
         flows_invalid_routes = {4: {1: 0.4}}
-        flows_invalid_pairs =  {5: {2: 0.1}}
+        flows_invalid_pairs = {5: {2: 0.1}}
         self.assertTrue(fnss.validate_traffic_matrix(topology, fnss.TrafficMatrix('Mbps', flows_valid_load), validate_load=False))
         self.assertTrue(fnss.validate_traffic_matrix(topology, fnss.TrafficMatrix('Mbps', flows_valid_load), validate_load=True))
         self.assertTrue(fnss.validate_traffic_matrix(topology, fnss.TrafficMatrix('Mbps', flows_invalid_load), validate_load=False))

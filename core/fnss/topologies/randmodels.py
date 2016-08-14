@@ -1,8 +1,6 @@
-"""
-Provides functions to generate random topologies according to a number of 
-models.
+"""Functions to generate random topologies according to a number of models.
 
-The generated topologies are either Topology or DIrectedTopology objects.
+The generated topologies are either Topology or DirectedTopology objects.
 """
 import math
 import random
@@ -23,7 +21,7 @@ __all__ = [
           ]
 
 def erdos_renyi_topology(n, p, seed=None, fast=False):
-    r"""Return a random graph :math:`G_{n,p}` (Erdos-Renyi graph, binomial 
+    r"""Return a random graph :math:`G_{n,p}` (Erdos-Renyi graph, binomial
     graph).
 
     Chooses each of the possible edges with probability p.
@@ -35,15 +33,15 @@ def erdos_renyi_topology(n, p, seed=None, fast=False):
     p : float
         Probability for edge creation.
     seed : int, optional
-        Seed for random number generator (default=None). 
+        Seed for random number generator (default=None).
     fast : boolean, optional
-        Uses the algorithm proposed by [3]_, which is faster for small p 
+        Uses the algorithm proposed by [3]_, which is faster for small p
 
     References
     ----------
     .. [1] P. Erdos and A. Renyi, On Random Graphs, Publ. Math. 6, 290 (1959).
     .. [2] E. N. Gilbert, Random Graphs, Ann. Math. Stat., 30, 1141 (1959).
-    .. [3] Vladimir Batagelj and Ulrik Brandes, 
+    .. [3] Vladimir Batagelj and Ulrik Brandes,
        "Efficient generation of large random networks",
        Phys. Rev. E, 71, 036113, 2005.
     """
@@ -66,7 +64,7 @@ def waxman_1_topology(n, alpha=0.4, beta=0.1, L=1.0,
     r"""
     Return a Waxman-1 random topology.
 
-    The Waxman-1 random topology models assigns link between nodes with 
+    The Waxman-1 random topology models assigns link between nodes with
     probability
 
     .. math::
@@ -86,24 +84,24 @@ def waxman_1_topology(n, alpha=0.4, beta=0.1, L=1.0,
     L : float
         Maximum distance between nodes.
     seed : int, optional
-        Seed for random number generator (default=None). 
+        Seed for random number generator (default=None).
 
     Returns
     -------
     G : Topology
-    
+
     Notes
     -----
     Each node of G has the attributes *latitude* and *longitude*. These
     attributes are not expressed in degrees but in *distance_unit*.
-    
+
     Each edge of G has the attribute *length*, which is also expressed in
     *distance_unit*.
 
     References
     ----------
-    .. [1]  B. M. Waxman, Routing of multipoint connections. 
-       IEEE J. Select. Areas Commun. 6(9),(1988) 1617-1622. 
+    .. [1]  B. M. Waxman, Routing of multipoint connections.
+       IEEE J. Select. Areas Commun. 6(9),(1988) 1617-1622.
     """
     # validate input parameters
     if not isinstance(n, int) or n <= 0:
@@ -116,7 +114,7 @@ def waxman_1_topology(n, alpha=0.4, beta=0.1, L=1.0,
         random.seed(seed)
 
     G = Topology(type='waxman_1', distance_unit=distance_unit)
-    
+
     G.name = "waxman_1_topology(%s, %s, %s, %s)" % (n, alpha, beta, L)
     G.add_nodes_from(range(n))
     nodes = G.nodes()
@@ -124,7 +122,7 @@ def waxman_1_topology(n, alpha=0.4, beta=0.1, L=1.0,
         u = nodes.pop()
         for v in nodes:
             d = L * random.random()
-            if random.random() < alpha * math.exp(-d/(beta * L)):
+            if random.random() < alpha * math.exp(-d / (beta * L)):
                 G.add_edge(u, v, length=d)
     return G
 
@@ -156,20 +154,20 @@ def waxman_2_topology(n, alpha=0.4, beta=0.1, domain=(0, 0, 1, 1),
     domain : tuple of numbers, optional
          Domain size (xmin, ymin, xmax, ymax)
     seed : int, optional
-        Seed for random number generator (default=None). 
-              
+        Seed for random number generator (default=None).
+
     Returns
     -------
     G : Topology
-    
+
     Notes
     -----
     Each edge of G has the attribute *length*
 
     References
     ----------
-    .. [1]  B. M. Waxman, Routing of multipoint connections. 
-       IEEE J. Select. Areas Commun. 6(9),(1988) 1617-1622. 
+    .. [1]  B. M. Waxman, Routing of multipoint connections.
+       IEEE J. Select. Areas Commun. 6(9),(1988) 1617-1622.
     """
     # validate input parameters
     if not isinstance(n, int) or n <= 0:
@@ -189,12 +187,12 @@ def waxman_2_topology(n, alpha=0.4, beta=0.1, domain=(0, 0, 1, 1),
     G = Topology(type='waxman_2', distance_unit=distance_unit)
     G.name = "waxman_2_topology(%s, %s, %s)" % (n, alpha, beta)
     G.add_nodes_from(range(n))
-    
-    
+
+
     for v in G.nodes_iter():
         G.node[v]['latitude'] = (ymin + (ymax - ymin)) * random.random()
         G.node[v]['longitude'] = (xmin + (xmax - xmin)) * random.random()
-        
+
     l = {}
     nodes = G.nodes()
     while nodes:
@@ -204,34 +202,34 @@ def waxman_2_topology(n, alpha=0.4, beta=0.1, domain=(0, 0, 1, 1),
             x_v = G.node[v]['longitude']
             y_u = G.node[u]['latitude']
             y_v = G.node[v]['latitude']
-            l[(u, v)] = math.sqrt((x_u - x_v)**2 + (y_u - y_v)**2) 
+            l[(u, v)] = math.sqrt((x_u - x_v) ** 2 + (y_u - y_v) ** 2)
     L = max(l.values())
     for (u, v), d in l.items():
-        if random.random() < alpha * math.exp(-d/(beta*L)):
+        if random.random() < alpha * math.exp(-d / (beta * L)):
             G.add_edge(u, v, length=d)
-  
-    return G
-    
 
-# This is the classical BA model, without rewiring and add 
+    return G
+
+
+# This is the classical BA model, without rewiring and add
 def barabasi_albert_topology(n, m, m0, seed=None):
     r"""
-    Return a random topology using Barabasi-Albert preferential attachment 
+    Return a random topology using Barabasi-Albert preferential attachment
     model.
-        
+
     A topology of n nodes is grown by attaching new nodes each with m links
     that are preferentially attached to existing nodes with high degree.
-    
+
     More precisely, the Barabasi-Albert topology is built as follows. First, a
     line topology with m0 nodes is created. Then at each step, one node is
     added and connected to m existing nodes. These nodes are selected randomly
-    with probability 
-    
+    with probability
+
     .. math::
             \Pi(i) = \frac{deg(i)}{sum_{v \in V} deg V}.
-    
+
     Where i is the selected node and V is the set of nodes of the graph.
-    
+
     Parameters
     ----------
     n : int
@@ -241,15 +239,15 @@ def barabasi_albert_topology(n, m, m0, seed=None):
     m0 : int
         Number of nodes initially attached to the network
     seed : int, optional
-        Seed for random number generator (default=None). 
+        Seed for random number generator (default=None).
 
     Returns
     -------
     G : Topology
-        
+
     Notes
     -----
-    The initialization is a graph with with m nodes connected by :math:`m -1` 
+    The initialization is a graph with with m nodes connected by :math:`m -1`
     edges.
     It does not use the Barabasi-Albert method provided by NetworkX because it
     does not allow to specify *m0* parameter.
@@ -264,8 +262,8 @@ def barabasi_albert_topology(n, m, m0, seed=None):
         """Calculate BA Pi function for all nodes of the graph"""
         degree = G.degree()
         den = float(sum(degree.values()))
-        return dict((node, degree[node]/den) for node in G.nodes_iter())
-    
+        return dict((node, degree[node] / den) for node in G.nodes_iter())
+
     # input parameters
     if n < 1 or m < 1 or m0 < 1:
         raise ValueError('n, m and m0 must be positive integers')
@@ -275,12 +273,12 @@ def barabasi_albert_topology(n, m, m0, seed=None):
         raise ValueError('n must be > m0')
     if seed is not None:
         random.seed(seed)
-    # Step 1: Add m0 nodes. These nodes are interconnected together 
+    # Step 1: Add m0 nodes. These nodes are interconnected together
     # because otherwise they will end up isolated at the end
     G = Topology(nx.path_graph(m0))
     G.name = "ba_topology(%d,%d,%d)" % (n, m, m0)
     G.graph['type'] = 'ba'
-    
+
     # Step 2: Add one node and connect it with m links
     while G.number_of_nodes() < n:
         pi = calc_pi(G)
@@ -298,30 +296,30 @@ def barabasi_albert_topology(n, m, m0, seed=None):
 # This is the extended BA model, with rewiring and add
 def extended_barabasi_albert_topology(n, m, m0, p, q, seed=None):
     r"""
-    Return a random topology using the extended Barabasi-Albert preferential 
+    Return a random topology using the extended Barabasi-Albert preferential
     attachment model.
-            
+
     Differently from the original Barabasi-Albert model, this model takes into
     account the presence of local events, such as the addition of new links or
     the rewiring of existing links.
-    
-    More precisely, the Barabasi-Albert topology is built as follows. First, a 
+
+    More precisely, the Barabasi-Albert topology is built as follows. First, a
     topology with *m0* isolated nodes is created. Then, at each step:
-    with probability *p* add *m* new links between existing nodes, selected 
+    with probability *p* add *m* new links between existing nodes, selected
     with probability:
-    
+
     .. math::
         \Pi(i) = \frac{deg(i) + 1}{\sum_{v \in V} (deg(v) + 1)}
 
-    with probability *q* rewire *m* links. Each link to be rewired is selected as 
+    with probability *q* rewire *m* links. Each link to be rewired is selected as
     follows: a node i is randomly selected and a link is randomly removed from
-    it. The node i is then connected to a new node randomly selected with 
+    it. The node i is then connected to a new node randomly selected with
     probability :math:`\Pi(i)`,
-    with probability :math:`1-p-q` add a new node and attach it to m nodes of 
+    with probability :math:`1-p-q` add a new node and attach it to m nodes of
     the existing topology selected with probability :math:`\Pi(i)`
-    
+
     Repeat the previous step until the topology comprises n nodes in total.
-    
+
     Parameters
     ----------
     n : int
@@ -335,22 +333,22 @@ def extended_barabasi_albert_topology(n, m, m0, p, q, seed=None):
     q : float
         The probability that existing links are rewired
     seed : int, optional
-        Seed for random number generator (default=None). 
+        Seed for random number generator (default=None).
 
     Returns
     -------
     G : Topology
-        
+
     References
     ----------
-    .. [1] A. L. Barabasi and R. Albert "Topology of evolving networks: local 
+    .. [1] A. L. Barabasi and R. Albert "Topology of evolving networks: local
        events and universality", Physical Review Letters 85(24), 2000.
     """
     def calc_pi(G):
         """Calculate extended-BA Pi function for all nodes of the graph"""
         degree = G.degree()
         den = float(sum(degree.values()) + G.number_of_nodes())
-        return dict((node, (degree[node] + 1)/den) for node in G.nodes_iter())
+        return dict((node, (degree[node] + 1) / den) for node in G.nodes_iter())
 
     # input parameters
     if n < 1 or m < 1 or m0 < 1:
@@ -371,18 +369,18 @@ def extended_barabasi_albert_topology(n, m, m0, p, q, seed=None):
     G.name = "ext_ba_topology(%d, %d, %d, %f, %f)" % (n, m, m0, p, q)
     # Step 1: Add m0 isolated nodes
     G.add_nodes_from(range(m0))
-    
+
     while G.number_of_nodes() < n:
         pi = calc_pi(G)
         r = random.random()
-        
+
         if r <= p:
             # add m new links with probability p
             n_nodes = G.number_of_nodes()
             n_edges = G.number_of_edges()
             max_n_edges = (n_nodes * (n_nodes - 1)) / 2
-            if n_edges + m > max_n_edges: # cannot add m links
-                continue # rewire or add nodes 
+            if n_edges + m > max_n_edges:  # cannot add m links
+                continue  # rewire or add nodes
             new_links = 0
             while new_links < m:
                 u = random_from_pdf(pi)
@@ -390,16 +388,16 @@ def extended_barabasi_albert_topology(n, m, m0, p, q, seed=None):
                 if u is not v and not G.has_edge(u, v):
                     G.add_edge(u, v)
                     new_links += 1
-            
+
         elif r > p and r <= p + q:
             # rewire m links with probability q
             rewired_links = 0
             while rewired_links < m:
-                i = random.choice(G.nodes()) # pick up node randomly (uniform)
-                if len(G.edge[i]) is 0: # if i has no edges, I cannot rewire
+                i = random.choice(G.nodes())  # pick up node randomly (uniform)
+                if len(G.edge[i]) is 0:  # if i has no edges, I cannot rewire
                     break
-                j = random.choice(list(G.edge[i].keys())) # node to be disconnected
-                k = random_from_pdf(pi) # new node to be connected
+                j = random.choice(list(G.edge[i].keys()))  # node to be disconnected
+                k = random_from_pdf(pi)  # new node to be connected
                 if i is not k and j is not k and not G.has_edge(i, k):
                     G.remove_edge(i, j)
                     G.add_edge(i, k)
@@ -413,7 +411,7 @@ def extended_barabasi_albert_topology(n, m, m0, p, q, seed=None):
                 existing_node = random_from_pdf(pi)
                 if not G.has_edge(new_node, existing_node):
                     G.add_edge(new_node, existing_node)
-                    new_links += 1             
+                    new_links += 1
     return G
 
 
@@ -421,24 +419,24 @@ def glp_topology(n, m, m0, p, beta, seed=None):
     r"""
     Return a random topology using the Generalized Linear Preference (GLP)
     preferential attachment model.
-        
+
     It differs from the extended Barabasi-Albert model in that there is link
     rewiring and a beta parameter is introduced to fine-tune preferential
     attachment.
-    
-    More precisely, the GLP topology is built as follows. First, a 
+
+    More precisely, the GLP topology is built as follows. First, a
     line topology with *m0* nodes is created. Then, at each step:
-    with probability *p*, add *m* new links between existing nodes, selected 
+    with probability *p*, add *m* new links between existing nodes, selected
     with probability:
-    
+
     .. math::
         \Pi(i) = \frac{deg(i) - \beta 1}{\sum_{v \in V} (deg(v) - \beta)}
 
-    with probability :math:`1-p`, add a new node and attach it to m nodes of 
+    with probability :math:`1-p`, add a new node and attach it to m nodes of
     the existing topology selected with probability :math:`\Pi(i)`
-    
+
     Repeat the previous step until the topology comprises n nodes in total.
-    
+
     Parameters
     ----------
     n : int
@@ -452,34 +450,34 @@ def glp_topology(n, m, m0, p, beta, seed=None):
     beta : float
         Parameter to fine-tune preferntial attachment: beta < 1
     seed : int, optional
-        Seed for random number generator (default=None). 
+        Seed for random number generator (default=None).
 
     Returns
     -------
     G : Topology
-        
+
     References
     ----------
     .. [1] T. Bu and D. Towsey "On distinguishing between Internet power law
-       topology generators", Proceeding od the 21st IEEE INFOCOM conference. 
+       topology generators", Proceeding od the 21st IEEE INFOCOM conference.
        IEEE, volume 2, pages 638-647, 2002.
     """
     def calc_pi(G, beta):
         """Calculate GLP Pi function for all nodes of the graph"""
         # validate input parameter
         if beta >= 1:
-            raise ValueError('beta must be < 1')    
+            raise ValueError('beta must be < 1')
         degree = G.degree()
         den = float(sum(degree.values()) - (G.number_of_nodes() * beta))
-        return dict((node, (degree[node]-beta)/den) for node in G.nodes_iter())
+        return dict((node, (degree[node] - beta) / den) for node in G.nodes_iter())
 
     def add_m_links(G, pi):
         """Add m links between existing nodes to the graph"""
         n_nodes = G.number_of_nodes()
         n_edges = G.number_of_edges()
         max_n_edges = (n_nodes * (n_nodes - 1)) / 2
-        if n_edges + m > max_n_edges: # cannot add m links
-            add_node(G, pi) # add a new node instead
+        if n_edges + m > max_n_edges:  # cannot add m links
+            add_node(G, pi)  # add a new node instead
             # return in any case because before doing another operation
             # (add node or links) we need to recalculate pi
             return
@@ -490,7 +488,7 @@ def glp_topology(n, m, m0, p, beta, seed=None):
             if u != v and not G.has_edge(u, v):
                 G.add_edge(u, v)
                 new_links += 1
-    
+
     def add_node(G, pi):
         """Add one node to the graph and connect it to m existing nodes"""
         new_node = G.number_of_nodes()
@@ -501,7 +499,7 @@ def glp_topology(n, m, m0, p, beta, seed=None):
             if not G.has_edge(new_node, existing_node):
                 G.add_edge(new_node, existing_node)
                 new_links += 1
-                
+
     # validate input parameters
     if n < 1 or m < 1 or m0 < 1:
         raise ValueError('n, m and m0 must be a positive integers')

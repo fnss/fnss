@@ -1,11 +1,9 @@
-"""
-Provides functions to assign and manipulate link weights to a network topology.
-"""
+"""Functions to assign and manipulate link weights to a network topology."""
 import networkx as nx
 
 __all__ = [
     'set_weights_inverse_capacity',
-    'set_weights_constant', 
+    'set_weights_constant',
     'set_weights_delays',
     'get_weights',
     'clear_weights'
@@ -14,7 +12,7 @@ __all__ = [
 
 def set_weights_inverse_capacity(topology):
     """
-    Assign link weights to links proportionally to the inverse of their 
+    Assign link weights to links proportionally to the inverse of their
     capacity. Weights are normalized so that the minimum weight is 1.
 
     Parameters
@@ -31,19 +29,19 @@ def set_weights_inverse_capacity(topology):
     >>> fnss.set_weights_inverse_capacity(topology)
     """
     try:
-        max_capacity = float(max((topology.edge[u][v]['capacity'] 
+        max_capacity = float(max((topology.edge[u][v]['capacity']
                                   for u, v in topology.edges_iter())))
     except KeyError:
         raise ValueError('All links must have a capacity attribute')
     for u, v in topology.edges_iter():
         capacity = topology.edge[u][v]['capacity']
-        weight = max_capacity/capacity
+        weight = max_capacity / capacity
         topology.edge[u][v]['weight'] = weight
 
 
 def set_weights_delays(topology):
     """
-    Assign link weights to links proportionally their delay. Weights are 
+    Assign link weights to links proportionally their delay. Weights are
     normalized so that the minimum weight is 1.
 
     Parameters
@@ -57,7 +55,7 @@ def set_weights_delays(topology):
     >>> topology = fnss.erdos_renyi_topology(50, 0.1)
     >>> fnss.set_delays_constant(topology, 2, 'ms')
     >>> fnss.set_weights_delays(topology)
-    
+
     """
     try:
         min_delay = float(min((topology.edge[u][v]['delay']
@@ -108,7 +106,7 @@ def get_weights(topology):
     -------
     weights : dict
         Dictionary of weights keyed by link.
-    
+
     Examples
     --------
     >>> import fnss
@@ -133,4 +131,3 @@ def clear_weights(topology):
     for u, v in topology.edges_iter():
         if 'weight' in topology.edge[u][v]:
             del topology.edge[u][v]['weight']
-    

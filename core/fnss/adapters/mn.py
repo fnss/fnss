@@ -18,12 +18,12 @@ __all__ = [
 
 def from_mininet(topology):
     """Convert a Mininet topology to an FNSS one.
-    
+
     Parameters
     ----------
     topology : Mininet Topo
         A Mininet topology object
-    
+
     Returns
     -------
     topology : Topology
@@ -43,22 +43,22 @@ def from_mininet(topology):
             delay = opts['delay']
             val = re.findall("\d+\.?\d*", delay)[0]
             unit = delay.strip(val).strip(' ')
-            set_delays_constant(fnss_topo, val, unit, [(u,v)])
+            set_delays_constant(fnss_topo, val, unit, [(u, v)])
     return fnss_topo
 
 
 def to_mininet(topology, switches=None, hosts=None, relabel_nodes=True):
     """Convert an FNSS topology to Mininet Topo object that can be used to
     deploy a Mininet network.
-    
+
     If the links of the topology are labeled with delays, capacities or buffer
     sizes, the returned Mininet topology will also include those parameters.
-    
+
     However, it should be noticed that buffer sizes are included in the
     converted topology only if they are expressed in packets. If buffer sizes
     are expressed in the form of bytes they will be discarded. This is because
     Mininet only supports buffer sizes expressed in packets.
-    
+
     Parameters
     ----------
     topology : Topology, DirectedTopology or DatacenterTopology
@@ -72,12 +72,12 @@ def to_mininet(topology, switches=None, hosts=None, relabel_nodes=True):
         <https://github.com/mininet/mininet/wiki/Introduction-to-Mininet#naming-in-mininet>`_.
         In Mininet all node labels are strings whose values are "h1", "h2", ...
         if the node is a host or "s1", "s2", ... if the node is a switch.
-    
+
     Returns
     -------
     topology : Mininet Topo
         A Mininet topology object
-    
+
     Notes
     -----
     It is not necessary to provide a list of switch and host nodes if the
@@ -85,14 +85,14 @@ def to_mininet(topology, switches=None, hosts=None, relabel_nodes=True):
     can have values *host* or *switch*. This is the case of datacenter
     topologies generated with FNSS which already include information about
     which nodes are hosts and which are switches.
-    
+
     If switches and hosts are passed as arguments, then the hosts and switches
     sets must be disjoint and their union must coincide to the set of all
     topology nodes. In other words, there cannot be nodes labeled as both
     *host* and *switch* and there cannot be nodes that are neither a *host* nor
     a *switch*.
-    
-    It is important to point out that if the topology contains loops, it will 
+
+    It is important to point out that if the topology contains loops, it will
     not work with the *ovs-controller* and *controller* provided by Mininet. It
     will be necessary to use custom controllers. Further info `here
     <https://github.com/mininet/mininet/wiki/Introduction-to-Mininet#multipath-routing>`_.
@@ -121,8 +121,8 @@ def to_mininet(topology, switches=None, hosts=None, relabel_nodes=True):
     if relabel_nodes:
         hosts = sorted(hosts)
         switches = sorted(switches)
-        mapping = dict([(hosts[i], "h%s" % str(i+1)) for i in range(len(hosts))] +
-                       [(switches[i], "s%s" % str(i+1)) for i in range(len(switches))])
+        mapping = dict([(hosts[i], "h%s" % str(i + 1)) for i in range(len(hosts))] +
+                       [(switches[i], "s%s" % str(i + 1)) for i in range(len(switches))])
         hosts = set(mapping[v] for v in hosts)
         switches = set(mapping[v] for v in switches)
         nodes = hosts.union(switches)
@@ -133,7 +133,7 @@ def to_mininet(topology, switches=None, hosts=None, relabel_nodes=True):
     for v in hosts:
         topo.addHost(str(v))
     delay_unit = topology.graph['delay_unit'] \
-                 if 'delay_unit' in topology.graph else None    
+                 if 'delay_unit' in topology.graph else None
     capacity_unit = topology.graph['capacity_unit'] \
                     if 'capacity_unit' in topology.graph else None
     buffer_unit = topology.graph['buffer_unit'] \
@@ -149,9 +149,9 @@ def to_mininet(topology, switches=None, hosts=None, relabel_nodes=True):
         if 'capacity' in topology.edge[u][v] and capacity_unit:
             params['bw'] = topology.edge[u][v]['capacity'] * capacity_conversion
             # Use Token Bucket filter to implement rate limit
-            params['use_htb'] = True 
+            params['use_htb'] = True
         if 'delay' in topology.edge[u][v] and delay_unit:
-            params['delay'] = '%sus' % str(topology.edge[u][v]['delay'] 
+            params['delay'] = '%sus' % str(topology.edge[u][v]['delay']
                                            * delay_conversion)
         if 'buffer_size' in topology.edge[u][v] and buffer_unit == 'packets':
             params['max_queue_size'] = topology.edge[u][v]['buffer_size']

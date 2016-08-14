@@ -5,7 +5,7 @@ else:
     try:
         import unittest2 as unittest
     except ImportError:
-        raise ImportError("The unittest2 package is needed to run the tests.") 
+        raise ImportError("The unittest2 package is needed to run the tests.")
 del sys
 from os import environ, path
 from re import findall
@@ -18,10 +18,8 @@ class Test(unittest.TestCase):
     def setUp(self):
         pass
 
-
     def tearDown(self):
         pass
-
 
     @unittest.skipIf(RES_DIR is None, "Resources folder not present")
     def test_parse_abilene(self):
@@ -37,7 +35,7 @@ class Test(unittest.TestCase):
                             and 'link_type' in topology.edge[u][v])
                         for u, v in topology.edges_iter())
         self.assertTrue(all(topology.edge[u][v]['length'] >= 0
-                            for u,v in topology.edges_iter()))
+                            for u, v in topology.edges_iter()))
 
 
     @unittest.skipIf(RES_DIR is None, "Resources folder not present")
@@ -116,16 +114,16 @@ class Test(unittest.TestCase):
 
     @unittest.skipIf(RES_DIR is None, "Resources folder not present")
     def test_parse_caida_as_relationships(self):
-        caida_file = path.join(RES_DIR,'caida-as-rel.txt')
+        caida_file = path.join(RES_DIR, 'caida-as-rel.txt')
         topology = fnss.parse_caida_as_relationships(caida_file)
         self.assertEqual(41203, topology.number_of_nodes())
         self.assertEqual(121309, topology.number_of_edges())
-        self.assertEqual('customer',topology.edge[263053][28163]['type'])
+        self.assertEqual('customer', topology.edge[263053][28163]['type'])
 
 
     @unittest.skipIf(RES_DIR is None, "Resources folder not present")
     def test_parse_inet(self):
-        inet_file = path.join(RES_DIR,'inet.txt')
+        inet_file = path.join(RES_DIR, 'inet.txt')
         topology = fnss.parse_inet(inet_file)
         self.assertEqual(3500, topology.number_of_nodes())
         self.assertEqual(6146, topology.number_of_edges())
@@ -133,7 +131,7 @@ class Test(unittest.TestCase):
 
     @unittest.skipIf(RES_DIR is None, "Resources folder not present")
     def test_parse_topology_zoo(self):
-        topozoo_file = path.join(RES_DIR,'topozoo-arnes.graphml')
+        topozoo_file = path.join(RES_DIR, 'topozoo-arnes.graphml')
         topology = fnss.parse_topology_zoo(topozoo_file)
         self.assertEqual(type(topology), fnss.Topology)
         self.assertFalse(topology.is_multigraph())
@@ -142,13 +140,13 @@ class Test(unittest.TestCase):
         self.assertEqual(1000000000.0, topology.edge[4][15]['capacity'])
         self.assertEquals('bps', topology.graph['capacity_unit'])
         self.assertTrue(all(topology.edge[u][v]['length'] >= 0
-                    for u,v in topology.edges_iter()
+                    for u, v in topology.edges_iter()
                     if 'length' in topology.edge[u][v]))
 
-    
+
     @unittest.skipIf(RES_DIR is None, "Resources folder not present")
     def test_parse_topology_zoo_multigraph(self):
-        topozoo_file = path.join(RES_DIR,'topozoo-garr.graphml')
+        topozoo_file = path.join(RES_DIR, 'topozoo-garr.graphml')
         topology = fnss.parse_topology_zoo(topozoo_file)
         self.assertEqual(type(topology), fnss.Topology)
         self.assertFalse(topology.is_multigraph())
@@ -156,8 +154,8 @@ class Test(unittest.TestCase):
         self.assertEqual(75, topology.number_of_edges())
         self.assertEquals('bps', topology.graph['capacity_unit'])
         self.assertEquals(2000000000, topology.edge[37][58]['capacity'])
-        bundled_links = [(43, 18), (49, 32), (41, 18),   (4, 7),
-                          (6, 55),  (9, 58), (58, 37), (10, 55),
+        bundled_links = [(43, 18), (49, 32), (41, 18), (4, 7),
+                          (6, 55), (9, 58), (58, 37), (10, 55),
                          (14, 57), (14, 35), (18, 41), (18, 43),
                          (31, 33), (31, 34), (32, 49), (37, 58)]
         for u, v in topology.edges():
@@ -168,18 +166,18 @@ class Test(unittest.TestCase):
 
     @unittest.skipIf(RES_DIR is None, "Resources folder not present")
     def test_parse_brite_as(self):
-        brite_file = path.join(RES_DIR,'brite-as.brite')
+        brite_file = path.join(RES_DIR, 'brite-as.brite')
         topology = fnss.parse_brite(brite_file, directed=False)
         self.assertEqual(type(topology), fnss.Topology)
         self.assertEqual(1000, topology.number_of_nodes())
         self.assertEqual(2000, topology.number_of_edges())
-        #851    570    980    2    2    851    AS_NODE
+        # 851    570    980    2    2    851    AS_NODE
         self.assertTrue(851 in topology.nodes())
         self.assertEqual(570, topology.node[851]['longitude'])
         self.assertEqual(980, topology.node[851]['latitude'])
         self.assertEqual('AS_NODE', topology.node[851]['type'])
         # 1478    716    230    212.11553455605272    0.7075412636166207    0.0011145252848059164    716    230    E_AS    U
-        #assert_true((716, 230) in topology.edges())
+        # assert_true((716, 230) in topology.edges())
         self.assertEquals(1478, topology.edge[716][230]['id'])
         self.assertAlmostEquals(212.11553455605272,
                                 topology.edge[716][230]['length'], 0.01)

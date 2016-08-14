@@ -1,5 +1,4 @@
-"""Provide basic utility functions
-"""
+"""Basic utility functions"""
 from __future__ import division
 import ast
 import random
@@ -20,20 +19,19 @@ __all__ = [
 
 
 def split_list(l, size):
-    """
-    Splits a list into evenly sized chunks
-    
+    """Split a list into evenly sized chunks
+
     Parameters
     ----------
     l : list
         The list to split
     size : n
         The size of each chunk
-        
+
     Returns
     -------
     A list of sub-lists
-    
+
     Example
     -------
     >>> from fnss.util import split_list
@@ -44,9 +42,8 @@ def split_list(l, size):
 
 
 def random_from_pdf(pdf, seed=None):
-    """
-    Return a random value according to a given probability density function.
-    
+    """Return a random value according to a given probability density function.
+
     Parameters
     ----------
     pdf : dict
@@ -54,12 +51,12 @@ def random_from_pdf(pdf, seed=None):
         occurrence. The sum of all dictionary values must be 1.
     seed : int, optional
         The seed to be used
-    
+
     Returns
     -------
     key : key of pdf
         A randomly selected key from the keyset of the *pdf* parameter
-    
+
     Example
     -------
     >>> pdf = {100: 0.5, 200: 0.5}
@@ -82,12 +79,11 @@ def random_from_pdf(pdf, seed=None):
 
 
 def map_func(x):
-    """
-    Execute a function with given arguments, both of them passed as an argument
-    
+    """Execute a function with given arguments, both of them passed as an argument
+
     This function is used to execute map operations on a function taking an
     arbitrary number of arguments
-    
+
     Parameters
     ----------
     x : tuple (func, args)
@@ -99,16 +95,15 @@ def map_func(x):
 
 
 def xml_cast_type(type_attrib, val):
-    """
-    Cast a value read to an XML to an appropriate Python type
-    
+    """Cast a value read to an XML to an appropriate Python type
+
     Parameters
     ----------
     type_attrib : str
         The type of the value as specified in the XML file
     val : str
         The value to cast
-        
+
     Returns
     -------
     cast_val : any type
@@ -130,14 +125,13 @@ def xml_cast_type(type_attrib, val):
 
 
 def xml_type(val):
-    """
-    Return a type string for writing to an XML file.
-    
+    """Return a type string for writing to an XML file.
+
     Parameters
     ----------
     val : any type
         The value
-    
+
     Returns
     -------
     type : str
@@ -157,9 +151,8 @@ def xml_type(val):
 
 
 def xml_indent(elem, level=0):
-    """
-    Indent the elements of the XML tree
-    
+    """Indent the elements of the XML tree
+
     Parameters
     ----------
     elem : xml.etree.Element object
@@ -184,12 +177,12 @@ def xml_indent(elem, level=0):
 
 def package_available(pkg):
     """Test whether a package is available or not
-    
+
     Parameters
     ----------
     pkg : string
         Name of the package to look for
-        
+
     Returns
     -------
     pkg_available : bool
@@ -205,9 +198,9 @@ def package_available(pkg):
 def geographical_distance(lat_u, lon_u, lat_v, lon_v):
     """Return geographical distance along the Earth surface between two points
     *u* and *v*
-    
+
     This distance is computed using the Haversine formula.
-    
+
     Parameters
     ----------
     lat_u : float
@@ -218,7 +211,7 @@ def geographical_distance(lat_u, lon_u, lat_v, lon_v):
         Latitude of point *v* in degrees
     lon_v : float
         Longitude of point *v* in degrees
-        
+
     Returns
     -------
     d : float

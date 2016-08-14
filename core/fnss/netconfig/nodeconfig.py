@@ -1,4 +1,4 @@
-"""Provides functions to deploy and configure protocol stacks and applications
+"""Functions to deploy and configure protocol stacks and applications
 on network nodes
 """
 
@@ -17,9 +17,9 @@ __all__ = [
 
 def add_stack(topology, node, name, properties=None, **kwargs):
     """Set stack on a node.
-    
+
     If the node already has a stack, it is overwritten
-    
+
     Parameters
     ----------
     topology : Topology
@@ -43,7 +43,7 @@ def add_stack(topology, node, name, properties=None, **kwargs):
 
 def get_stack(topology, node, data=True):
     """Return the stack of a node, if any
-    
+
     Parameters
     ----------
     topology : Topology
@@ -53,7 +53,7 @@ def get_stack(topology, node, data=True):
     data : bool, optional
         If true, returns a tuple of the stack name and its attributes,
         otherwise just the stack name
-    
+
     Returns
     -------
     stack : tuple (name, properties) or name only
@@ -71,7 +71,7 @@ def get_stack(topology, node, data=True):
 
 def remove_stack(topology, node):
     """Remove stack from a node
-    
+
     Parameters
     ----------
     topology : Topology
@@ -85,7 +85,7 @@ def remove_stack(topology, node):
 
 def clear_stacks(topology):
     """Remove all stacks from all nodes of the topology
-    
+
     Parameters
     ----------
     topology : Topology
@@ -113,7 +113,7 @@ def add_application(topology, node, name, properties=None, **attr):
     if properties is None:
         properties = {}
     elif not isinstance(properties, dict):
-        raise TypeError('The attr_dict parameter must be a dictionary')    
+        raise TypeError('The attr_dict parameter must be a dictionary')
     properties.update(attr)
     if 'application' not in topology.node[node]:
         topology.node[node]['application'] = {}
@@ -133,7 +133,7 @@ def get_application_names(topology, node):
     Returns
     -------
     application_names : list
-        A list of application names 
+        A list of application names
     """
     return [] if 'application' not in topology.node[node] \
                 else list(topology.node[node]['application'].keys())
@@ -164,7 +164,7 @@ def get_application_properties(topology, node, name):
 
 def remove_application(topology, node, name=None):
     """Remove an application from a node
-    
+
     Parameters
     ----------
     topology : Topology

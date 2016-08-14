@@ -9,7 +9,7 @@ def run(verbosity=1, doctest=False, coverage=False):
     Parameters
     ----------
     verbosity: int, optional
-        Level of detail in test reports.  Higher numbers provide more detail.  
+        Level of detail in test reports.  Higher numbers provide more detail.
 
     doctest: bool, optional
         If *True* run doctests in code modules
@@ -36,21 +36,21 @@ def run(verbosity=1, doctest=False, coverage=False):
             '-w', src_dir,
             '-exe']
     if doctest:
-        argv.extend(['--with-doctest','--doctest-extension=txt'])
+        argv.extend(['--with-doctest', '--doctest-extension=txt'])
     if coverage:
         argv.extend(['--with-coverage', '--cover-package=fnss'])
     # Prepare tests
     if path.exists(tmp_dir):
         rmtree(tmp_dir)
     mkdir(tmp_dir)
-    
+
     # Run tests
     nose.run(argv=argv)
-    
+
     # Clean up
     if path.exists(tmp_dir):
         rmtree(tmp_dir)
 
-if __name__=="__main__":
+if __name__ == "__main__":
     run()
 

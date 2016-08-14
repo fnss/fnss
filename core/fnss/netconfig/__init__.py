@@ -1,6 +1,7 @@
-"""
-Tools for configuring network topologies, e.g. adding link capacities, delays,
-weights, buffer sizes and deploy protocol stacks and applications
+"""Tools for configuring network topologies
+
+The functions provided allow users to add link capacities, delays, weights,
+buffer sizes and deploy protocol stacks and applications
 """
 from fnss.netconfig.buffers import *
 from fnss.netconfig.capacities import *

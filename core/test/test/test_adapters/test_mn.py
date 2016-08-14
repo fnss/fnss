@@ -5,7 +5,7 @@ else:
     try:
         import unittest2 as unittest
     except ImportError:
-        raise ImportError("The unittest2 package is needed to run the tests.") 
+        raise ImportError("The unittest2 package is needed to run the tests.")
 del sys
 import fnss
 from fnss.util import package_available
@@ -15,17 +15,17 @@ class Test(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         pass
-        
+
     @classmethod
     def tearDownClass(cls):
         pass
-    
+
     def setUp(self):
         pass
 
     def tearDown(self):
         pass
-    
+
     @unittest.skipUnless(package_available('mininet'), 'Requires Mininet')
     def test_to_mininet(self):
         t = fnss.Topology()

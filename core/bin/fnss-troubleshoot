@@ -38,7 +38,7 @@ def usage():
 
 def main():
     """Troubleshooting script
-    
+
     Print useful information for troubleshooting.
     """
     print('FNSS TROUBLESHOOTING INFORMATION')
@@ -49,7 +49,7 @@ def main():
     print('OS version: %s' % version)
     print('Machine: %s' % machine)
     print('Python version: %s' % py_version.replace('\n', ''))
-    # see what packages and versions are installed    
+    # see what packages and versions are installed
     for package in packages:
         try:
             version = pkg.get_distribution(package).version

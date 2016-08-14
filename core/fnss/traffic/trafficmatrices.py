@@ -1,8 +1,8 @@
-"""
-Provides functions and classes for creating and manipulating traffic matrices.
+"""Functions and classes for creating and manipulating traffic matrices.
 
-The functions of this class allow to synthetically generate traffic matrices
-with given statistical properties according to models proposed in literature.
+The functions of this class allow users to synthetically generate traffic
+matrices with given statistical properties according to models proposed in
+literature.
 
 The output of this generation is either a TrafficMatrix or a
 TrafficMatrixSequence object.
@@ -388,8 +388,8 @@ def static_traffic_matrix(topology, mean, stddev, max_u=0.9,
     topology = topology.copy() if topology.is_directed() \
                else topology.to_directed()
     volume_unit = topology.graph['capacity_unit']
-    mu = log(mean**2/sqrt(stddev**2 + mean**2))
-    sigma = sqrt(log((stddev**2/mean**2) + 1))
+    mu = log(mean ** 2 / sqrt(stddev ** 2 + mean ** 2))
+    sigma = sqrt(log((stddev ** 2 / mean ** 2) + 1))
     if origin_nodes is None and destination_nodes is None:
         od_pairs = od_pairs_from_topology(topology)
     else:
@@ -401,7 +401,7 @@ def static_traffic_matrix(topology, mean, stddev, max_u=0.9,
         od_pairs = [(o, d) for o in origins for d in destinations if o != d]
     nr_pairs = len(od_pairs)
     volumes = sorted(lognormal(mu, sigma, size=nr_pairs))
-    #volumes = sorted([lognormvariate(mu, sigma) for _ in range(nr_pairs)])
+    # volumes = sorted([lognormvariate(mu, sigma) for _ in range(nr_pairs)])
     if any(isinf(vol) for vol in volumes):
         raise ValueError('Some volumes are too large to be handled by a '\
                          'float type. Set a lower value of mu and try again.')
@@ -434,9 +434,9 @@ def static_traffic_matrix(topology, mean, stddev, max_u=0.9,
                             += assignments[(o, d)]
         # Calculate scaling
         current_max_u = max((float(topology.edge[u][v]['load']) \
-                             /float(topology.edge[u][v]['capacity'])
+                             / float(topology.edge[u][v]['capacity'])
                              for u, v in topology.edges_iter()))
-        norm_factor = max_u/current_max_u
+        norm_factor = max_u / current_max_u
         for od_pair in assignments:
             assignments[od_pair] *= norm_factor
 
@@ -525,7 +525,7 @@ def stationary_traffic_matrix(topology, mean, stddev, gamma, log_psi, n,
                          "causes psi=0.0, which makes the standard deviation "
                          "of random fluctuation to become infinite. Try with "
                          "a greater value of log_psi")
-    std_dict = dict(((o, d), (m/psi)**(1.0/gamma))
+    std_dict = dict(((o, d), (m / psi) ** (1.0 / gamma))
                      for (o, d), m in mean_dict.items())
     if any(isinf(std) for std in std_dict.values()):
         raise ValueError("The value of log_psi or gamma provided are too "
@@ -560,7 +560,7 @@ def stationary_traffic_matrix(topology, mean, stddev, gamma, log_psi, n,
                                             shortest_path
                                             ).values())
                              for i in range(n)))
-        norm_factor = max_u/current_max_u
+        norm_factor = max_u / current_max_u
         for i in range(n):
             for o, d in mean_dict:
                 tm_sequence.matrix[i].flow[o][d] *= norm_factor
@@ -665,7 +665,7 @@ def sin_cyclostationary_traffic_matrix(topology, mean, stddev, gamma, log_psi,
                          "causes psi=0.0, which makes the standard deviation "
                          "of random fluctuation to become infinite. Try with "
                          "a greater value of log_psi")
-    std_dict = dict(((o, d), (m/psi)**(1.0/gamma))
+    std_dict = dict(((o, d), (m / psi) ** (1.0 / gamma))
                      for (o, d), m in mean_dict.items())
     print(std_dict.values())
     if any(isinf(std) for std in std_dict.values()):
@@ -678,7 +678,7 @@ def sin_cyclostationary_traffic_matrix(topology, mean, stddev, gamma, log_psi,
         for i in range(n):
             tm = TrafficMatrix(volume_unit=volume_unit)
             for o, d in od_pairs:
-                volume = static_tm[(o, d)] * (1 + delta * sin((2*pi*i)/n))
+                volume = static_tm[(o, d)] * (1 + delta * sin((2 * pi * i) / n))
                 # Implementation without Numpy
                 # volume = max([0, normalvariate(volume, std_dict[(o, d)])])
                 volume = max((0, normal(volume, std_dict[(o, d)])))
@@ -699,9 +699,9 @@ def sin_cyclostationary_traffic_matrix(topology, mean, stddev, gamma, log_psi,
                                             tm_sequence.get(i),
                                             shortest_path
                                             ).values())
-                             for i in range(n*periods)))
-        norm_factor = max_u/current_max_u
-        for i in range(n*periods):
+                             for i in range(n * periods)))
+        norm_factor = max_u / current_max_u
+        for i in range(n * periods):
             for o, d in mean_dict:
                 tm_sequence.matrix[i].flow[o][d] *= norm_factor
     return tm_sequence
@@ -767,7 +767,7 @@ def __ranking_metrics_heuristic(topology, od_pairs=None):
     # in reverse order the max of NFURs. Since all NFURs are >=0,
     # using the opposite yields the same results as the inverse, but there
     # is no risk of incurring in divisions by 0.
-    max_inv_nfur = dict(((u, v), - max(nfur[u], nfur[v])) for u, v in od_pairs)
+    max_inv_nfur = dict(((u, v), -max(nfur[u], nfur[v])) for u, v in od_pairs)
     # Sort all OD_pairs
     return sorted(od_pairs, key=lambda od_pair: (min_capacity[od_pair],
                                                  min_degree[od_pair],
@@ -822,10 +822,10 @@ def __calc_nfur(topology, fast, parallelize=True):
     try:
         processes = mp.cpu_count()
     except NotImplementedError:
-        processes = 32 # upper bound of number of cores on a commodity server
+        processes = 32  # upper bound of number of cores on a commodity server
     pool = mp.Pool(processes)
     # map operation
-    edges_chunks = util.split_list(edges, len(edges)//processes)
+    edges_chunks = util.split_list(edges, len(edges) // processes)
 #    args = ((topology, chunk, betw) for chunk in edges_chunks)
 #    result = pool.map(__nfur_func, args)
     args = [(__nfur_func, (topology, chunk, betw)) for chunk in edges_chunks]
@@ -834,7 +834,7 @@ def __calc_nfur(topology, fast, parallelize=True):
     return dict((v, max((result[i][v] for i in range(len(result)))))
                 for v in betw)
 
-#def __nfur_func(args):
+# def __nfur_func(args):
 #    topology, edges, betweenness = args
 def __nfur_func(topology, edges, betweenness):
     """
@@ -924,7 +924,7 @@ def validate_traffic_matrix(topology, traffic_matrix, validate_load=False):
                 topology.edge[u][v]['load'] = 0
             capacity_unit = capacity_units[topology.graph['capacity_unit']]
             volume_unit = capacity_units[matrix.attrib['volume_unit']]
-            norm_factor = float(capacity_unit)/float(volume_unit)
+            norm_factor = float(capacity_unit) / float(volume_unit)
             for o, d in od_pairs_tm:
                 path = shortest_path[o][d]
                 if len(path) <= 1:
@@ -986,13 +986,13 @@ def link_loads(topology, traffic_matrix, routing_matrix=None, ecmp=False):
         A dictionary of link loads keyed by link
 
     """
-    #TODO: extend documentation for ecmp usage
+    # TODO: extend documentation for ecmp usage
 
     topology = topology.copy() if topology.is_directed() \
                                else topology.to_directed()
     capacity_unit = capacity_units[topology.graph['capacity_unit']]
     volume_unit = capacity_units[traffic_matrix.attrib['volume_unit']]
-    norm_factor = float(capacity_unit)/float(volume_unit)
+    norm_factor = float(capacity_unit) / float(volume_unit)
     if routing_matrix == None:
         routing_matrix = nx.all_pairs_dijkstra_path(topology, weight='weight')
     for u, v in topology.edges_iter():

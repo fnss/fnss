@@ -1,23 +1,21 @@
-"""
-Provides functions to assign and manipulate link delays.
-"""
+"""Functions to assign and manipulate link delays."""
 import networkx as nx
 from fnss.units import time_units, distance_units
 
 __all__ = [
     'PROPAGATION_DELAY_VACUUM',
     'PROPAGATION_DELAY_FIBER',
-    'set_delays_constant', 
-    'set_delays_geo_distance', 
-    'get_delays', 
+    'set_delays_constant',
+    'set_delays_geo_distance',
+    'get_delays',
     'clear_delays'
            ]
 
 # Propagation delay of light in the vacuum
-PROPAGATION_DELAY_VACUUM = 1.0/300 # ms/Km
+PROPAGATION_DELAY_VACUUM = 1.0 / 300  # ms/Km
 
 # Propagation delay of light in an average optical fiber
-PROPAGATION_DELAY_FIBER = 0.005 # ms/Km
+PROPAGATION_DELAY_FIBER = 0.005  # ms/Km
 
 
 def set_delays_constant(topology, delay=1.0, delay_unit='ms', links=None):
@@ -31,7 +29,7 @@ def set_delays_constant(topology, delay=1.0, delay_unit='ms', links=None):
     delay : float, optional
         The constant delay to be applied to all links
     delay_unit : string, optional
-        The unit of delays. Supported units are: "us" (microseconds), "ms" 
+        The unit of delays. Supported units are: "us" (microseconds), "ms"
         (milliseconds) and "s" (seconds)
     links : list, optional
         List of selected links on which weights are applied. If it is None,
@@ -57,7 +55,7 @@ def set_delays_constant(topology, delay=1.0, delay_unit='ms', links=None):
         curr_delay_unit = topology.graph['delay_unit']
         if curr_delay_unit != delay_unit:
             conversion_factor = float(time_units[delay_unit]) \
-                                / time_units[curr_delay_unit] 
+                                / time_units[curr_delay_unit]
     else:
         topology.graph['delay_unit'] = delay_unit
     edges = topology.edges_iter() if links is None else links
@@ -65,16 +63,16 @@ def set_delays_constant(topology, delay=1.0, delay_unit='ms', links=None):
         topology.edge[u][v]['delay'] = delay * conversion_factor
 
 
-def set_delays_geo_distance(topology, specific_delay, default_delay=None, 
+def set_delays_geo_distance(topology, specific_delay, default_delay=None,
                             delay_unit='ms', links=None):
     """
     Assign a delay to all selected links equal to the product of link length
     and specific delay. To use this function, all nodes must have a 'latitude'
-    and a 'longitude' attribute. Alternatively, all links of the topology must 
+    and a 'longitude' attribute. Alternatively, all links of the topology must
     have a 'length' attribute. If the length of a link cannot be determined, it
-    is applied the delay equal default_delay if specified, otherwise an error 
-    is returned. 
-    
+    is applied the delay equal default_delay if specified, otherwise an error
+    is returned.
+
     Parameters
     ----------
     topology : Topology
@@ -83,9 +81,9 @@ def set_delays_geo_distance(topology, specific_delay, default_delay=None,
         The specific delay (in ms/Km) to be applied to all links
     default_delay : float, optional
         The delay to be applied to links whose length is not known. If None, if
-        the length of a link cannot be determined, an error is returned    
+        the length of a link cannot be determined, an error is returned
     delay_unit : string, optional
-        The unit of delays. Supported units are: "us" (microseconds), "ms" 
+        The unit of delays. Supported units are: "us" (microseconds), "ms"
         (milliseconds) and "s" (seconds)
     links : list, optional
         List of selected links on which weights are applied. If it is None, all
@@ -116,11 +114,11 @@ def set_delays_geo_distance(topology, specific_delay, default_delay=None,
         # been assigned delays, so set these delays using the same unit
         # already used instead of the delay unit provided as argument
         curr_delay_unit = topology.graph['delay_unit']
-        conv_factor = 1.0/time_units[curr_delay_unit]
+        conv_factor = 1.0 / time_units[curr_delay_unit]
     else:
         topology.graph['delay_unit'] = delay_unit
-        curr_delay_unit = delay_unit # used in case of default delay assignment
-        conv_factor = 1.0/time_units[delay_unit]
+        curr_delay_unit = delay_unit  # used in case of default delay assignment
+        conv_factor = 1.0 / time_units[delay_unit]
     # factor to convert length value in Km
     length_conv_factor = distance_units[distance_unit]
     # factor to convert default delay in target delay unit
@@ -131,7 +129,7 @@ def set_delays_geo_distance(topology, specific_delay, default_delay=None,
             delay = specific_delay * length * conv_factor
         else:
             delay = default_delay * default_conv_factor
-        topology.edge[u][v]['delay'] = delay 
+        topology.edge[u][v]['delay'] = delay
 
 
 def get_delays(topology):
@@ -147,7 +145,7 @@ def get_delays(topology):
     -------
     delays : dict
         Dictionary of link delays keyed by link.
-    
+
     Examples
     --------
     >>> import fnss
@@ -168,7 +166,7 @@ def clear_delays(topology):
     Parameters
     ----------
     topology : Topology
-        
+
     """
     if 'delay_unit' in topology.graph:
         del topology.graph['delay_unit']

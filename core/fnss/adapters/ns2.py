@@ -110,12 +110,12 @@ def validate_ns2_stacks(topology):
     """
     Validate whether the stacks and applications of a topology are valid for
     ns-2 deployment
-    
+
     Parameters
     ----------
     topology : Topology
         The topology object to validate
-        
+
     Returns
     -------
     valid : bool
@@ -130,17 +130,17 @@ def validate_ns2_stacks(topology):
         stack = get_stack(topology, node)
         if stack is None:
             # Each node must have a stack if it has an application
-            if len(applications) > 0: return False 
+            if len(applications) > 0: return False
         else:
             # If there is a stack, it must have a class attribute
             if 'class' not in stack[1]: return False
     return True
-            
+
 
 def to_ns2(topology, path, stacks=True):
     """Convert topology object into an ns-2 Tcl script that deploys that
     topology into ns-2.
-    
+
     Parameters
     ----------
     topology : Topology
@@ -152,7 +152,7 @@ def to_ns2(topology, path, stacks=True):
         For this to work, stacks must be formatted in a way understandable by
         ns-2. For example, stack and applications must have a 'class' attribute
         whose value is the name of the ns-2 class implementing it.
-        
+
     Notes
     -----
     In order for the function to parse stacks correctly, the input topology
@@ -173,7 +173,7 @@ def to_ns2(topology, path, stacks=True):
     # if all links are annotated with weights, then set weights
     set_weights = all('weight' in topology.edge[u][v]
                       for u, v in topology.edges_iter())
-    
+
     if not 'capacity_unit' in topology.graph:
         raise ValueError('The given topology does not have capacity data.')
     if not topology.graph['capacity_unit'] in capacity_units:

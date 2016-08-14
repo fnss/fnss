@@ -5,7 +5,7 @@ else:
     try:
         import unittest2 as unittest
     except ImportError:
-        raise ImportError("The unittest2 package is needed to run the tests.") 
+        raise ImportError("The unittest2 package is needed to run the tests.")
 del sys
 import networkx as nx
 import fnss
@@ -24,18 +24,17 @@ class Test(unittest.TestCase):
         fnss.set_capacities_random_uniform(cls.topo, cls.capacities)
         fnss.set_delays_constant(cls.topo, 3, 'ms', cls.odd_links)
         fnss.set_delays_constant(cls.topo, 12, 'ms', cls.even_links)
-    
+
     @classmethod
     def tearDownClass(cls):
         pass
-    
 
     def setUp(self):
         pass
 
     def tearDown(self):
         fnss.clear_weights(self.topo)
-    
+
     def test_weights_constant(self):
         fnss.set_weights_constant(self.topo, 2, self.odd_links)
         fnss.set_weights_constant(self.topo, 5, self.even_links)
@@ -44,14 +43,14 @@ class Test(unittest.TestCase):
 
     def test_weights_inverse_capacity(self):
         fnss.set_weights_inverse_capacity(self.topo)
-        self.assertTrue(all(self.topo.edge[u][v]['weight'] in [1, 2] 
+        self.assertTrue(all(self.topo.edge[u][v]['weight'] in [1, 2]
                             for (u, v) in self.topo.edges_iter()))
-        
+
     def test_weights_delays(self):
         fnss.set_weights_delays(self.topo)
-        self.assertTrue(all(self.topo.edge[u][v]['weight'] in [1, 4] 
+        self.assertTrue(all(self.topo.edge[u][v]['weight'] in [1, 4]
                             for (u, v) in self.topo.edges_iter()))
-        
+
     def test_clear_weights(self):
         # create new topology to avoid parameters pollution
         G = fnss.star_topology(12)

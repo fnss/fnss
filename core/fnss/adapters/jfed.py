@@ -14,7 +14,7 @@ import xml.etree.cElementTree as ET
 
 import networkx as nx
 
-from fnss import Topology, get_delays, get_capacities 
+from fnss import Topology, get_delays, get_capacities
 import fnss.util as util
 import fnss.units as units
 
@@ -24,7 +24,7 @@ __all__ = ['to_jfed', 'from_jfed']
 
 def to_jfed(topology, path, testbed="wall1.ilabt.iminds.be", encoding="utf-8", prettyprint=True):
     """Convert a topology object into an RSPEC file for jFed
-    
+
     Parameters
     ----------
     topology : Topology
@@ -37,7 +37,7 @@ def to_jfed(topology, path, testbed="wall1.ilabt.iminds.be", encoding="utf-8", p
         The encoding of the target file
     prettyprint : bool, optional
         Indent the XML code in the output file
-        
+
     Notes
     -----
     It currently supports only undirected topologies, if a topology is directed
@@ -46,11 +46,11 @@ def to_jfed(topology, path, testbed="wall1.ilabt.iminds.be", encoding="utf-8", p
     if topology.is_directed():
         topology = topology.to_undirected()
     topology = nx.convert_node_labels_to_integers(topology)
-    
+
     if 'capacity_unit' in topology.graph:
-        capacity_norm = units.capacity_units[topology.graph['capacity_unit']]/units.capacity_units['Kbps']
+        capacity_norm = units.capacity_units[topology.graph['capacity_unit']] / units.capacity_units['Kbps']
     if 'delay_unit' in topology.graph:
-        delay_norm = units.time_units[topology.graph['delay_unit']]/units.time_units['ms']
+        delay_norm = units.time_units[topology.graph['delay_unit']] / units.time_units['ms']
     delays = get_delays(topology)
     capacities = get_capacities(topology)
     # Node positions (randomly generated)
@@ -61,7 +61,7 @@ def to_jfed(topology, path, testbed="wall1.ilabt.iminds.be", encoding="utf-8", p
         next_hops = sorted(topology.edge[v].keys())
         if_names[v] = dict((next_hops[i], i) for i in range(len(next_hops)))
     head = ET.Element('rspec')
-    head.attrib["generated_by"]= "FNSS"
+    head.attrib["generated_by"] = "FNSS"
     head.attrib['xsi:schemaLocation'] = "http://www.geni.net/resources/rspec/3 http://www.geni.net/resources/rspec/3/request.xsd"
     head.attrib['xmlns'] = "http://www.geni.net/resources/rspec/3"
     head.attrib["xmlns:jFed"] = "http://jfed.iminds.be/rspec/ext/jfed/1"
@@ -78,30 +78,30 @@ def to_jfed(topology, path, testbed="wall1.ilabt.iminds.be", encoding="utf-8", p
         sliver_type.attrib['name'] = topology.node[v]['sliver_type'] if 'sliver_type' in topology.node[v] else 'raw-pc'
         location = ET.SubElement(node, 'jFed:location')
         x, y = pos[v]
-        location.attrib['x'] = str(1000*x)
-        location.attrib['y'] = str(500*y)
+        location.attrib['x'] = str(1000 * x)
+        location.attrib['y'] = str(500 * y)
         for if_name in if_names[v].values():
             interface = ET.SubElement(node, 'interface')
             interface.attrib['client_id'] = "node%s:if%s" % (str(v), str(if_name))
     # The convention in jFed is to identify links with "linkX" where X is an
-    # integer but making sure that links and nodes have different integers 
+    # integer but making sure that links and nodes have different integers
     link_id = topology.number_of_nodes() - 1
     for u, v in topology.edges_iter():
         link_id += 1
         link = ET.SubElement(head, 'link')
         link.attrib['client_id'] = "link%s" % str(link_id)
-        component_manager =  ET.SubElement(link, 'component_manager')
+        component_manager = ET.SubElement(link, 'component_manager')
         component_manager.attrib['name'] = "urn:publicid:IDN+%s+authority+cm" % testbed
-        u_if = "node%s:if%s" % (str(u), str(if_names[u][v])) 
+        u_if = "node%s:if%s" % (str(u), str(if_names[u][v]))
         v_if = "node%s:if%s" % (str(v), str(if_names[v][u]))
         for source, dest in ((u_if, v_if), (v_if, u_if)):
             prop = ET.SubElement(link, 'property')
             prop.attrib["source_id"] = source
             prop.attrib["dest_id"] = dest
             if (u, v) in delays:
-                prop.attrib['latency'] = str(delay_norm*delays[(u, v)])
+                prop.attrib['latency'] = str(delay_norm * delays[(u, v)])
             if (u, v) in capacities:
-                prop.attrib['capacity'] = str(capacity_norm*capacities[(u, v)])
+                prop.attrib['capacity'] = str(capacity_norm * capacities[(u, v)])
             interface_ref = ET.SubElement(link, 'interface_ref')
             interface_ref.attrib['client_id'] = source
     if prettyprint:
@@ -112,28 +112,28 @@ def to_jfed(topology, path, testbed="wall1.ilabt.iminds.be", encoding="utf-8", p
 def from_jfed(path):
     """Read a jFed RSPEC file and returns an FNSS topology modelling the
     network topology of the jFed experiment specification.
-    
+
     Parameters
     ----------
     path : str
         The path of the jFed RSPEC file to parse
-    
+
     Returns
     -------
     topology: Topology
         The parsed topology
-    
+
     Notes
     -----
     This function does not support directed topologies and unidirectional links
-    
+
     It is possible in jFed to create multipoint links (links with more than 2
     endpoints). Such types of link cannot be modelled in FNSS. Therefore, any
     attempt to convert an RSPEC with such links will fail.
     """
     # This implementation could be improved by using SOAP libraries, but it
     # would require to add another dependency to the project.
-    # The current implementation, although not really elegant, works fine 
+    # The current implementation, although not really elegant, works fine
     tree = ET.parse(path)
     head = tree.getroot()
     xmlns = "http://www.geni.net/resources/rspec/3"
@@ -163,7 +163,7 @@ def from_jfed(path):
         # A link may connect more than two nodes. These links cannot be
         # represented in an FNSS Topology.
         # This statement also encompasses the potential case of one interface
-        # only that should not happen if the file is correctly formatted. 
+        # only that should not happen if the file is correctly formatted.
         if len(interfaces) != 2:
             raise ValueError("Link %s is not a point-to-point link but a shared "
                              "medium connecting %d interfaces. These links are "
