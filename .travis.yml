@@ -3,8 +3,8 @@ language: python
 # Python versions to be tested
 python:
   - "2.7"
-  - "3.3"
   - "3.4"
+  - "3.5"
 
 env:
   global:
@@ -14,21 +14,29 @@ before_install:
   # For Ubuntu 12.04 VMs
   - sudo apt-get update -qq
   - sudo apt-get install -qq libatlas-dev libatlas-base-dev liblapack-dev gfortran clang ant doxygen
-  - $PIP_INSTALL setuptools
-  - $PIP_INSTALL pip
-  # Install Miniconda: it's the simplest way to get up-to-date versions of NumPy, SciPy and Matplotlib
-  - wget http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O miniconda.sh
-  - chmod +x miniconda.sh
-  - ./miniconda.sh -b
-  - export PATH=/home/travis/miniconda/bin:$PATH
-  - conda update --yes conda
+  # Instructions on using Miniconda: http://conda.pydata.org/docs/travis.html
+  # We do this conditionally because it saves us some downloading if the
+  # version is the same.
+  - if [[ "$TRAVIS_PYTHON_VERSION" == "2.7" ]]; then
+      wget https://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O miniconda.sh;
+    else
+      wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh;
+    fi
+  - bash miniconda.sh -b -p $HOME/miniconda
+  - export PATH="$HOME/miniconda/bin:$PATH"
+  - hash -r
+  - conda config --set always_yes yes --set changeps1 no
+  - conda update -q conda
+  # Useful for debugging any issues with conda
+  - conda info -a
+
   # The next couple lines fix a crash with multiprocessing on Travis
   - sudo rm -rf /dev/shm
   - sudo ln -s /run/shm /dev/shm
 
 install:
-  - conda install --yes python=$TRAVIS_PYTHON_VERSION atlas numpy scipy matplotlib nose dateutil pandas statsmodels
-  - $PIP_INSTALL networkx
+  - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION atlas numpy scipy matplotlib nose pandas mako statsmodels networkx
+  - source activate test-environment
 
 script:
   - make test
