@@ -150,6 +150,7 @@ class Test(unittest.TestCase):
         topology = fnss.parse_topology_zoo(topozoo_file)
         self.assertEqual(type(topology), fnss.Topology)
         self.assertFalse(topology.is_multigraph())
+        self.assertTrue(topology.graph['link_bundling'])
         self.assertEqual(61, topology.number_of_nodes())
         self.assertEqual(75, topology.number_of_edges())
         self.assertEquals('bps', topology.graph['capacity_unit'])
@@ -163,6 +164,13 @@ class Test(unittest.TestCase):
             self.assertEquals((u, v) in bundled_links,
                               topology.edge[u][v]['bundle'])
 
+    @unittest.skipIf(RES_DIR is None, "Resources folder not present")
+    def test_parse_topology_zoo_multigraph_directed_topology(self):
+        topozoo_file = path.join(RES_DIR, 'topozoo-kdl.graphml')
+        topology = fnss.parse_topology_zoo(topozoo_file)
+        self.assertEqual(type(topology), fnss.DirectedTopology)
+        self.assertFalse(topology.is_multigraph())
+        self.assertTrue(topology.graph['link_bundling'])
 
     @unittest.skipIf(RES_DIR is None, "Resources folder not present")
     def test_parse_brite_as(self):
@@ -182,16 +190,13 @@ class Test(unittest.TestCase):
         self.assertAlmostEquals(212.11553455605272,
                                 topology.edge[716][230]['length'], 0.01)
 
-
     @unittest.skipIf(RES_DIR is None, "Resources folder not present")
     def test_parse_brite_router(self):
         pass
 
-
     @unittest.skipIf(RES_DIR is None, "Resources folder not present")
     def test_parse_brite_bottomup(self):
         pass
-
 
     @unittest.skipIf(RES_DIR is None, "Resources folder not present")
     def test_parse_brite_topdown(self):
