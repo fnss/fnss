@@ -620,8 +620,7 @@ def parse_topology_zoo(path):
                else Topology()
     topology.graph['type'] = 'topology_zoo'
     topology.graph['distance_unit'] = 'Km'
-    topology.graph['link_bundling'] = True if topo_zoo_graph.is_multigraph() \
-                                      else False
+    topology.graph['link_bundling'] = topo_zoo_graph.is_multigraph()
     for tv in topo_zoo_graph.nodes_iter():
         v = try_convert_int(tv)
         topology.add_node(v)
