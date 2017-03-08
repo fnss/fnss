@@ -652,19 +652,13 @@ def parse_topology_zoo(path):
             topology.edge[v][u]['length'] = length
         if topo_zoo_graph.is_multigraph():
             edge = topo_zoo_graph.edge[tv][tu]
-            if len(edge) == 1:
-                topology.edge[v][u]['bundle'] = False
-                if 'LinkSpeedRaw' in edge[0]:
-                    topology.edge[v][u]['capacity'] = \
-                            edge[0]['LinkSpeedRaw']
-            else:
-                topology.edge[v][u]['bundle'] = True
-                capacity = 0
-                for edge_attr in list(edge.values()):
-                    if 'LinkSpeedRaw' in edge_attr:
-                        capacity += edge_attr['LinkSpeedRaw']
-                if capacity > 0:
-                    topology.edge[v][u]['capacity'] = capacity
+            topology.edge[v][u]['bundle'] = True if len(edge) > 1 else False
+            capacity = 0
+            for edge_attr in list(edge.values()):
+                if 'LinkSpeedRaw' in edge_attr:
+                    capacity += edge_attr['LinkSpeedRaw']
+            if capacity > 0:
+                topology.edge[v][u]['capacity'] = capacity
         else:
             if 'LinkSpeedRaw' in topo_zoo_graph.edge[tv][tu]:
                 topology.edge[v][u]['capacity'] = \
