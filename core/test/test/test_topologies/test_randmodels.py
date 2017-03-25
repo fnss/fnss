@@ -1,13 +1,5 @@
-import sys
-if sys.version_info[:2] >= (2, 7):
-    import unittest
-else:
-    try:
-        import unittest2 as unittest
-    except ImportError:
-        raise ImportError("The unittest2 package is needed to run the tests.")
-del sys
-import random
+import unittest
+
 import networkx as nx
 import fnss
 

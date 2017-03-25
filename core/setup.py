@@ -6,8 +6,8 @@ import os
 from shutil import rmtree
 
 # Verify Python version
-if sys.version_info[:2] < (2, 6):
-    print("FNSS requires Python version 2.6 or later (%d.%d detected)." %
+if sys.version_info[:2] < (2, 7):
+    print("FNSS requires Python version 2.7 or later (%d.%d detected)." %
           sys.version_info[:2])
     sys.exit(-1)
 
@@ -20,11 +20,6 @@ required_packages = [('networkx', '>=', '1.6'),
 optional_packages = [('nose', '>=', '1.1'),
                      ('numpydoc', '>=', '0.4'),
                      ('sphinx', '>=', '1.1')]
-
-# Python 2.6 version of unittest does not include features required by
-# FNSS's tests: unittest2 is needed
-if sys.version_info[:2] == (2, 6):
-    optional_packages.append(('unittest2', '>=', '0.4'))
 
 # if install in development mode, then install all packages required to
 # run tests and build documentation
@@ -100,12 +95,10 @@ if __name__ == "__main__":
              'Natural Language :: English',
              'Operating System :: OS Independent',
              'Programming Language :: Python :: 2',
-             'Programming Language :: Python :: 2.6',
              'Programming Language :: Python :: 2.7',
              'Programming Language :: Python :: 3',
-             'Programming Language :: Python :: 3.1',
-             'Programming Language :: Python :: 3.2',
-             'Programming Language :: Python :: 3.3',
+             'Programming Language :: Python :: 3.4',
+             'Programming Language :: Python :: 3.5',
              'Topic :: Software Development :: Libraries :: Python Modules',
              'Topic :: Scientific/Engineering',
         ],

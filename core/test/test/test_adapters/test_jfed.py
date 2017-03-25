@@ -1,13 +1,6 @@
-import sys
-if sys.version_info[:2] >= (2, 7):
-    import unittest
-else:
-    try:
-        import unittest2 as unittest
-    except ImportError:
-        raise ImportError("The unittest2 package is needed to run the tests.")
-del sys
 from os import environ, path
+import unittest
+
 import fnss
 
 RES_DIR = environ['test.res.dir'] if 'test.res.dir' in environ else None

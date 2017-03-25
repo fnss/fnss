@@ -19,7 +19,7 @@ Other operating systems
 -----------------------
 
 The easiest way to install the core Python library is to download it and install it
-from the Python Package Index. To do so, you must have Python (version >= 2.6)
+from the Python Package Index. To do so, you must have Python (version >= 2.7)
 installed on your machine and either `pip` or `easy_install`.
 
 To install the FNSS core library using `easy_install` open a command shell and type::
@@ -99,8 +99,7 @@ Requirements
 Python
 ------
 
-To use FNSS you need Python version 2.6 or later (2.7 or later recommended).
-FNSS fully supports Python 3
+To use FNSS you need Python version 2.7 or later. FNSS fully supports Python 3
 
 
 Required packages

@@ -20,8 +20,8 @@ schedules to the desired target simulator or emulator.
 """
 # check Python version
 import sys
-if sys.version_info[:2] < (2, 6):
-    m = "Python version 2.6 or later is required for FNSS (%d.%d detected)."
+if sys.version_info[:2] < (2, 7):
+    m = "Python version 2.7 or later is required for FNSS (%d.%d detected)."
     raise ImportError(m % sys.version_info[:2])
 del sys
 
