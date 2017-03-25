@@ -27,11 +27,11 @@ __all__ = [
     'clear_capacities'
            ]
 
-def set_capacities_constant(topology, capacity, capacity_unit='Mbps', 
+def set_capacities_constant(topology, capacity, capacity_unit='Mbps',
                             links=None):
     """
     Set constant link capacities
-    
+
     Parameters
     ----------
     topology : Topology
@@ -44,7 +44,7 @@ def set_capacities_constant(topology, capacity, capacity_unit='Mbps',
         applied to all links.
     capacity_unit : str, optional
         The unit in which capacity value is expressed (e.g. Mbps, Gbps etc..)
-        
+
     Examples
     --------
     >>> import fnss
@@ -63,7 +63,7 @@ def set_capacities_constant(topology, capacity, capacity_unit='Mbps',
         curr_capacity_unit = topology.graph['capacity_unit']
         if curr_capacity_unit != capacity_unit:
             conversion_factor = float(capacity_units[capacity_unit]) \
-                                / capacity_units[curr_capacity_unit] 
+                                / capacity_units[curr_capacity_unit]
     else:
         topology.graph['capacity_unit'] = capacity_unit
     edges = topology.edges_iter() if links is None else links
@@ -74,9 +74,9 @@ def set_capacities_constant(topology, capacity, capacity_unit='Mbps',
 
 def set_capacities_random(topology, capacity_pdf, capacity_unit='Mbps'):
     """
-    Set random link capacities according to a given probability density 
+    Set random link capacities according to a given probability density
     function
-    
+
     Parameters
     ----------
     topology : Topology
@@ -87,10 +87,10 @@ def set_capacities_random(topology, capacity_pdf, capacity_unit='Mbps'):
     capacity_unit : str, optional
         The unit in which capacity value is expressed (e.g. Mbps, Gbps etc..)
     links : list, optional
-        List of links, represented as (u, v) tuples to which capacity will be 
-        set. If None or not specified, the capacity will be applied to all 
+        List of links, represented as (u, v) tuples to which capacity will be
+        set. If None or not specified, the capacity will be applied to all
         links.
-        
+
     Examples
     --------
     >>> import fnss
@@ -108,26 +108,26 @@ def set_capacities_random(topology, capacity_pdf, capacity_unit='Mbps'):
     return
 
 
-def set_capacities_random_power_law(topology, capacities, capacity_unit='Mbps', 
+def set_capacities_random_power_law(topology, capacities, capacity_unit='Mbps',
                                     alpha=1.1):
     """
-    Set random link capacities according to a power-law probability density 
+    Set random link capacities according to a power-law probability density
     function.
-    
+
     The probability that a capacity :math:`c_i` is assigned to a link is:
-       
+
     .. math::
         p(c_i) = \\frac{{c_i}^{-\\alpha}}{\\sum_{c_k \\in C}{{c_k}^{-\\alpha}}}.
-    
+
     Where :math:`C` is the set of allowed capacity, i.e. the ``capacities``
     argument
-    
+
     Note that this capacity assignment differs from
     ``set_capacities_random_zipf`` because, while in Zipf assignment the power
-    law relationship is between the rank of a capacity and the probability of 
+    law relationship is between the rank of a capacity and the probability of
     being assigned to a link, in this assignment, the power law is between the
     value of the capacity and the probability of being assigned to a link.
-    
+
     Parameters
     ----------
     topology : Topology
@@ -140,32 +140,32 @@ def set_capacities_random_power_law(topology, capacities, capacity_unit='Mbps',
     if alpha <= 0.0:
         raise ValueError('alpha must be positive')
     capacities = sorted(capacities)
-    pdf = [capacities[i]**(-alpha) for i in range(len(capacities))]
+    pdf = [capacities[i] ** (-alpha) for i in range(len(capacities))]
     norm_factor = sum(pdf)
-    norm_pdf = dict((capacities[i], pdf[i]/norm_factor)
+    norm_pdf = dict((capacities[i], pdf[i] / norm_factor)
                     for i in range(len(capacities)))
     set_capacities_random(topology, norm_pdf, capacity_unit=capacity_unit)
 
 
-def set_capacities_random_zipf_mandelbrot(topology, capacities, 
-                                          capacity_unit='Mbps', alpha=1.1, 
+def set_capacities_random_zipf_mandelbrot(topology, capacities,
+                                          capacity_unit='Mbps', alpha=1.1,
                                           q=0.0, reverse=False):
     """
-    Set random link capacities according to a Zipf-Mandelbrot probability 
+    Set random link capacities according to a Zipf-Mandelbrot probability
     density function.
-    
+
     This capacity allocation consists in the following steps:
-    
+
     1. All capacities are sorted in descending or order (or ascending if
        reverse is True)
-    
+
     2. The i-th value of the sorted capacities list is then assigned to a link
        with probability
-       
+
     .. math::
        p(i) = \\frac{1/(i + q)^\\alpha}{\\sum_{i = 1}^{N}{1/(i + q)^\\alpha}}.
-    
-    
+
+
     Parameters
     ----------
     topology : Topology
@@ -187,34 +187,34 @@ def set_capacities_random_zipf_mandelbrot(topology, capacities,
     if q < 0.0:
         raise ValueError('q must be >= 0')
     capacities = sorted(capacities, reverse=reverse)
-    pdf = dict((capacities[i], 1.0 /(i + 1.0 + q)**alpha)
+    pdf = dict((capacities[i], 1.0 / (i + 1.0 + q) ** alpha)
                 for i in range(len(capacities)))
     norm_factor = sum(pdf.values())
-    norm_pdf = dict((capacity, pdf[capacity]/norm_factor)
+    norm_pdf = dict((capacity, pdf[capacity] / norm_factor)
                      for capacity in pdf)
     set_capacities_random(topology, norm_pdf, capacity_unit=capacity_unit)
 
 
-def set_capacities_random_zipf(topology, capacities, capacity_unit='Mbps', 
-                               alpha=1.1,  reverse=False):
+def set_capacities_random_zipf(topology, capacities, capacity_unit='Mbps',
+                               alpha=1.1, reverse=False):
     """
-    Set random link capacities according to a Zipf probability density 
+    Set random link capacities according to a Zipf probability density
     function.
-    
+
     The same objective can be achieved by invoking the function
     ``set_capacities_random_zipf_mandlebrot`` with parameter q set to 0.
-    
+
     This capacity allocation consists in the following steps:
-    
+
     1. All capacities are sorted in descending or order (or ascending if
        reverse is True)
-    
+
     2. The i-th value of the sorted capacities list is then assigned to a link
        with probability
-       
+
     .. math::
             p(i) = \\frac{1/i^\\alpha}{\\sum_{i = 1}^{N}{1/i^\\alpha}}.
-    
+
     Parameters
     ----------
     topology : Topology
@@ -229,8 +229,8 @@ def set_capacities_random_zipf(topology, capacities, capacity_unit='Mbps',
         If False, lower capacity links are the most frequent, if True, higher
         capacity links are more frequent
     """
-    set_capacities_random_zipf_mandelbrot(topology, capacities, alpha=alpha, 
-                                          q=0.0, reverse=reverse, 
+    set_capacities_random_zipf_mandelbrot(topology, capacities, alpha=alpha,
+                                          q=0.0, reverse=reverse,
                                           capacity_unit=capacity_unit)
 
 
@@ -238,7 +238,7 @@ def set_capacities_random_uniform(topology, capacities, capacity_unit='Mbps'):
     """
     Set random link capacities according to a uniform probability density
     function.
-    
+
     Parameters
     ----------
     topology : Topology
@@ -248,14 +248,14 @@ def set_capacities_random_uniform(topology, capacities, capacity_unit='Mbps'):
     capacity_unit : str, optional
         The unit in which capacity value is expressed (e.g. Mbps, Gbps etc..)
     """
-    capacity_pdf = dict((capacity, 1.0/len(capacities)) 
+    capacity_pdf = dict((capacity, 1.0 / len(capacities))
                          for capacity in capacities)
     set_capacities_random(topology, capacity_pdf, capacity_unit=capacity_unit)
 
 
 def set_capacities_degree_gravity(topology, capacities, capacity_unit='Mbps'):
     """
-    Set link capacities proportionally to the product of the degrees of the 
+    Set link capacities proportionally to the product of the degrees of the
     two end-points of the link
 
     Parameters
@@ -276,16 +276,16 @@ def set_capacities_degree_gravity(topology, capacities, capacity_unit='Mbps'):
         degree = nx.degree_centrality(topology)
         gravity = dict(((u, v), degree[u] * degree[v])
                         for (u, v) in topology.edges_iter())
-    _set_capacities_proportionally(topology, capacities, gravity, 
+    _set_capacities_proportionally(topology, capacities, gravity,
                                    capacity_unit=capacity_unit)
 
 
-def set_capacities_betweenness_gravity(topology, capacities, 
+def set_capacities_betweenness_gravity(topology, capacities,
                                        capacity_unit='Mbps', weighted=True):
     """
     Set link capacities proportionally to the product of the betweenness
     centralities of the two end-points of the link
-    
+
     Parameters
     ----------
     topology : Topology
@@ -300,17 +300,17 @@ def set_capacities_betweenness_gravity(topology, capacities,
         shortest paths are calculated based on hop count.
     """
     weight = 'weight' if weighted else None
-    centrality = nx.betweenness_centrality(topology, normalized=False, 
+    centrality = nx.betweenness_centrality(topology, normalized=False,
                                            weight=weight)
     _set_capacities_gravity(topology, capacities, centrality, capacity_unit)
 
 
-def set_capacities_eigenvector_gravity(topology, capacities, 
+def set_capacities_eigenvector_gravity(topology, capacities,
                                        capacity_unit='Mbps', max_iter=1000):
     """
     Set link capacities proportionally to the product of the eigenvector
     centralities of the two end-points of the link
-    
+
     Parameters
     ----------
     topology : Topology
@@ -322,7 +322,7 @@ def set_capacities_eigenvector_gravity(topology, capacities,
     max_iter : int, optional
         The max number of iteration of the algorithm allowed. If a solution is
         not found within this period
-    
+
     Raises
     ------
     RuntimeError : if the algorithm does not converge in max_iter iterations
@@ -330,17 +330,17 @@ def set_capacities_eigenvector_gravity(topology, capacities,
     try:
         centrality = nx.eigenvector_centrality(topology, max_iter=max_iter)
     except nx.NetworkXError:
-        raise RuntimeError('Algorithm did not converge in %d iterations' 
+        raise RuntimeError('Algorithm did not converge in %d iterations'
                            % max_iter)
     _set_capacities_gravity(topology, capacities, centrality, capacity_unit)
 
 
-def set_capacities_pagerank_gravity(topology, capacities, capacity_unit='Mbps', 
+def set_capacities_pagerank_gravity(topology, capacities, capacity_unit='Mbps',
                                     alpha=0.85, weight=None):
     """
     Set link capacities proportionally to the product of the Pagerank
     centralities of the two end-points of the link
-    
+
     Parameters
     ----------
     topology : Topology
@@ -356,17 +356,17 @@ def set_capacities_pagerank_gravity(topology, capacities, capacity_unit='Mbps',
         attributes include *capacity* *delay* and *weight*. If ``None``, all
         links are assigned the same weight.
     """
-    centrality = nx.pagerank_numpy(topology, alpha=alpha, personalization=None, 
+    centrality = nx.pagerank_numpy(topology, alpha=alpha, personalization=None,
                              weight=weight)
     _set_capacities_gravity(topology, capacities, centrality, capacity_unit)
 
 
-def set_capacities_communicability_gravity(topology, capacities, 
+def set_capacities_communicability_gravity(topology, capacities,
                                            capacity_unit='Mbps'):
     """
     Set link capacities proportionally to the product of the communicability
     centralities of the two end-points of the link
-    
+
     Parameters
     ----------
     topology : Topology
@@ -380,12 +380,12 @@ def set_capacities_communicability_gravity(topology, capacities,
     _set_capacities_gravity(topology, capacities, centrality, capacity_unit)
 
 
-def set_capacities_edge_betweenness(topology, capacities, capacity_unit='Mbps', 
+def set_capacities_edge_betweenness(topology, capacities, capacity_unit='Mbps',
                                     weighted=True):
     """
     Set link capacities proportionally to edge betweenness centrality of the
     link.
-    
+
     Parameters
     ----------
     topology : Topology
@@ -400,18 +400,18 @@ def set_capacities_edge_betweenness(topology, capacities, capacity_unit='Mbps',
         shortest paths are calculated based on hop count.
     """
     weight = 'weight' if weighted else None
-    centrality = nx.edge_betweenness_centrality(topology, normalized=False, 
+    centrality = nx.edge_betweenness_centrality(topology, normalized=False,
                                                 weight=weight)
-    _set_capacities_proportionally(topology, capacities, centrality, 
+    _set_capacities_proportionally(topology, capacities, centrality,
                                    capacity_unit=capacity_unit)
 
 
-def set_capacities_edge_communicability(topology, capacities, 
+def set_capacities_edge_communicability(topology, capacities,
                                         capacity_unit='Mbps'):
     """
     Set link capacities proportionally to edge communicability centrality of
     the link.
-    
+
     Parameters
     ----------
     topology : Topology
@@ -424,11 +424,11 @@ def set_capacities_edge_communicability(topology, capacities,
     communicability = nx.communicability(topology)
     centrality = dict(((u, v), communicability[u][v])
                       for (u, v) in topology.edges_iter())
-    _set_capacities_proportionally(topology, capacities, centrality, 
+    _set_capacities_proportionally(topology, capacities, centrality,
                                    capacity_unit=capacity_unit)
 
 
-def _set_capacities_gravity(topology, capacities, node_metric, 
+def _set_capacities_gravity(topology, capacities, node_metric,
                             capacity_unit='Mbps'):
     """
     Set link capacities proportionally to the product of the values of a given
@@ -448,15 +448,15 @@ def _set_capacities_gravity(topology, capacities, node_metric,
     """
     gravity = dict(((u, v), node_metric[u] * node_metric[v])
                    for (u, v) in topology.edges_iter())
-    _set_capacities_proportionally(topology, capacities, gravity, 
+    _set_capacities_proportionally(topology, capacities, gravity,
                                    capacity_unit=capacity_unit)
 
 
-def _set_capacities_proportionally(topology, capacities, metric, 
+def _set_capacities_proportionally(topology, capacities, metric,
                                    capacity_unit='Mbps'):
     """
     Set link capacities proportionally to the value of a given edge metric.
-    
+
     Parameters
     ----------
     topology : Topology
@@ -475,7 +475,7 @@ def _set_capacities_proportionally(topology, capacities, metric,
         raise ValueError('All capacities must be positive')
     if len(capacities) == 0:
         raise ValueError('The list of capacities cannot be empty')
-    
+
     topology.graph['capacity_unit'] = capacity_unit
 
     # If there is only one capacity the capacities list then all links are
@@ -483,26 +483,26 @@ def _set_capacities_proportionally(topology, capacities, metric,
     if len(capacities) == 1:
         set_capacities_constant(topology, capacities[0], capacity_unit)
         return
-    
+
     # get min and max of selected edge metric
     min_metric = min(metric.values())
     max_metric = max(metric.values())
-    
+
     capacities = sorted(capacities)
-    
+
     min_capacity = capacities[0] - 0.5 * (capacities[1] - capacities[0])
     max_capacity = capacities[-1] + 0.5 * (capacities[-1] - capacities[-2])
-    capacity_boundaries = [0.5*(capacities[i] + capacities[i + 1]) 
+    capacity_boundaries = [0.5 * (capacities[i] + capacities[i + 1])
                            for i in range(len(capacities) - 1)]
     capacity_boundaries.append(max_capacity)
-    
-    metric_boundaries = [(capacity_boundary - min_capacity) * 
-                         ((max_metric - min_metric)/
-                          (max_capacity - min_capacity)) + min_metric 
+
+    metric_boundaries = [(capacity_boundary - min_capacity) *
+                         ((max_metric - min_metric) /
+                          (max_capacity - min_capacity)) + min_metric
                          for capacity_boundary in capacity_boundaries]
     # to prevent float rounding errors
     metric_boundaries[-1] = max_metric + 0.1
-    
+
     for (u, v), metric_value in metric.items():
         for i in range(len(metric_boundaries)):
             if metric_value <= metric_boundaries[i]:
@@ -516,7 +516,7 @@ def _set_capacities_proportionally(topology, capacities, metric,
         # for loop we are already adjusting the value of metric_boundaries[-1]
         # to make it > max_capacity
         else: topology.edge[u][v]['capacity'] = capacities[-1]
-   
+
 
 def get_capacities(topology):
     """
@@ -531,7 +531,7 @@ def get_capacities(topology):
     -------
     capacities : dict
         Dictionary of link capacities keyed by link.
-    
+
     Examples
     --------
     >>> import fnss

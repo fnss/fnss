@@ -1,7 +1,7 @@
 """
 This module contains all the information related to the current release of the
 library including descriptions, version number, authors and contact
-information. 
+information.
 """
 # author information.
 # Used by __init__, doc and setup
