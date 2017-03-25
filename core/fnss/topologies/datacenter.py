@@ -76,8 +76,7 @@ def two_tier_topology(n_core, n_edge, n_hosts):
     topology : DatacenterTopology
     """
     # validate input arguments
-    if not isinstance(n_core, int) and not isinstance(n_edge, int) \
-                                and not isinstance(n_hosts, int):
+    if not all(isinstance(n, int) for n in (n_core, n_edge, n_hosts)):
         raise TypeError('n_core, n_edge and n_hosts must be integers')
     if n_core < 1 or n_edge < 1 or n_hosts < 1:
         raise ValueError('n_core, n_edge and n_hosts must be positive')
@@ -142,9 +141,8 @@ def three_tier_topology(n_core, n_aggregation, n_edge, n_hosts):
     topology : DatacenterTopology
     """
     # Validate input arguments
-    if not isinstance(n_core, int) or not isinstance(n_aggregation, int) \
-                                   or not isinstance(n_edge, int) \
-                                   or not isinstance(n_hosts, int):
+    if not all(isinstance(n, int) for n in
+               (n_core, n_aggregation, n_edge, n_hosts)):
         raise TypeError('n_core, n_edge, n_aggregation and n_hosts '\
                         'must be integers')
     if n_core < 1 or n_aggregation < 1 or n_edge < 1 or n_hosts < 1:
