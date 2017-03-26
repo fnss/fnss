@@ -142,8 +142,7 @@ def set_capacities_random_power_law(topology, capacities, capacity_unit='Mbps',
     capacities = sorted(capacities)
     pdf = [capacities[i] ** (-alpha) for i in range(len(capacities))]
     norm_factor = sum(pdf)
-    norm_pdf = dict((capacities[i], pdf[i] / norm_factor)
-                    for i in range(len(capacities)))
+    norm_pdf = {cap: pdf[i]/norm_factor for i, cap in enumerate(capacities)}
     set_capacities_random(topology, norm_pdf, capacity_unit=capacity_unit)
 
 
@@ -187,11 +186,9 @@ def set_capacities_random_zipf_mandelbrot(topology, capacities,
     if q < 0.0:
         raise ValueError('q must be >= 0')
     capacities = sorted(capacities, reverse=reverse)
-    pdf = dict((capacities[i], 1.0 / (i + 1.0 + q) ** alpha)
-                for i in range(len(capacities)))
+    pdf = {cap: 1.0/(i + 1.0 + q)**alpha for i, cap in enumerate(capacities)}
     norm_factor = sum(pdf.values())
-    norm_pdf = dict((capacity, pdf[capacity] / norm_factor)
-                     for capacity in pdf)
+    norm_pdf = {capacity: pdf[capacity] / norm_factor for capacity in pdf}
     set_capacities_random(topology, norm_pdf, capacity_unit=capacity_unit)
 
 
@@ -248,8 +245,7 @@ def set_capacities_random_uniform(topology, capacities, capacity_unit='Mbps'):
     capacity_unit : str, optional
         The unit in which capacity value is expressed (e.g. Mbps, Gbps etc..)
     """
-    capacity_pdf = dict((capacity, 1.0 / len(capacities))
-                         for capacity in capacities)
+    capacity_pdf = {capacity: 1.0/len(capacities) for capacity in capacities}
     set_capacities_random(topology, capacity_pdf, capacity_unit=capacity_unit)
 
 
@@ -270,12 +266,12 @@ def set_capacities_degree_gravity(topology, capacities, capacity_unit='Mbps'):
     if topology.is_directed():
         in_degree = nx.in_degree_centrality(topology)
         out_degree = nx.out_degree_centrality(topology)
-        gravity = dict(((u, v), out_degree[u] * in_degree[v])
-                       for (u, v) in topology.edges_iter())
+        gravity = {(u, v): out_degree[u] * in_degree[v]
+                   for (u, v) in topology.edges_iter()}
     else:
         degree = nx.degree_centrality(topology)
-        gravity = dict(((u, v), degree[u] * degree[v])
-                        for (u, v) in topology.edges_iter())
+        gravity = {(u, v): degree[u] * degree[v]
+                   for (u, v) in topology.edges_iter()}
     _set_capacities_proportionally(topology, capacities, gravity,
                                    capacity_unit=capacity_unit)
 
@@ -422,8 +418,8 @@ def set_capacities_edge_communicability(topology, capacities,
         The unit in which capacity value is expressed (e.g. Mbps, Gbps etc..)
     """
     communicability = nx.communicability(topology)
-    centrality = dict(((u, v), communicability[u][v])
-                      for (u, v) in topology.edges_iter())
+    centrality = {(u, v): communicability[u][v]
+                  for (u, v) in topology.edges_iter()}
     _set_capacities_proportionally(topology, capacities, centrality,
                                    capacity_unit=capacity_unit)
 
@@ -446,8 +442,8 @@ def _set_capacities_gravity(topology, capacities, node_metric,
     capacity_unit : str, optional
         The unit in which capacity value is expressed (e.g. Mbps, Gbps etc..)
     """
-    gravity = dict(((u, v), node_metric[u] * node_metric[v])
-                   for (u, v) in topology.edges_iter())
+    gravity = {(u, v): node_metric[u] * node_metric[v]
+               for (u, v) in topology.edges_iter()}
     _set_capacities_proportionally(topology, capacities, gravity,
                                    capacity_unit=capacity_unit)
 

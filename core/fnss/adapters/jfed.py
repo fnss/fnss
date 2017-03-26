@@ -59,7 +59,7 @@ def to_jfed(topology, path, testbed="wall1.ilabt.iminds.be", encoding="utf-8", p
     if_names = {}
     for v in topology.edge:
         next_hops = sorted(topology.edge[v].keys())
-        if_names[v] = dict((next_hops[i], i) for i in range(len(next_hops)))
+        if_names[v] = {next_hop: i for i, next_hop in enumerate(next_hops)}
     head = ET.Element('rspec')
     head.attrib["generated_by"] = "FNSS"
     head.attrib['xsi:schemaLocation'] = "http://www.geni.net/resources/rspec/3 http://www.geni.net/resources/rspec/3/request.xsd"

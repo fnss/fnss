@@ -262,7 +262,7 @@ def barabasi_albert_topology(n, m, m0, seed=None):
         """Calculate BA Pi function for all nodes of the graph"""
         degree = G.degree()
         den = float(sum(degree.values()))
-        return dict((node, degree[node] / den) for node in G.nodes_iter())
+        return {node: degree[node]/den for node in G.nodes_iter()}
 
     # input parameters
     if n < 1 or m < 1 or m0 < 1:
@@ -348,7 +348,7 @@ def extended_barabasi_albert_topology(n, m, m0, p, q, seed=None):
         """Calculate extended-BA Pi function for all nodes of the graph"""
         degree = G.degree()
         den = float(sum(degree.values()) + G.number_of_nodes())
-        return dict((node, (degree[node] + 1) / den) for node in G.nodes_iter())
+        return {node: (degree[node] + 1)/den for node in G.nodes_iter()}
 
     # input parameters
     if n < 1 or m < 1 or m0 < 1:
@@ -469,7 +469,7 @@ def glp_topology(n, m, m0, p, beta, seed=None):
             raise ValueError('beta must be < 1')
         degree = G.degree()
         den = float(sum(degree.values()) - (G.number_of_nodes() * beta))
-        return dict((node, (degree[node] - beta) / den) for node in G.nodes_iter())
+        return {node: (degree[node] - beta)/den for node in G.nodes_iter()}
 
     def add_m_links(G, pi):
         """Add m links between existing nodes to the graph"""
