@@ -765,7 +765,7 @@ def __ranking_metrics_heuristic(topology, od_pairs=None):
     # in reverse order the max of NFURs. Since all NFURs are >=0,
     # using the opposite yields the same results as the inverse, but there
     # is no risk of incurring in divisions by 0.
-    max_inv_nfur = {(u, v): -max(nfur[u], nfur[v]) for u, v in od_pairs}
+    max_inv_nfur = {(u, v):-max(nfur[u], nfur[v]) for u, v in od_pairs}
     # Sort all OD_pairs
     return sorted(od_pairs, key=lambda od_pair: (min_capacity[od_pair],
                                                  min_degree[od_pair],
@@ -921,7 +921,7 @@ def validate_traffic_matrix(topology, traffic_matrix, validate_load=False):
                 topology.edge[u][v]['load'] = 0
             capacity_unit = capacity_units[topology.graph['capacity_unit']]
             volume_unit = capacity_units[matrix.attrib['volume_unit']]
-            norm_factor = float(capacity_unit) / float(volume_unit)
+            norm_factor = float(volume_unit) / float(capacity_unit)
             for o, d in od_pairs_tm:
                 path = shortest_path[o][d]
                 if len(path) <= 1:

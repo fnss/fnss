@@ -244,3 +244,12 @@ class Test(unittest.TestCase):
         self.assertFalse(fnss.validate_traffic_matrix(topology, fnss.TrafficMatrix('Mbps', flows_invalid_pairs), validate_load=False))
         self.assertFalse(fnss.validate_traffic_matrix(topology, fnss.TrafficMatrix('Mbps', flows_invalid_pairs), validate_load=True))
 
+    def test_validate_traffic_matrix_diff_units(self):
+        topo = fnss.line_topology(2)
+        fnss.set_capacities_constant(topo, 1, capacity_unit='Gbps')
+        valid_tm = fnss.TrafficMatrix(volume_unit='Mbps')
+        valid_tm.add_flow(0, 1, 999)
+        self.assertTrue(fnss.validate_traffic_matrix(topo, valid_tm, validate_load=True))
+        invalid_tm = fnss.TrafficMatrix(volume_unit='Mbps')
+        invalid_tm.add_flow(0, 1, 1001)
+        self.assertFalse(fnss.validate_traffic_matrix(topo, invalid_tm, validate_load=True))
