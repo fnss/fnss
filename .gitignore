@@ -1,40 +1,17 @@
 # Ignore binaries and temp files
 *.pyc
 __pycache__
-*~ 
-*.class
 
 # Ignore all files starting with . (e.g. .classpath, .*project) but not .gitignore and .travis.yml
 .*
 !.gitignore
 !.travis.yml
 
-# Ignore aggregated built files
-/doc
-/dist
-
-# Ignore core built files
-core/dist
-core/build
-core/fnss.egg-info
-core/MANIFEST
-core/doc/build
-core/doc/source/apidoc/generated
-core/doc/source/examples
-
-# Ignore Java built files
-java/dist
-java/doc
-java/bin
-
-# Ignore C++ built files
-cpp/bin
-cpp/build
-cpp/doc
-cpp/dist
-cpp/include
-cpp/lib
-
-# Ignore ns3 built files
-ns3/dist
-ns3/doc
+# Ignore build files
+dist
+build
+fnss.egg-info
+MANIFEST
+doc/build
+doc/source/apidoc/generated
+doc/source/examples
