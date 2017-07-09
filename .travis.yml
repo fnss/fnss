@@ -4,7 +4,6 @@ language: python
 
 python:
   - "2.7"
-  - "3.3"
   - "3.4"
   - "3.5"
   - "3.6"
@@ -23,7 +22,7 @@ addons:
 
 install:
   - pip install nose
-  - pip install atlas numpy scipy matplotlib nose pandas mako statsmodels networkx
+  - pip install numpy scipy mako networkx
   - pip install .
 
 script:
