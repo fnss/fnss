@@ -22,4 +22,3 @@ global-exclude .*project
 
 # Exclude this file to avoid unnecessary warnings when installing with pip or easy_install 
 exclude MANIFEST.in
-
