@@ -2,7 +2,7 @@
 *.pyc
 __pycache__
 
-# Ignore all files starting with . (e.g. .classpath, .*project) but not .gitignore and .travis.yml
+# Ignore all files starting with . (e.g., .*project) but not .gitignore and .travis.yml
 .*
 !.gitignore
 !.travis.yml
