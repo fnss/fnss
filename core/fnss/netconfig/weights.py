@@ -89,7 +89,7 @@ def set_weights_constant(topology, weight=1.0, links=None):
     >>> topology.add_edges_from([(1, 2), (5, 8), (4, 5), (1, 7)])
     >>> fnss.set_weights_constant(topology, weight=1.0, links=[(1, 2), (5, 8), (4, 5)])
     """
-    edges = topology.edges_iter() if links is None else links
+    edges = links or topology.edges_iter()
     for u, v in edges:
         topology.edge[u][v]['weight'] = weight
 
@@ -129,5 +129,4 @@ def clear_weights(topology):
     topology : Topology
     """
     for u, v in topology.edges_iter():
-        if 'weight' in topology.edge[u][v]:
-            del topology.edge[u][v]['weight']
+        topology.edge[u][v].pop('weight', None)

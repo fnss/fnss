@@ -10,8 +10,10 @@ TrafficMatrixSequence object.
 A traffic matrix or a sequence of matrices can be read and written from/to an
 XML files with provided functions.
 """
+import itertools
 import multiprocessing as mp
 from math import exp, sin, pi, log, sqrt
+from collections import Counter
 import xml.etree.cElementTree as ET
 
 from numpy import isinf
@@ -394,10 +396,8 @@ def static_traffic_matrix(topology, mean, stddev, max_u=0.9,
         od_pairs = od_pairs_from_topology(topology)
     else:
         all_nodes = topology.nodes()
-        origins = origin_nodes if origin_nodes is not None \
-                  else all_nodes
-        destinations = destination_nodes if destination_nodes is not None \
-                       else all_nodes
+        origins = origin_nodes or all_nodes
+        destinations = destination_nodes or all_nodes
         od_pairs = [(o, d) for o in origins for d in destinations if o != d]
     nr_pairs = len(od_pairs)
     volumes = sorted(lognormal(mu, sigma, size=nr_pairs))
@@ -416,10 +416,9 @@ def static_traffic_matrix(topology, mean, stddev, max_u=0.9,
                                                           weight='weight'))
                     for node in origin_nodes)
             # remove OD pairs not connected
-            for o in shortest_path:
-                for d in destinations:
-                    if o != d and d not in shortest_path[o]:
-                        od_pairs.remove((o, d))
+            for o, d in itertools.product(shortest_path, destinations):
+                if o != d and d not in shortest_path[o]:
+                    od_pairs.remove((o, d))
         else:
             shortest_path = nx.all_pairs_dijkstra_path(topology,
                                                        weight='weight')
@@ -429,9 +428,8 @@ def static_traffic_matrix(topology, mean, stddev, max_u=0.9,
         for o, d in od_pairs:
             path = shortest_path[o][d]
             if len(path) > 1:
-                for hop in range(len(path) - 1):
-                    topology.edge[path[hop]][path[hop + 1]]['load'] \
-                            += assignments[(o, d)]
+                for u, v in zip(path[:-1], path[1:]):
+                    topology.edge[u][v]['load'] += assignments[(o, d)]
         # Calculate scaling
         current_max_u = max((float(topology.edge[u][v]['load']) \
                              / float(topology.edge[u][v]['capacity'])
@@ -740,13 +738,7 @@ def __ranking_metrics_heuristic(topology, od_pairs=None):
     # and degree sorting
     cap_deg_pairs = [(min_capacity[(u, v)], min_degree[(u, v)])
                      for u, v in od_pairs]
-    try:
-        # The import will fail for Python < 2.7
-        from collections import Counter
-        nfur_required = any((val > 1 for val in
-                             Counter(cap_deg_pairs).values()))
-    except ImportError:
-        nfur_required = True
+    nfur_required = any((val > 1 for val in Counter(cap_deg_pairs).values()))
     if not nfur_required:
         # Sort all OD_pairs
         return sorted(od_pairs, key=lambda od_pair: (min_capacity[od_pair],
@@ -824,15 +816,11 @@ def __calc_nfur(topology, fast, parallelize=True):
     pool = mp.Pool(processes)
     # map operation
     edges_chunks = util.split_list(edges, len(edges) // processes)
-#    args = ((topology, chunk, betw) for chunk in edges_chunks)
-#    result = pool.map(__nfur_func, args)
     args = [(__nfur_func, (topology, chunk, betw)) for chunk in edges_chunks]
     result = pool.map(util.map_func, args)
     # reduce operation
     return {v: max((result[i][v] for i in range(len(result)))) for v in betw}
 
-# def __nfur_func(args):
-#    topology, edges, betweenness = args
 def __nfur_func(topology, edges, betweenness):
     """
     Calculate NFUR on a specific set of edges
@@ -926,9 +914,8 @@ def validate_traffic_matrix(topology, traffic_matrix, validate_load=False):
                 path = shortest_path[o][d]
                 if len(path) <= 1:
                     continue
-                for hop in range(len(path) - 1):
-                    topology.edge[path[hop]][path[hop + 1]]['load'] \
-                            += matrix.flow[o][d]
+                for u, v in zip(path[:-1], path[1:]):
+                    topology.edge[u][v]['load'] += matrix.flow[o][d]
             max_u = max((norm_factor * float(topology.edge[u][v]['load']) \
                          / float(topology.edge[u][v]['capacity'])
                          for u, v in topology.edges_iter()))
@@ -984,7 +971,6 @@ def link_loads(topology, traffic_matrix, routing_matrix=None, ecmp=False):
 
     """
     # TODO: extend documentation for ecmp usage
-
     topology = topology.copy() if topology.is_directed() \
                                else topology.to_directed()
     capacity_unit = capacity_units[topology.graph['capacity_unit']]
@@ -999,12 +985,11 @@ def link_loads(topology, traffic_matrix, routing_matrix=None, ecmp=False):
     def process_path(path, number_of_paths=1):
         if len(path) <= 1:
             return
-        for hop in range(len(path) - 1):
+        for u, v in zip(path[:-1], path[1:]):
             if not ecmp:
-                topology.edge[path[hop]][path[hop + 1]]['load'] += \
-                            traffic_matrix.flow[o][d]
+                topology.edge[u][v]['load'] += traffic_matrix.flow[o][d]
             else:
-                topology.edge[path[hop]][path[hop + 1]]['load'] += \
+                topology.edge[u][v]['load'] += \
                             traffic_matrix.flow[o][d] / float(number_of_paths)
 
     for o, d in od_pairs:

@@ -79,8 +79,7 @@ def remove_stack(topology, node):
     node : any hashable type
         The ID of the node
     """
-    if 'stack' in topology.node[node]:
-        del topology.node[node]['stack']
+    topology.node[node].pop('stack', None)
 
 
 def clear_stacks(topology):
@@ -91,8 +90,7 @@ def clear_stacks(topology):
     topology : Topology
     """
     for v in topology.nodes_iter():
-        if 'stack' in topology.node[v]:
-            del topology.node[v]['stack']
+        topology.node[v].pop('stack', None)
 
 def add_application(topology, node, name, properties=None, **attr):
     """Add an application to a node
@@ -136,7 +134,7 @@ def get_application_names(topology, node):
         A list of application names
     """
     return [] if 'application' not in topology.node[node] \
-                else list(topology.node[node]['application'].keys())
+              else list(topology.node[node]['application'].keys())
 
 
 def get_application_properties(topology, node, name):
@@ -191,5 +189,4 @@ def clear_applications(topology):
         The topology
     """
     for v in topology.nodes_iter():
-        if 'application' in topology.node[v]:
-            del topology.node[v]['application']
+        topology.node[v].pop('application', None)

@@ -66,16 +66,13 @@ def set_buffer_sizes_bw_delay_prod(topology, buffer_unit='bytes',
             if len(path) <= 1:
                 continue
             path_delay = 0
-            for hop in range(len(path) - 1):
-                if 'delay' in topology.edge[path[hop]][path[hop + 1]]:
-                    if (path[hop], path[hop + 1]) in route_presence:
-                        route_presence[(path[hop], path[hop + 1])] \
-                                      .append((orig, dest))
+            for u, v in zip(path[:-1], path[1:]):
+                if 'delay' in topology.edge[u][v]:
+                    if (u, v) in route_presence:
+                        route_presence[(u, v)].append((orig, dest))
                     else:
-                        route_presence[(path[hop + 1], path[hop])] \
-                                      .append((orig, dest))
-                    path_delay += \
-                            topology.edge[path[hop]][path[hop + 1]]['delay']
+                        route_presence[(v, u)].append((orig, dest))
+                    path_delay += topology.edge[u][v]['delay']
                 else:
                     raise ValueError('No link delays available')
             e2e_delay[orig][dest] = path_delay
@@ -258,8 +255,6 @@ def clear_buffer_sizes(topology):
     topology : Topology or DirectedTopology
         The topology whose buffer sizes are cleared
     """
-    if 'buffer_unit' in topology.graph:
-        del topology.graph['buffer_unit']
+    topology.graph.pop('buffer_unit', None)
     for u, v in topology.edges_iter():
-        if 'buffer' in topology.edge[u][v]:
-            del topology.edge[u][v]['buffer']
+        topology.edge[u][v].pop('buffer', None)

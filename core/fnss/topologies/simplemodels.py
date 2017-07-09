@@ -155,10 +155,7 @@ def k_ary_tree_topology(k, h):
     for depth in range(1, h + 1):
         for _ in range(k ** depth):
             G.node[v]['depth'] = depth
-            if depth == h:
-                G.node[v]['type'] = 'leaf'
-            else:
-                G.node[v]['type'] = 'intermediate'
+            G.node[v]['type'] = 'leaf'  if (depth == h) else 'intermediate'
             v += 1
     return G
 

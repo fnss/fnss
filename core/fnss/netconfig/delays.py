@@ -58,7 +58,7 @@ def set_delays_constant(topology, delay=1.0, delay_unit='ms', links=None):
                                 / time_units[curr_delay_unit]
     else:
         topology.graph['delay_unit'] = delay_unit
-    edges = topology.edges_iter() if links is None else links
+    edges = links or topology.edges_iter()
     for u, v in edges:
         topology.edge[u][v]['delay'] = delay * conversion_factor
 
@@ -105,7 +105,7 @@ def set_delays_geo_distance(topology, specific_delay, default_delay=None,
     if distance_unit not in distance_units:
         raise ValueError("The distance_unit attribute of the provided "\
                          "topology (%s) is not valid" % distance_unit)
-    edges = topology.edges() if links is None else links
+    edges = links or topology.edges()
     if default_delay is None:
         if any(('length' not in topology.edge[u][v] for u, v in edges)):
             raise ValueError('All links must have a length attribute')
@@ -166,10 +166,7 @@ def clear_delays(topology):
     Parameters
     ----------
     topology : Topology
-
     """
-    if 'delay_unit' in topology.graph:
-        del topology.graph['delay_unit']
+    topology.graph.pop('delay_unit', None)
     for u, v in topology.edges_iter():
-        if 'delay' in topology.edge[u][v]:
-            del topology.edge[u][v]['delay']
+        topology.edge[u][v].pop('delay', None)

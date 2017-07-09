@@ -132,18 +132,14 @@ def to_mininet(topology, switches=None, hosts=None, relabel_nodes=True):
         topo.addSwitch(str(v))
     for v in hosts:
         topo.addHost(str(v))
-    delay_unit = topology.graph['delay_unit'] \
-                 if 'delay_unit' in topology.graph else None
-    capacity_unit = topology.graph['capacity_unit'] \
-                    if 'capacity_unit' in topology.graph else None
-    buffer_unit = topology.graph['buffer_unit'] \
-                  if 'buffer_unit' in topology.graph else None
+    delay_unit = topology.graph.get('delay_unit', None)
+    capacity_unit = topology.graph.get('capacity_unit', None)
+    buffer_unit = topology.graph.get('buffer_unit', None)
     if capacity_unit:
         capacity_conversion = float(capacity_units[capacity_unit]) \
                               / capacity_units['Mbps']
     if delay_unit:
-        delay_conversion = float(time_units[delay_unit]) \
-                              / time_units['us']
+        delay_conversion = float(time_units[delay_unit]) / time_units['us']
     for u, v in topology.edges_iter():
         params = {}
         if 'capacity' in topology.edge[u][v] and capacity_unit:

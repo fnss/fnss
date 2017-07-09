@@ -66,7 +66,7 @@ def set_capacities_constant(topology, capacity, capacity_unit='Mbps',
                                 / capacity_units[curr_capacity_unit]
     else:
         topology.graph['capacity_unit'] = capacity_unit
-    edges = topology.edges_iter() if links is None else links
+    edges = links or topology.edges_iter()
     for u, v in edges:
         topology.edge[u][v]['capacity'] = capacity * conversion_factor
     return
@@ -142,7 +142,7 @@ def set_capacities_random_power_law(topology, capacities, capacity_unit='Mbps',
     capacities = sorted(capacities)
     pdf = [capacities[i] ** (-alpha) for i in range(len(capacities))]
     norm_factor = sum(pdf)
-    norm_pdf = {cap: pdf[i]/norm_factor for i, cap in enumerate(capacities)}
+    norm_pdf = {cap: pdf[i] / norm_factor for i, cap in enumerate(capacities)}
     set_capacities_random(topology, norm_pdf, capacity_unit=capacity_unit)
 
 
@@ -186,7 +186,7 @@ def set_capacities_random_zipf_mandelbrot(topology, capacities,
     if q < 0.0:
         raise ValueError('q must be >= 0')
     capacities = sorted(capacities, reverse=reverse)
-    pdf = {cap: 1.0/(i + 1.0 + q)**alpha for i, cap in enumerate(capacities)}
+    pdf = {cap: 1.0 / (i + 1.0 + q) ** alpha for i, cap in enumerate(capacities)}
     norm_factor = sum(pdf.values())
     norm_pdf = {capacity: pdf[capacity] / norm_factor for capacity in pdf}
     set_capacities_random(topology, norm_pdf, capacity_unit=capacity_unit)
@@ -245,7 +245,7 @@ def set_capacities_random_uniform(topology, capacities, capacity_unit='Mbps'):
     capacity_unit : str, optional
         The unit in which capacity value is expressed (e.g. Mbps, Gbps etc..)
     """
-    capacity_pdf = {capacity: 1.0/len(capacities) for capacity in capacities}
+    capacity_pdf = {capacity: 1.0 / len(capacities) for capacity in capacities}
     set_capacities_random(topology, capacity_pdf, capacity_unit=capacity_unit)
 
 
@@ -500,8 +500,8 @@ def _set_capacities_proportionally(topology, capacities, metric,
     metric_boundaries[-1] = max_metric + 0.1
 
     for (u, v), metric_value in metric.items():
-        for i in range(len(metric_boundaries)):
-            if metric_value <= metric_boundaries[i]:
+        for i, boundary in enumerate(metric_boundaries):
+            if metric_value <= boundary:
                 capacity = capacities[i]
                 topology.edge[u][v]['capacity'] = capacity
                 break
@@ -549,9 +549,6 @@ def clear_capacities(topology):
     ----------
     topology : Topology
     """
-    if 'capacity_unit' in topology.graph:
-        del topology.graph['capacity_unit']
+    topology.graph.pop('capacity_unit', None)
     for u, v in topology.edges_iter():
-        if 'capacity' in topology.edge[u][v]:
-            del topology.edge[u][v]['capacity']
-
+        topology.edge[u][v].pop('capacity', None)

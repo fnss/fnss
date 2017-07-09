@@ -209,7 +209,7 @@ class EventSchedule(object):
         event_schedule.attrib['t_end'] = t_end
         event_schedule.attrib['t_unit'] = self.attrib['t_unit']
         event_schedule.event = [(time, event) for (time, event) in self.event
-                if time >= t_start and time < t_end]
+                                if time >= t_start and time < t_end]
         return event_schedule
 
 

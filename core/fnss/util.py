@@ -4,7 +4,7 @@ import ast
 import random
 from math import pi, sqrt, sin, cos, asin
 
-from fnss.units import EARTH_RADIUS 
+from fnss.units import EARTH_RADIUS
 
 __all__ = [
     'split_list',
@@ -107,7 +107,7 @@ def xml_cast_type(type_attrib, val):
     Returns
     -------
     cast_val : any type
-        The val argument cast to a given type 
+        The val argument cast to a given type
     """
     if type_attrib == 'int':
         return int(val)
@@ -217,9 +217,10 @@ def geographical_distance(lat_u, lon_u, lat_v, lon_v):
     d : float
         The distance between *u* and *v*
     """
-    lat_u = (pi/180) * lat_u
-    lon_u = (pi/180) * lon_u
-    lat_v = (pi/180) * lat_v
-    lon_v = (pi/180) * lon_v
-    return 2*EARTH_RADIUS*asin(sqrt(sin((lat_u - lat_v)/2)**2 + 
-                                    cos(lat_v)*cos(lat_u)*sin((lon_u-lon_v)/2)**2))
+    lat_u = (pi / 180) * lat_u
+    lon_u = (pi / 180) * lon_u
+    lat_v = (pi / 180) * lat_v
+    lon_v = (pi / 180) * lon_v
+    return 2 * EARTH_RADIUS * asin(sqrt(sin((lat_u - lat_v) / 2) ** 2 +
+                                    cos(lat_v) * cos(lat_u)
+                                    * sin((lon_u - lon_v) / 2) ** 2))
