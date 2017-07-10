@@ -8,12 +8,6 @@ RES_DIR = environ['test.res.dir'] if 'test.res.dir' in environ else None
 
 class Test(unittest.TestCase):
 
-    def setUp(self):
-        pass
-
-    def tearDown(self):
-        pass
-
     @unittest.skipIf(RES_DIR is None, "Resources folder not present")
     def test_parse_abilene(self):
         abilene_topo_file = path.join(RES_DIR, 'abilene-topo.txt')
@@ -30,14 +24,12 @@ class Test(unittest.TestCase):
         self.assertTrue(all(topology.edge[u][v]['length'] >= 0
                             for u, v in topology.edges_iter()))
 
-
     @unittest.skipIf(RES_DIR is None, "Resources folder not present")
     def test_parse_rockefuel_isp_map(self):
         rocketfuel_file = path.join(RES_DIR, 'rocketfuel-2914.cch')
         topology = fnss.parse_rocketfuel_isp_map(rocketfuel_file)
         self.assertEquals(10961, topology.number_of_nodes())
         self.assertEquals(26070, topology.number_of_edges())
-
 
     @unittest.skipIf(RES_DIR is None, "Resources folder not present")
     def test_parse_rocketfuel_isp_latency(self):
@@ -65,6 +57,7 @@ class Test(unittest.TestCase):
             self.assertGreaterEqual(data['delay'], 0)
             self.assertGreater(data['weight'], 0)
 
+    @unittest.skipIf(RES_DIR is None, "Resources folder not present")
     def test_parse_rocketfuel_isp_latency_overseas_nodes(self):
         rocketfuel_file = path.join(RES_DIR, 'rocketfuel-1239.latencies.intra')
         topology = fnss.parse_rocketfuel_isp_latency(rocketfuel_file)
@@ -104,7 +97,6 @@ class Test(unittest.TestCase):
         self.assertEqual(size, topology.number_of_nodes())
         self.assertEqual(3, topology.degree(57))
 
-
     @unittest.skipIf(RES_DIR is None, "Resources folder not present")
     def test_parse_caida_as_relationships(self):
         caida_file = path.join(RES_DIR, 'caida-as-rel.txt')
@@ -113,14 +105,12 @@ class Test(unittest.TestCase):
         self.assertEqual(121309, topology.number_of_edges())
         self.assertEqual('customer', topology.edge[263053][28163]['type'])
 
-
     @unittest.skipIf(RES_DIR is None, "Resources folder not present")
     def test_parse_inet(self):
         inet_file = path.join(RES_DIR, 'inet.txt')
         topology = fnss.parse_inet(inet_file)
         self.assertEqual(3500, topology.number_of_nodes())
         self.assertEqual(6146, topology.number_of_edges())
-
 
     @unittest.skipIf(RES_DIR is None, "Resources folder not present")
     def test_parse_topology_zoo(self):
@@ -135,7 +125,6 @@ class Test(unittest.TestCase):
         self.assertTrue(all(topology.edge[u][v]['length'] >= 0
                     for u, v in topology.edges_iter()
                     if 'length' in topology.edge[u][v]))
-
 
     @unittest.skipIf(RES_DIR is None, "Resources folder not present")
     def test_parse_topology_zoo_multigraph(self):
@@ -178,7 +167,6 @@ class Test(unittest.TestCase):
         self.assertEqual(980, topology.node[851]['latitude'])
         self.assertEqual('AS_NODE', topology.node[851]['type'])
         # 1478    716    230    212.11553455605272    0.7075412636166207    0.0011145252848059164    716    230    E_AS    U
-        # assert_true((716, 230) in topology.edges())
         self.assertEquals(1478, topology.edge[716][230]['id'])
         self.assertAlmostEquals(212.11553455605272,
                                 topology.edge[716][230]['length'], 0.01)
