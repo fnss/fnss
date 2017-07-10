@@ -970,7 +970,6 @@ def link_loads(topology, traffic_matrix, routing_matrix=None, ecmp=False):
         A dictionary of link loads keyed by link
 
     """
-    # TODO: extend documentation for ecmp usage
     topology = topology.copy() if topology.is_directed() \
                                else topology.to_directed()
     capacity_unit = capacity_units[topology.graph['capacity_unit']]
