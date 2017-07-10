@@ -19,11 +19,21 @@ addons:
     - libgdal-dev
     - graphviz
     - mono-devel
+    - mininet
+
+env:
+  global:
+    - PIP_INSTALL="pip install --upgrade"
+
+before_install:
+  - $PIP_INSTALL pip
+  - uname -a
+  - printenv
 
 install:
-  - pip install nose
-  - pip install numpy mako networkx
-  - pip install .
+  - $PIP_INSTALL nose
+  - $PIP_INSTALL numpy mako networkx
+  - $PIP_INSTALL .
 
 script:
   - make test
