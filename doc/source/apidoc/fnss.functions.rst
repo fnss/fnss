@@ -200,9 +200,9 @@ Functions
     to_autonetkit
 
 :mod:`jfed` module
-^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^
 
-.. automodule:: fnss.adapters.omnetpp
+.. automodule:: fnss.adapters.jfed
 .. autosummary::
    :toctree: generated/
 
@@ -230,7 +230,7 @@ Functions
     validate_ns2_stacks
 
 :mod:`omnetpp` module
-^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^
 
 .. automodule:: fnss.adapters.omnetpp
 .. autosummary::

@@ -23,12 +23,12 @@ def make_rst(inpath, outpath):
     with open(inpath, 'r') as infile:
         with open(outpath, 'w+') as outfile:
             base = os.path.basename(inpath).partition('.')[0]
-            title = "%s" % base.replace('_',' ').title()
+            title = "%s" % base.replace('_', ' ').title()
             outfile.write(title + '\n' +
-                          '='*len(title) + '\n'*2 + 
+                          '=' * len(title) + '\n' * 2 +
                           '::\n\n')
             for line in infile:
-                outfile.write(' '*4 + line)
+                outfile.write(' ' * 4 + line)
 
 
 def main(indir, outdir):
@@ -53,7 +53,7 @@ def main(indir, outdir):
         # Iterate over the Python file directory
         for root, subdirs, files in os.walk(indir):
             files = [f for f in files if f[0] not in ('.', '#', '_') and f.endswith('.py')]
-            if not files:   # Empty directory
+            if not files:  # Empty directory
                 continue
             # create subdirectory in outdir if it is not the root
             relpath = os.path.relpath(root, start=indir)
@@ -62,7 +62,7 @@ def main(indir, outdir):
                 os.mkdir(outsubdir)
                 level = relpath.count(os.sep)
                 title = os.path.basename(relpath).replace('_', ' ').title()
-                index.write("\n" + title + "\n" + TITLE_STYLE[level -1]*len(title) + "\n"*2 +
+                index.write("\n" + title + "\n" + TITLE_STYLE[level - 1] * len(title) + "\n"*2 +
                             ".. toctree::\n"
                             "    :maxdepth: 2\n\n")
             # Create files in target output directory
@@ -73,7 +73,7 @@ def main(indir, outdir):
 
 
 def usage(name):
-    print("Usage: %s inputdir outputdir\n\n" 
+    print("Usage: %s inputdir outputdir\n\n"
           "    inputdir: directory containing the Python code for the examples.\n"
           "    outputdir: directory to put the generated documentation source for these examples.\n" % name)
     sys.exit(-1)

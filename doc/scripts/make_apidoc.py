@@ -8,7 +8,7 @@ import sys
 import glob
 import inspect
 
-# This ensures that docs build even if FNSS is not installed 
+# This ensures that docs build even if FNSS is not installed
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir, os.path.pardir)))
 import fnss
 
@@ -20,13 +20,13 @@ def get_subpackages(module):
         return os.path.isdir(d) and glob.glob(os.path.join(d, '__init__.py*'))
     return filter(is_package, os.listdir(dir))
 
-    
+
 def print_classes(f, outdir):
     outdir = os.path.relpath(outdir, os.path.dirname(f.name))
     classes = inspect.getmembers(fnss, predicate=inspect.isclass)
     for cls_name, cls_type in classes:
         mod_name = cls_type.__module__
-        f.write(".. currentmodule:: %s\n" 
+        f.write(".. currentmodule:: %s\n"
                 ".. autoclass:: %s.%s\n"
                 ".. autosummary::\n"
                 "   :toctree: %s/\n\n" % (mod_name, mod_name, cls_name, outdir))
@@ -52,12 +52,12 @@ def print_functions(f, outdir):
         sorted_paths = sorted(module_paths.keys())
         for mod in sorted_paths:
             functions = inspect.getmembers(eval(mod), predicate=inspect.isfunction)
-            function_names = [func[0] for func in functions  
+            function_names = [func[0] for func in functions
                               if (hasattr(eval(mod), '__all__') and func[0] in eval('%s.__all__' % mod))
                              ]
-            f.write(".. automodule:: %s.%s.%s\n" 
+            f.write(".. automodule:: %s.%s.%s\n"
                     ".. autosummary::\n"
-                    "   :toctree: %s/\n\n"  % ('fnss', pkg, module_paths[mod], outdir))
+                    "   :toctree: %s/\n\n" % ('fnss', pkg, module_paths[mod], outdir))
             for func in function_names:
                 f.write("    %s\n" % func)
             f.write("\n")
@@ -72,7 +72,7 @@ def main(rstfile, outdir):
         print_functions(f, outdir)
 
 def usage(name):
-    print("Usage: %s inputdir outputdir\n\n" 
+    print("Usage: %s inputdir outputdir\n\n"
           "    inputdir: directory containing the Python code for the examples.\n"
           "    outputdir: directory to put the generated documentation source for these examples.\n" % name)
     sys.exit(-1)

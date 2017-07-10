@@ -54,7 +54,7 @@ init: clean
 	mkdir -p $(TMPDIR)
 	cp $(SRCDIR)/conf.py $(TMPDIR)/conf.py
 	python $(SCRIPTDIR)/make_apidoc.py $(TMPDIR)/index.rst $(GENAPIDOCDIR)
-	sphinx-build -b linkcheck $(TMPDIR) $(TMPDIR)
+	sphinx-build -b linkcheck $(TMPDIR) $(BUILDDIR)
 	rm -rf $(TMPDIR)
 	python $(SCRIPTDIR)/make_examples.py $(EXCODEDIR) $(EXSRCDOCDIR)
 
