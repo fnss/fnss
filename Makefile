@@ -44,5 +44,4 @@ distclean:
 clean: docclean distclean
 	find . -name "*__pycache__" | xargs rm -rf
 	find . -name "*.pyc" | xargs rm -rf
-	rm -rf $(BUILD_DIR)
-	rm MANIFEST
+	rm -rf $(BUILD_DIR) MANIFEST
