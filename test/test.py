@@ -1,23 +1,16 @@
 #!/usr/bin/env python
 """Run unit tests"""
+import sys
 from os import path, getcwd, environ, mkdir
 from shutil import rmtree
 
-def run(verbosity=1, doctest=False, coverage=False):
-    """Run tests.
-
-    Parameters
-    ----------
-    verbosity: int, optional
-        Level of detail in test reports.  Higher numbers provide more detail.
-
-    doctest: bool, optional
-        If *True* run doctests in code modules
-    """
+def main():
+    """Run all tests"""
     try:
-        import nose
+        import pytest
     except ImportError:
-        raise ImportError("The nose package is needed to run the tests.")
+        raise ImportError("The pytest package is needed to run the tests.")
+
     # get folder of Python source files
     src_dir = path.join(path.dirname(__file__), path.pardir)
     # get folder where resource files are stored and make it available to
@@ -30,26 +23,22 @@ def run(verbosity=1, doctest=False, coverage=False):
     # stop if running from source directory
     if getcwd() == path.abspath(path.join(src_dir, path.pardir)):
         raise RuntimeError("Can't run tests from source directory.\n"
-                           "Run 'nosetests' from the command line.")
+                           "Run 'py.test' from the command line.")
 
-    argv = [' ', '--verbosity=%d' % verbosity,
-            '-w', src_dir,
-            '-exe']
-    if doctest:
-        argv.extend(['--with-doctest', '--doctest-extension=txt'])
-    if coverage:
-        argv.extend(['--with-coverage', '--cover-package=fnss'])
     # Prepare tests
     if path.exists(tmp_dir):
         rmtree(tmp_dir)
     mkdir(tmp_dir)
 
     # Run tests
-    nose.run(argv=argv)
+    res = pytest.main(['.'])
 
     # Clean up
     if path.exists(tmp_dir):
         rmtree(tmp_dir)
 
+    # Return results
+    return res
+
 if __name__ == "__main__":
-    run()
+    sys.exit(main())
