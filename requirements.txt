@@ -1,0 +1,9 @@
+# Optional dependencies
+scipy
+
+# Testing
+pytest
+
+# Documentation
+numpydoc
+sphinx

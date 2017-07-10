@@ -7,7 +7,7 @@ DOC_DIR   = doc
 
 .PHONY: clean dist doc test install upload distclean docclean
 
-all: dist
+all: install
 
 # Run all test cases
 test:
@@ -21,11 +21,13 @@ doc: docclean
 dist: clean doc
 	python setup.py sdist
 
-# Install the library
+# Install the library in development mode
 install: clean
-	python setup.py install
+	pip install --upgrade pip setuptools
+	pip install --upgrade -r requirements.txt
+	pip install --upgrade -e .
 
-# Upload FNSS to Python Package Index (you need access credentials)
+# Upload FNSS to Python Package Index (you need PyPI credentials on your machine)
 upload: clean doc
 	python setup.py sdist upload
 
@@ -43,3 +45,4 @@ clean: docclean distclean
 	find . -name "*__pycache__" | xargs rm -rf
 	find . -name "*.pyc" | xargs rm -rf
 	rm -rf $(BUILD_DIR)
+	rm MANIFEST

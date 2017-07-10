@@ -8,6 +8,10 @@ python:
   - "3.5"
   - "3.6"
 
+# This is needed to make mininet available to virtualenv
+virtualenv:
+  system_site_packages: true
+
 addons:
   apt:
     packages:
@@ -21,19 +25,12 @@ addons:
     - mono-devel
     - mininet
 
-env:
-  global:
-    - PIP_INSTALL="pip install --upgrade"
-
 before_install:
-  - $PIP_INSTALL pip
   - uname -a
   - printenv
 
 install:
-  - $PIP_INSTALL nose
-  - $PIP_INSTALL numpy mako networkx
-  - $PIP_INSTALL .
+  - travis wait 30 make install # Building Scipy from sources on Python 2.7 takes more than 10 minutes
 
 script:
   - make test
