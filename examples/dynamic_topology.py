@@ -29,7 +29,7 @@ fnss.set_delays_constant(topology, 1, 'ms')
 # betweenness centrality
 fnss.set_capacities_edge_betweenness(topology, [10, 100, 1000], 'Mbps')
 
-    
+
 # now create a static traffic matrix assuming all nodes are both origins
 # and destinations of traffic
 traffic_matrix = fnss.static_traffic_matrix(topology, mean=2, stddev=0.2, max_u=0.5)
@@ -41,12 +41,12 @@ def rand_failure(links):
 
 # Create schedule of link failures
 event_schedule = fnss.poisson_process_event_schedule(
-                        avg_interval=0.5,               # 0.5 min = 30 sec
-                        t_start=0,                      # starts at 0
-                        duration= 60,                   # 2 hours
-                        t_unit='min',                   # minutes
-                        event_generator= rand_failure,  # event gen function
-                        links=topology.edges(),         # 'links' argument
+                        avg_interval=0.5,  # 0.5 min = 30 sec
+                        t_start=0,  # starts at 0
+                        duration=60,  # 2 hours
+                        t_unit='min',  # minutes
+                        event_generator=rand_failure,  # event gen function
+                        links=topology.edges(),  # 'links' argument
                         )
 
 # Now let's create a schedule with link restoration events
@@ -56,7 +56,7 @@ restore_schedule = fnss.EventSchedule(t_start=0, t_unit='min')
 for failure_time, event in event_schedule:
     link = event['link']
     restore_time = failure_time + random.expovariate(1)
-    restore_schedule.add(time=restore_time, 
+    restore_schedule.add(time=restore_time,
                          event={'link': link, 'action': 'up'},
                          absolute_time=True
                          )

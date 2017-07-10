@@ -5,7 +5,7 @@ Create datacenter topology for Mininet
 This example shows how to create a datacenter topology with FNSS and export it
 to Mininet.
 
-This example requires Mininet to be installed on the machine. 
+This example requires Mininet to be installed on the machine.
 """
 import fnss
 
@@ -33,9 +33,9 @@ fnss.set_buffer_sizes_constant(fnss_topo, 50, 'packets')
 # If argument relabel_nodes is set to False, node labels are not changed when
 # converting an FNSS topology to a Mininet one, except converting the type to
 # string (e.g. 1 -> '1'). If relabel_nodes is set to True (default option)
-# then nodes are label according to Mininet conventions, e.g. hosts are 
+# then nodes are label according to Mininet conventions, e.g. hosts are
 # prepended an h (e.g. 1 -> 'h1') and switches are prepended an s
-# (e.g. 2 -> 's2') 
+# (e.g. 2 -> 's2')
 mn_topo = fnss.to_mininet(fnss_topo, relabel_nodes=True)
 
 # Create a Mininet instance and start it
