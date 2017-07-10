@@ -8,10 +8,6 @@ python:
   - "3.5"
   - "3.6"
 
-# This is needed to make mininet available to virtualenv
-virtualenv:
-  system_site_packages: true
-
 addons:
   apt:
     packages:
@@ -23,14 +19,13 @@ addons:
     - libgdal-dev
     - graphviz
     - mono-devel
-    - mininet
 
 before_install:
   - uname -a
   - printenv
 
 install:
-  - travis wait 30 make install # Building Scipy from sources on Python 2.7 takes more than 10 minutes
+  - travis_wait 30 make install # Building Scipy from sources on Python 2.7 takes more than 10 minutes
 
 script:
   - make test
