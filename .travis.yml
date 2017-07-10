@@ -22,7 +22,7 @@ addons:
 
 install:
   - pip install nose
-  - pip install numpy scipy mako networkx
+  - pip install numpy mako networkx
   - pip install .
 
 script:
