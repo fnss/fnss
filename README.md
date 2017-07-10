@@ -1,97 +1,105 @@
-# FNSS core (Python) library
-The FNSS core library is a Python library providing a set of features allowing the simplification of the setup of a network experiment.
-These features include the ability to:
+# Fast Network Simulation Setup
+Fast Network Simulation Setup (FNSS) is a toolchain allowing network researchers
+and engineers to simplify the process of setting up a network experiment scenario.
+It allows users to:
 
- * Parse a topology from a dataset, a topology generator or generate it according to a number of synthetic models
- * Apply link capacity, link weights, link delays and buffer sizes
- * Deploy application stacks
- * Generate traffic matrices
- * Generate event schedules
+* Parse a topology from a dataset or a topology generator or generate it according to a number of synthetic models
+* Configure links with capacity, weights, delays and buffer sizes
+* Deploy applications and protocol stacks on nodes
+* Generate traffic matrices
+* Generate event schedules
+* Deploy network and workload configuration to a number of simulators and emulators
 
-The core library provides function to export created topologies to [ns-2](http://www.isi.edu/nsnam/ns/), [Mininet](http://www.mininet.org), [Omnet++](http://www.omnetpp.org/), [Autonetkit](http://www.autonetkit.org) and [jFed](http://jfed.iminds.be/).
-It can also be used in conjunction with the FNSS Java, C++ API or [ns-3](http://www.nsnam.org/) libraries to import topologies, traffic matrices and event schedules in the desired target simulator or emulator. 
+FNSS comprises a core library, written in Python, and a set of adapters.
+This repository contanins the core library, which provides all capabilities
+for generating experiment scenarios and to export them to
+[ns-2](http://www.isi.edu/nsnam/ns/), [Mininet](http://www.mininet.org),
+[Omnet++](http://www.omnetpp.org/), [Autonetkit](http://www.autonetkit.org)
+and [jFed](http://jfed.iminds.be/).
+It can also be used in conjunction with the FNSS Java, C++ API or [ns-3](http://www.nsnam.org/) libraries to import topologies,
+traffic matrices and event schedules in the desired target simulator or emulator.
+See the repositories [fnss-java](https://github.com/fnss/fnss-java),
+[fnss-cpp](https://github.com/fnss/fnss-cpp) and [fnss-ns3](https://github.com/fnss/fnss-ns3)
+for further information.
 
-## Project directory structure
-The files of the FNSS core library are organized in the following directories.
+## Workflow
+As discussed above, the FNSS library comprises a core Python library, which also includes adapters for ns-2, Mininet and Autonetkit
+and libraries for ns-3 and Java and C++ simulators/emulators.
+The core Python library is needed for creating and configuring topologies, traffic matrices and event schedules.
+Such objects can then be used directly if you intend to use a Python simulator.
+Otherwise, they can be exported to ns-2, Autonetkit and Mininet or saved to XML files which can then be parsed by the ns-3, Java or C++ libraries.
+For detailed information on how to use each component of the toolchain, please refer to
+the [fnss-java](https://github.com/fnss/fnss-java), [fnss-cpp](https://github.com/fnss/fnss-cpp) or [fnss-ns3](https://github.com/fnss/fnss-ns3) repositories.
+or visit the [FNSS website](http://fnss.github.io).
 
- * `bin`: verious scripts to be run from the command shell
- * `dist`: folder where the built packages are saved
- * `doc`: documentation
- * `examples`: example code using the library
- * `fnss`: source code
- * `test`: test code
+## Installation
+The easiest way to install the latest stable version of this library is via `pip`.
+First, ensure that you have Python installed on your machine with version (2.7.9+ or 3.4+).
+Then, from a shell run:
 
-## Install
-You do not necessarily need to install FNSS to start using it. If you have already all the required packages on your system (look at requirements section below), you can simply add the directory where this README is located to your PYTHONPATH environment variable and you will be able to FNSS straight away.
+    pip install --upgrade fnss
 
-However, we recommend to install FNSS using the following process, which will take care installing all required packages, if missing. 
+This will automatically pull the latest version and install all dependencies.
 
-To install the package from sources, the easiest way is to open a shell and move to the directory where this README file is located.
-There should be a `setup.py` file in this directory.
-
-To install run the following command:
-
-    $ python setup.py install
-
-Alternatively, you can use the make script provided:
-
-    $ make install
-
-## Build package and documentation
-You do not need to build the package to use the FNSS core library: you can install it following the procedure described above. 
-If you wish to build a package, for example to redistribute it, open a shell and move to the directory where this README file is located.
-There should also be a `setup.py` file in this directory.
-
-To create a package, run the following command:
-
-    $ make dist
-
-This will create the package file and save them in the `dist` folder.
-It will also generate all the HTML documentation and save it in the folder `doc/html`.
-If you only want to build the documentation, run:
-
-    $ make doc
-
-Before attempting to build the documentation make sure that you have all the packages required, listed below.
-
-## How to use
+## Usage
 Once the package is successfully installed, you can start using FNSS straight away.
-To use the FNSS package, simply import it by typing `import fnss` in your Python console or in your source file.
-After importing the `fnss` package, all FNSS functions and classes are automatically imported. 
-For furhter information on how to use library you can either look at the API documentation located in the `doc/html` folder (run `make doc` to build it). Alternatively, you can have a look at some code examples under the `examples` directory.
+Look at the documentation and examples for getting started.
 
-## Test
-To run the tests, open a shell and move to the `test` subdirectory (it should contain a `test.py` file) and then run the command:
+FNSS also provides a `mn-fnss` which can be used to start Mininet with
+an FNSS-generated network topology.
+Open a shell and run the following command to get more information on how to use it.
 
-    $ python test.py
+    $ mn-fnss --help
 
-Alternatively, you can use the make script provided:
+## Development setup
+If you wish to develop on FNSS run:
+
+    make install
+
+This will download all developement requirements and install FNSS in editable mode,
+which means that any change made to the source code will be immediately available
+by other libraries in the system without needing reinstallation.
+
+You can run tests with:
 
     $ make test
 
-## Requirements
-To run the core library of FNSS you need to have [Python](http://www.python.org/) (version 2.7, 3.4 or later).
-In addition you also need the following Python packages.
+and build documenation with:
 
- * [numpy](http://www.numpy.org/) (version 1.4 or later)
- * [networkx](http://networkx.github.gov/) (version 1.6 or later)
+    $ make doc
 
-To be able to export topologies to ns-2, you also need:
+It is advisable to use [virtualenv](https://virtualenv.pypa.io/en/stable/)
+to create an isolated environment for working with FNSS before running `make install`.
 
- * [mako](http://www.makotemplates.org/) (version 0.4 or later)
+## Citing
+If you cite FNSS in your paper, please refer to the following pubblication:
 
-To be able to export topologies to Mininet you need Mininet itself:
+L. Saino, C. Cocora, G. Pavlou, [A Toolchain for Simplifying Network Simulation Setup](http://www.ee.ucl.ac.uk/~lsaino/publications/fnss-simutools13.pdf), in *Proceedings of the 6th International ICST Conference on Simulation Tools and Techniques (SIMUTOOLS '13)*, Cannes, France, March 2013
 
- * [mininet](http://www.mininet.org/) (version 2.1.0 or later)
+    @inproceedings{fnss,
+         author = {Saino, Lorenzo and Cocora, Cosmin and Pavlou, George},
+         title = {A Toolchain for Simplifying Network Simulation Setup},
+         booktitle = {Proceedings of the 6th International ICST Conference on Simulation Tools and Techniques},
+         series = {SIMUTOOLS '13},
+         year = {2013},
+         location = {Cannes, France},
+         numpages = {10},
+         publisher = {ICST},
+         address = {ICST, Brussels, Belgium, Belgium},
+    }
 
-To run unit test cases, you also need the nose package:
+## Bug reports
+If you wish to report a bug, please open an issue on the GitHub [issue page](https://github.com/fnss/fnss/issues/).
+When reporting an issue, please try to provide a reproducible example of the problem, if possible.
 
- * [nose](https://nose.readthedocs.org/en/latest/) (version 1.1 or later) 
+## Contributions
+Any contributions to the project (either bug fixes or new features) are very much welcome. To submit your code, please send a pull request on the [GitHub project page](https://github.com/fnss/fnss/).
 
-To build the documentation from sources, you also need the following Python packages:
+If you wish to contribute please try to follow these guidelines:
 
- * [sphinx](http://sphinx-doc.org/) (version 1.1 or later)
- * [numpydoc](http://pypi.python.org/pypi/numpydoc/) (version 0.4 or later)
- 
+ * Write commit messages conforming to [Git convention](http://365git.tumblr.com/post/3308646748/writing-git-commit-messages)
+ * If you are sending a fix to an open issue, feel free to send a pull request directly, but make sure to reference the issue ID that you are fixing in the commit message.
+ * Think about writing test cases for your feature or bug fix, if relevant. If you can't, don't worry: send your code anyway.
+
 ## License
 The FNSS core library is released under the terms of the [BSD License](http://en.wikipedia.org/wiki/BSD_licenses). See `LICENSE.txt`.
