@@ -1,5 +1,5 @@
 # Ignore binaries and temp files
-*.pyc
+*.py[cod]
 __pycache__
 
 # Ignore all files starting with . (e.g., .*project) but not .gitignore and .travis.yml
