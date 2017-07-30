@@ -11,21 +11,26 @@ python:
 addons:
   apt:
     packages:
-    - libatlas-dev
-    - libatlas-base-dev
-    - liblapack-dev
-    - gfortran
-    - libsuitesparse-dev
-    - libgdal-dev
-    - graphviz
-    - mono-devel
-
-before_install:
-  - uname -a
-  - printenv
+      - libatlas-dev
+      - libatlas-base-dev
+      - liblapack-dev
+      - gfortran
+      - libsuitesparse-dev
+      - libgdal-dev
+      - graphviz
+      - mono-devel
 
 install:
-  - travis_wait 30 make install # Building Scipy from sources on Python 2.7 takes more than 10 minutes
+  - travis_wait 30 make install # Building Scipy from sources on Python 2.7 may take more than 10 minutes
 
 script:
   - make test
+
+deploy:
+  provider: pypi
+  user: $PYPI_USER
+  password:
+    secure: $PYPI_PASSWD
+  on:
+    tags: true
+    condition: $TRAVIS_PYTHON_VERSION = "2.7" # Ensure it runs once per build
