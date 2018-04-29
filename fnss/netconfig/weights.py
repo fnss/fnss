@@ -29,14 +29,14 @@ def set_weights_inverse_capacity(topology):
     >>> fnss.set_weights_inverse_capacity(topology)
     """
     try:
-        max_capacity = float(max((topology.edge[u][v]['capacity']
-                                  for u, v in topology.edges_iter())))
+        max_capacity = float(max((topology.adj[u][v]['capacity']
+                                  for u, v in topology.edges())))
     except KeyError:
         raise ValueError('All links must have a capacity attribute')
-    for u, v in topology.edges_iter():
-        capacity = topology.edge[u][v]['capacity']
+    for u, v in topology.edges():
+        capacity = topology.adj[u][v]['capacity']
         weight = max_capacity / capacity
-        topology.edge[u][v]['weight'] = weight
+        topology.adj[u][v]['weight'] = weight
 
 
 def set_weights_delays(topology):
@@ -58,14 +58,14 @@ def set_weights_delays(topology):
 
     """
     try:
-        min_delay = float(min((topology.edge[u][v]['delay']
-                               for u, v in topology.edges_iter())))
+        min_delay = float(min((topology.adj[u][v]['delay']
+                               for u, v in topology.edges())))
     except KeyError:
         raise ValueError('All links must have a delay attribute')
-    for u, v in topology.edges_iter():
-        delay = topology.edge[u][v]['delay']
+    for u, v in topology.edges():
+        delay = topology.adj[u][v]['delay']
         weight = delay / min_delay
-        topology.edge[u][v]['weight'] = weight
+        topology.adj[u][v]['weight'] = weight
 
 
 def set_weights_constant(topology, weight=1.0, links=None):
@@ -89,9 +89,9 @@ def set_weights_constant(topology, weight=1.0, links=None):
     >>> topology.add_edges_from([(1, 2), (5, 8), (4, 5), (1, 7)])
     >>> fnss.set_weights_constant(topology, weight=1.0, links=[(1, 2), (5, 8), (4, 5)])
     """
-    edges = links or topology.edges_iter()
+    edges = links or topology.edges()
     for u, v in edges:
-        topology.edge[u][v]['weight'] = weight
+        topology.adj[u][v]['weight'] = weight
 
 
 def get_weights(topology):
@@ -128,5 +128,5 @@ def clear_weights(topology):
     ----------
     topology : Topology
     """
-    for u, v in topology.edges_iter():
-        topology.edge[u][v].pop('weight', None)
+    for u, v in topology.edges():
+        topology.adj[u][v].pop('weight', None)

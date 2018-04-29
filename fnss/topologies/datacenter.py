@@ -36,13 +36,13 @@ class DatacenterTopology(Topology):
         """
         Return the list of switch nodes in the topology
         """
-        return [v for v in self.nodes_iter() if self.node[v]['type'] == 'switch']
+        return [v for v in self.nodes() if self.node[v]['type'] == 'switch']
 
     def hosts(self):
         """
         Return the list of host nodes in the topology
         """
-        return [v for v in self.nodes_iter() if self.node[v]['type'] == 'host']
+        return [v for v in self.nodes() if self.node[v]['type'] == 'host']
 
 
 def two_tier_topology(n_core, n_edge, n_hosts):
@@ -87,8 +87,8 @@ def two_tier_topology(n_core, n_edge, n_hosts):
     for u in range(n_core):
         topo.node[u]['tier'] = 'core'
         topo.node[u]['type'] = 'switch'
-        for v in topo.edge[u]:
-            topo.edge[u][v]['type'] = 'core_edge'
+        for v in topo.adj[u]:
+            topo.adj[u][v]['type'] = 'core_edge'
     for u in range(n_core, n_core + n_edge):
         topo.node[u]['tier'] = 'edge'
         topo.node[u]['type'] = 'switch'
@@ -157,8 +157,8 @@ def three_tier_topology(n_core, n_aggregation, n_edge, n_hosts):
     for u in range(n_core):
         topo.node[u]['tier'] = 'core'
         topo.node[u]['type'] = 'switch'
-        for v in topo.edge[u]:
-            topo.edge[u][v]['type'] = 'core_aggregation'
+        for v in topo.adj[u]:
+            topo.adj[u][v]['type'] = 'core_aggregation'
     for u in range(n_core, n_core + n_aggregation):
         topo.node[u]['tier'] = 'aggregation'
         topo.node[u]['type'] = 'switch'
@@ -322,7 +322,7 @@ def fat_tree_topology(k):
             aggr_node = n_core + (core_node // (k // 2)) + (k * pod)
             topo.add_edge(core_node, aggr_node, type='core_aggregation')
     # Create hosts and connect them to edge switches
-    for u in [v for v in topo.nodes_iter() if topo.node[v]['layer'] == 'edge']:
+    for u in [v for v in topo.nodes() if topo.node[v]['layer'] == 'edge']:
         leaf_nodes = range(topo.number_of_nodes(),
                            topo.number_of_nodes() + k // 2)
         topo.add_nodes_from(leaf_nodes, layer='leaf', type='host',

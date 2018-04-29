@@ -57,8 +57,8 @@ def to_jfed(topology, path, testbed="wall1.ilabt.iminds.be", encoding="utf-8", p
     pos = nx.random_layout(topology)
     # Create mapping between links and interface IDs
     if_names = {}
-    for v in topology.edge:
-        next_hops = sorted(topology.edge[v].keys())
+    for v in topology.adj:
+        next_hops = sorted(topology.adj[v].keys())
         if_names[v] = {next_hop: i for i, next_hop in enumerate(next_hops)}
     head = ET.Element('rspec')
     head.attrib["generated_by"] = "FNSS"
@@ -69,7 +69,7 @@ def to_jfed(topology, path, testbed="wall1.ilabt.iminds.be", encoding="utf-8", p
     head.attrib["xmlns:delay"] = "http://www.protogeni.net/resources/rspec/ext/delay/1"
     head.attrib["xmlns:xsi"] = "http://www.w3.org/2001/XMLSchema-instance"
     # Iterate over nodes
-    for v in topology.nodes_iter():
+    for v in topology.nodes():
         node = ET.SubElement(head, 'node')
         node.attrib['client_id'] = "node%s" % str(v)
         node.attrib['component_manager_id'] = "urn:publicid:IDN+%s+authority+cm" % testbed
@@ -86,7 +86,7 @@ def to_jfed(topology, path, testbed="wall1.ilabt.iminds.be", encoding="utf-8", p
     # The convention in jFed is to identify links with "linkX" where X is an
     # integer but making sure that links and nodes have different integers
     link_id = topology.number_of_nodes() - 1
-    for u, v in topology.edges_iter():
+    for u, v in topology.edges():
         link_id += 1
         link = ET.SubElement(head, 'link')
         link.attrib['client_id'] = "link%s" % str(link_id)
@@ -184,7 +184,7 @@ def from_jfed(path):
             if 'latency' in prop.attrib:
                 edge_attr['delay'] = prop.attrib['latency']
                 has_delays = True
-        topology.add_edge(u, v, edge_attr)
+        topology.add_edge(u, v, **edge_attr)
     # Set capacity and delay units
     if has_capacities:
         topology.graph['capacity_unit'] = 'kbps'

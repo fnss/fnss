@@ -50,7 +50,7 @@ class Test(unittest.TestCase):
         capacities = topology.capacities()
         delays = topology.delays()
         buffer_sizes = topology.buffers()
-        for e in topology.edges_iter():
+        for e in topology.edges():
             self.assertEqual(weight, weights[e])
             self.assertEqual(capacity, capacities[e])
             self.assertEqual(delay, delays[e])
@@ -128,10 +128,10 @@ class Test(unittest.TestCase):
         self.assertEquals(len(fnss.get_application_names(self.G, 2)),
                       len(fnss.get_application_names(read_topo, 2)))
         self.assertEquals('fnss', fnss.get_application_properties(read_topo, 2, 'server')['user-agent'])
-        self.assertEquals([2, 4, 6], [ v for v in read_topo.nodes_iter()
+        self.assertEquals([2, 4, 6], [ v for v in read_topo.nodes()
                                       if fnss.get_stack(read_topo, v) is not None
                                       and fnss.get_stack(read_topo, v)[0] == 'tcp'])
-        self.assertEquals([2, 4], [ v for v in read_topo.nodes_iter()
+        self.assertEquals([2, 4], [ v for v in read_topo.nodes()
                                    if 'client' in fnss.get_application_names(read_topo, v)])
-        self.assertEquals([2], [ v for v in read_topo.nodes_iter()
+        self.assertEquals([2], [ v for v in read_topo.nodes()
                                 if 'server' in fnss.get_application_names(read_topo, v)])

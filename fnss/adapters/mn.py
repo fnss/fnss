@@ -38,7 +38,7 @@ def from_mininet(topology):
         fnss_topo.add_edge(u, v)
         opts = topology.linkInfo(u, v)
         if 'bw' in opts:
-            fnss_topo.edge[u][v]['capacity'] = opts['bw']
+            fnss_topo.adj[u][v]['capacity'] = opts['bw']
         if 'delay' in opts:
             delay = opts['delay']
             val = re.findall("\d+\.?\d*", delay)[0]
@@ -103,12 +103,12 @@ def to_mininet(topology, switches=None, hosts=None, relabel_nodes=True):
         raise ImportError('Cannot import mininet.topo package. '
                           'Make sure Mininet is installed on this machine.')
     if hosts is None:
-        hosts = (v for v in topology.nodes_iter()
+        hosts = (v for v in topology.nodes()
                  if 'host' in topology.node[v]['type'])
     if switches is None:
-        switches = (v for v in topology.nodes_iter()
+        switches = (v for v in topology.nodes()
                     if 'switch' in topology.node[v]['type'])
-    nodes = set(topology.nodes_iter())
+    nodes = set(topology.nodes())
     switches = set(switches)
     hosts = set(hosts)
     if not switches.isdisjoint(hosts):
@@ -140,16 +140,16 @@ def to_mininet(topology, switches=None, hosts=None, relabel_nodes=True):
                               / capacity_units['Mbps']
     if delay_unit:
         delay_conversion = float(time_units[delay_unit]) / time_units['us']
-    for u, v in topology.edges_iter():
+    for u, v in topology.edges():
         params = {}
-        if 'capacity' in topology.edge[u][v] and capacity_unit:
-            params['bw'] = topology.edge[u][v]['capacity'] * capacity_conversion
+        if 'capacity' in topology.adj[u][v] and capacity_unit:
+            params['bw'] = topology.adj[u][v]['capacity'] * capacity_conversion
             # Use Token Bucket filter to implement rate limit
             params['use_htb'] = True
-        if 'delay' in topology.edge[u][v] and delay_unit:
-            params['delay'] = '%sus' % str(topology.edge[u][v]['delay']
+        if 'delay' in topology.adj[u][v] and delay_unit:
+            params['delay'] = '%sus' % str(topology.adj[u][v]['delay']
                                            * delay_conversion)
-        if 'buffer_size' in topology.edge[u][v] and buffer_unit == 'packets':
-            params['max_queue_size'] = topology.edge[u][v]['buffer_size']
+        if 'buffer_size' in topology.adj[u][v] and buffer_unit == 'packets':
+            params['max_queue_size'] = topology.adj[u][v]['buffer_size']
         topo.addLink(str(u), str(v), **params)
     return topo

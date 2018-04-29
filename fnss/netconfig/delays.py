@@ -58,9 +58,9 @@ def set_delays_constant(topology, delay=1.0, delay_unit='ms', links=None):
                                 / time_units[curr_delay_unit]
     else:
         topology.graph['delay_unit'] = delay_unit
-    edges = links or topology.edges_iter()
+    edges = links or topology.edges()
     for u, v in edges:
-        topology.edge[u][v]['delay'] = delay * conversion_factor
+        topology.adj[u][v]['delay'] = delay * conversion_factor
 
 
 def set_delays_geo_distance(topology, specific_delay, default_delay=None,
@@ -107,7 +107,7 @@ def set_delays_geo_distance(topology, specific_delay, default_delay=None,
                          "topology (%s) is not valid" % distance_unit)
     edges = links or topology.edges()
     if default_delay is None:
-        if any(('length' not in topology.edge[u][v] for u, v in edges)):
+        if any(('length' not in topology.adj[u][v] for u, v in edges)):
             raise ValueError('All links must have a length attribute')
     if 'delay_unit' in topology.graph and links is not None:
         # If a delay_unit is set, that means that some links have already
@@ -124,12 +124,12 @@ def set_delays_geo_distance(topology, specific_delay, default_delay=None,
     # factor to convert default delay in target delay unit
     default_conv_factor = time_units[delay_unit] / time_units[curr_delay_unit]
     for u, v in edges:
-        if 'length' in topology.edge[u][v]:
-            length = topology.edge[u][v]['length'] * length_conv_factor
+        if 'length' in topology.adj[u][v]:
+            length = topology.adj[u][v]['length'] * length_conv_factor
             delay = specific_delay * length * conv_factor
         else:
             delay = default_delay * default_conv_factor
-        topology.edge[u][v]['delay'] = delay
+        topology.adj[u][v]['delay'] = delay
 
 
 def get_delays(topology):
@@ -168,5 +168,5 @@ def clear_delays(topology):
     topology : Topology
     """
     topology.graph.pop('delay_unit', None)
-    for u, v in topology.edges_iter():
-        topology.edge[u][v].pop('delay', None)
+    for u, v in topology.edges():
+        topology.adj[u][v].pop('delay', None)

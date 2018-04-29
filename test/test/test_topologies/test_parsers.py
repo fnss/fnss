@@ -18,11 +18,11 @@ class Test(unittest.TestCase):
         topology = fnss.parse_abilene(abilene_topo_file, abilene_links_file)
         self.assertEquals(12, topology.number_of_nodes())
         self.assertEquals(30, topology.number_of_edges())
-        self.assertTrue(all('link_index' in topology.edge[u][v]
-                            and 'link_type' in topology.edge[u][v])
-                        for u, v in topology.edges_iter())
-        self.assertTrue(all(topology.edge[u][v]['length'] >= 0
-                            for u, v in topology.edges_iter()))
+        self.assertTrue(all('link_index' in topology.adj[u][v]
+                            and 'link_type' in topology.adj[u][v])
+                        for u, v in topology.edges())
+        self.assertTrue(all(topology.adj[u][v]['length'] >= 0
+                            for u, v in topology.edges()))
 
     @unittest.skipIf(RES_DIR is None, "Resources folder not present")
     def test_parse_rockefuel_isp_map(self):
@@ -37,7 +37,7 @@ class Test(unittest.TestCase):
         topology = fnss.parse_rocketfuel_isp_latency(rocketfuel_file)
         self.assertEquals(108, topology.number_of_nodes())
         self.assertEquals(306, topology.number_of_edges())
-        for _, _, data in topology.edges_iter(data=True):
+        for _, _, data in topology.edges(data=True):
             self.assertTrue('delay' in data)
             self.assertIsInstance(data['delay'], int)
             self.assertGreaterEqual(data['delay'], 0)
@@ -49,7 +49,7 @@ class Test(unittest.TestCase):
         topology = fnss.parse_rocketfuel_isp_latency(latencies_file, weights_file)
         self.assertEquals(108, topology.number_of_nodes())
         self.assertEquals(306, topology.number_of_edges())
-        for _, _, data in topology.edges_iter(data=True):
+        for _, _, data in topology.edges(data=True):
             self.assertTrue('delay' in data)
             self.assertTrue('weight' in data)
             self.assertIsInstance(data['delay'], int)
@@ -63,7 +63,7 @@ class Test(unittest.TestCase):
         topology = fnss.parse_rocketfuel_isp_latency(rocketfuel_file)
         self.assertEquals(315, topology.number_of_nodes())
         self.assertEquals(1944, topology.number_of_edges())
-        for _, _, data in topology.edges_iter(data=True):
+        for _, _, data in topology.edges(data=True):
             self.assertTrue('delay' in data)
             self.assertIsInstance(data['delay'], int)
             self.assertGreaterEqual(data['delay'], 0)
@@ -75,7 +75,7 @@ class Test(unittest.TestCase):
         topology = fnss.parse_rocketfuel_isp_latency(latencies_file, weights_file)
         self.assertEquals(315, topology.number_of_nodes())
         self.assertEquals(1944, topology.number_of_edges())
-        for _, _, data in topology.edges_iter(data=True):
+        for _, _, data in topology.edges(data=True):
             self.assertTrue('delay' in data)
             self.assertTrue('weight' in data)
             self.assertIsInstance(data['delay'], int)
@@ -103,7 +103,7 @@ class Test(unittest.TestCase):
         topology = fnss.parse_caida_as_relationships(caida_file)
         self.assertEqual(41203, topology.number_of_nodes())
         self.assertEqual(121309, topology.number_of_edges())
-        self.assertEqual('customer', topology.edge[263053][28163]['type'])
+        self.assertEqual('customer', topology.adj[263053][28163]['type'])
 
     @unittest.skipIf(RES_DIR is None, "Resources folder not present")
     def test_parse_inet(self):
@@ -120,11 +120,11 @@ class Test(unittest.TestCase):
         self.assertFalse(topology.is_multigraph())
         self.assertEqual(34, topology.number_of_nodes())
         self.assertEqual(46, topology.number_of_edges())
-        self.assertEqual(1000000000.0, topology.edge[4][15]['capacity'])
+        self.assertEqual(1000000000.0, topology.adj[4][15]['capacity'])
         self.assertEquals('bps', topology.graph['capacity_unit'])
-        self.assertTrue(all(topology.edge[u][v]['length'] >= 0
-                    for u, v in topology.edges_iter()
-                    if 'length' in topology.edge[u][v]))
+        self.assertTrue(all(topology.adj[u][v]['length'] >= 0
+                    for u, v in topology.edges()
+                    if 'length' in topology.adj[u][v]))
 
     @unittest.skipIf(RES_DIR is None, "Resources folder not present")
     def test_parse_topology_zoo_multigraph(self):
@@ -136,7 +136,7 @@ class Test(unittest.TestCase):
         self.assertEqual(61, topology.number_of_nodes())
         self.assertEqual(75, topology.number_of_edges())
         self.assertEquals('bps', topology.graph['capacity_unit'])
-        self.assertEquals(2000000000, topology.edge[37][58]['capacity'])
+        self.assertEquals(2000000000, topology.adj[37][58]['capacity'])
         bundled_links = [(43, 18), (49, 32), (41, 18), (4, 7),
                           (6, 55), (9, 58), (58, 37), (10, 55),
                          (14, 57), (14, 35), (18, 41), (18, 43),
@@ -144,7 +144,7 @@ class Test(unittest.TestCase):
         for u, v in topology.edges():
             print(u, v)
             self.assertEquals((u, v) in bundled_links,
-                              topology.edge[u][v]['bundle'])
+                              topology.adj[u][v]['bundle'])
 
     @unittest.skipIf(RES_DIR is None, "Resources folder not present")
     def test_parse_topology_zoo_multigraph_directed_topology(self):
@@ -167,9 +167,9 @@ class Test(unittest.TestCase):
         self.assertEqual(980, topology.node[851]['latitude'])
         self.assertEqual('AS_NODE', topology.node[851]['type'])
         # 1478    716    230    212.11553455605272    0.7075412636166207    0.0011145252848059164    716    230    E_AS    U
-        self.assertEquals(1478, topology.edge[716][230]['id'])
+        self.assertEquals(1478, topology.adj[716][230]['id'])
         self.assertAlmostEquals(212.11553455605272,
-                                topology.edge[716][230]['length'], 0.01)
+                                topology.adj[716][230]['length'], 0.01)
 
     @unittest.skipIf(RES_DIR is None, "Resources folder not present")
     def test_parse_brite_router(self):

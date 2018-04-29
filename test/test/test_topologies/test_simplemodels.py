@@ -33,7 +33,7 @@ class Test(unittest.TestCase):
             self.assertEquals(sum(k ** d for d in range(1, h + 1)),
                               G.number_of_edges())
             degree = G.degree()
-            for v in G.nodes_iter():
+            for v in G.nodes():
                 v_type = G.node[v]['type']
                 v_depth = G.node[v]['depth']
                 self.assertEqual(expected_degree[v_type], degree[v])
@@ -127,10 +127,10 @@ class Test(unittest.TestCase):
             n = 2 ** m
             self.assertEqual(len(G), n)
             if r <= 2:
-                for i in G.nodes_iter():
-                    self.assertEqual(len(G.edge[i]), m)
+                for i in G.nodes():
+                    self.assertEqual(len(G.adj[i]), m)
             else:
-                for i in G.nodes_iter():
+                for i in G.nodes():
                     for j in range(i + 1, i + r + 1):
                         self.assertTrue(G.has_edge(i, j % n))
         test_chord_connectivity(2, 1)

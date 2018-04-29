@@ -276,7 +276,7 @@ def parse_rocketfuel_isp_latency(latencies_path, weights_path=None):
                     raise ValueError("The weight file includes edge (%s, %s), "
                                      "which was not included in the latencies file"
                                      % (u_str, v_str))
-                topology.edge[u][v]['weight'] = weight
+                topology.adj[u][v]['weight'] = weight
     return topology
 
 
@@ -481,8 +481,8 @@ def parse_abilene(topology_path, links_path=None):
                         raise ValueError('Invalid input file. '\
                                          'Parsing failed while trying to '\
                                          'parse a link from links_file')
-                    topology.edge[u][v]['link_index'] = link_index
-                    topology.edge[u][v]['link_type'] = link_type
+                    topology.adj[u][v]['link_index'] = link_index
+                    topology.adj[u][v]['link_type'] = link_type
     return topology
 
 
@@ -628,7 +628,7 @@ def parse_topology_zoo(path):
     topology.graph['type'] = 'topology_zoo'
     topology.graph['distance_unit'] = 'Km'
     topology.graph['link_bundling'] = topo_zoo_graph.is_multigraph()
-    for tv in topo_zoo_graph.nodes_iter():
+    for tv in topo_zoo_graph.nodes():
         v = try_convert_int(tv)
         topology.add_node(v)
         if 'label' in topo_zoo_graph.node[tv]:
@@ -640,7 +640,7 @@ def parse_topology_zoo(path):
             topology.node[v]['latitude'] = latitude
         except KeyError:
             pass
-    for tv, tu in topo_zoo_graph.edges_iter():
+    for tv, tu in topo_zoo_graph.edges():
         v = try_convert_int(tv)
         u = try_convert_int(tu)
         if u == v:
@@ -655,20 +655,20 @@ def parse_topology_zoo(path):
             lat_u = topo_zoo_graph.node[tu]['Latitude']
             lon_u = topo_zoo_graph.node[tu]['Longitude']
             length = geographical_distance(lat_v, lon_v, lat_u, lon_u)
-            topology.edge[v][u]['length'] = length
+            topology.adj[v][u]['length'] = length
         if topo_zoo_graph.is_multigraph():
-            edge = topo_zoo_graph.edge[tv][tu]
-            topology.edge[v][u]['bundle'] = True if len(edge) > 1 else False
+            edge = topo_zoo_graph.adj[tv][tu]
+            topology.adj[v][u]['bundle'] = True if len(edge) > 1 else False
             capacity = 0
             for edge_attr in list(edge.values()):
                 if 'LinkSpeedRaw' in edge_attr:
                     capacity += edge_attr['LinkSpeedRaw']
             if capacity > 0:
-                topology.edge[v][u]['capacity'] = capacity
+                topology.adj[v][u]['capacity'] = capacity
         else:
-            if 'LinkSpeedRaw' in topo_zoo_graph.edge[tv][tu]:
-                topology.edge[v][u]['capacity'] = \
-                        topo_zoo_graph.edge[tv][tu]['LinkSpeedRaw']
+            if 'LinkSpeedRaw' in topo_zoo_graph.adj[tv][tu]:
+                topology.adj[v][u]['capacity'] = \
+                        topo_zoo_graph.adj[tv][tu]['LinkSpeedRaw']
     if len(nx.get_edge_attributes(topology, 'capacity')) > 0:
         topology.graph['capacity_unit'] = 'bps'
     return topology

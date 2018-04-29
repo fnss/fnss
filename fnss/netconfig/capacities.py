@@ -3,6 +3,8 @@
 Link capacities can be assigned either deterministically or randomly, according
 to various models.
 """
+from distutils.version import LooseVersion
+
 import networkx as nx
 
 from fnss.util import random_from_pdf
@@ -66,9 +68,9 @@ def set_capacities_constant(topology, capacity, capacity_unit='Mbps',
                                 / capacity_units[curr_capacity_unit]
     else:
         topology.graph['capacity_unit'] = capacity_unit
-    edges = links or topology.edges_iter()
+    edges = links or topology.edges()
     for u, v in edges:
-        topology.edge[u][v]['capacity'] = capacity * conversion_factor
+        topology.adj[u][v]['capacity'] = capacity * conversion_factor
     return
 
 
@@ -103,8 +105,8 @@ def set_capacities_random(topology, capacity_pdf, capacity_unit='Mbps'):
     if any((capacity < 0 for capacity in capacity_pdf.keys())):
         raise ValueError('All capacities in capacity_pdf must be positive')
     topology.graph['capacity_unit'] = capacity_unit
-    for u, v in topology.edges_iter():
-        topology.edge[u][v]['capacity'] = random_from_pdf(capacity_pdf)
+    for u, v in topology.edges():
+        topology.adj[u][v]['capacity'] = random_from_pdf(capacity_pdf)
     return
 
 
@@ -267,11 +269,11 @@ def set_capacities_degree_gravity(topology, capacities, capacity_unit='Mbps'):
         in_degree = nx.in_degree_centrality(topology)
         out_degree = nx.out_degree_centrality(topology)
         gravity = {(u, v): out_degree[u] * in_degree[v]
-                   for (u, v) in topology.edges_iter()}
+                   for (u, v) in topology.edges()}
     else:
         degree = nx.degree_centrality(topology)
         gravity = {(u, v): degree[u] * degree[v]
-                   for (u, v) in topology.edges_iter()}
+                   for (u, v) in topology.edges()}
     _set_capacities_proportionally(topology, capacities, gravity,
                                    capacity_unit=capacity_unit)
 
@@ -372,7 +374,10 @@ def set_capacities_communicability_gravity(topology, capacities,
     capacity_unit : str, optional
         The unit in which capacity value is expressed (e.g. Mbps, Gbps etc..)
     """
-    centrality = nx.communicability_centrality(topology)
+    if LooseVersion(nx.__version__) < LooseVersion("2.0"):
+        centrality = nx.communicability_centrality(topology)
+    else:
+        centrality = nx.subgraph_centrality(topology)
     _set_capacities_gravity(topology, capacities, centrality, capacity_unit)
 
 
@@ -419,7 +424,7 @@ def set_capacities_edge_communicability(topology, capacities,
     """
     communicability = nx.communicability(topology)
     centrality = {(u, v): communicability[u][v]
-                  for (u, v) in topology.edges_iter()}
+                  for (u, v) in topology.edges()}
     _set_capacities_proportionally(topology, capacities, centrality,
                                    capacity_unit=capacity_unit)
 
@@ -443,7 +448,7 @@ def _set_capacities_gravity(topology, capacities, node_metric,
         The unit in which capacity value is expressed (e.g. Mbps, Gbps etc..)
     """
     gravity = {(u, v): node_metric[u] * node_metric[v]
-               for (u, v) in topology.edges_iter()}
+               for (u, v) in topology.edges()}
     _set_capacities_proportionally(topology, capacities, gravity,
                                    capacity_unit=capacity_unit)
 
@@ -503,7 +508,7 @@ def _set_capacities_proportionally(topology, capacities, metric,
         for i, boundary in enumerate(metric_boundaries):
             if metric_value <= boundary:
                 capacity = capacities[i]
-                topology.edge[u][v]['capacity'] = capacity
+                topology.adj[u][v]['capacity'] = capacity
                 break
         # if the loop is not stopped yet, it means that because of float
         # rounding error, max_capacity <  metric_boundaries[-1], so we set the
@@ -511,7 +516,7 @@ def _set_capacities_proportionally(topology, capacities, metric,
         # Anyway, the code should never reach this point, because before the
         # for loop we are already adjusting the value of metric_boundaries[-1]
         # to make it > max_capacity
-        else: topology.edge[u][v]['capacity'] = capacities[-1]
+        else: topology.adj[u][v]['capacity'] = capacities[-1]
 
 
 def get_capacities(topology):
@@ -550,5 +555,5 @@ def clear_capacities(topology):
     topology : Topology
     """
     topology.graph.pop('capacity_unit', None)
-    for u, v in topology.edges_iter():
-        topology.edge[u][v].pop('capacity', None)
+    for u, v in topology.edges():
+        topology.adj[u][v].pop('capacity', None)

@@ -89,7 +89,7 @@ def clear_stacks(topology):
     ----------
     topology : Topology
     """
-    for v in topology.nodes_iter():
+    for v in topology.nodes():
         topology.node[v].pop('stack', None)
 
 def add_application(topology, node, name, properties=None, **attr):
@@ -188,5 +188,5 @@ def clear_applications(topology):
     topology : Topology
         The topology
     """
-    for v in topology.nodes_iter():
+    for v in topology.nodes():
         topology.node[v].pop('application', None)

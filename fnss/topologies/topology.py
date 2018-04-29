@@ -106,7 +106,7 @@ class Topology(nx.Graph, BaseTopology):
         **kwargs : keyword arguments, optional
             Attributes to add to graph as key=value pairs.
         """
-        super(Topology, self).__init__(data=data, name=name, **kwargs)
+        super(Topology, self).__init__(data, name=name, **kwargs)
 
     def copy(self):
         """Return a copy of the topology.
@@ -272,7 +272,7 @@ class DirectedTopology(nx.DiGraph, BaseTopology):
         **kwargs : keyword arguments, optional
             Attributes to add to graph as key=value pairs.
         """
-        super(DirectedTopology, self).__init__(data=data, name=name, **kwargs)
+        super(DirectedTopology, self).__init__(data, name=name, **kwargs)
 
     def copy(self):
         """Return a copy of the topology.
@@ -442,7 +442,7 @@ def od_pairs_from_topology(topology):
     [(0, 1), (0, 2), (1, 0), (1, 2), (2, 0), (2, 1)]
     """
     if topology.is_directed():
-        routes = nx.all_pairs_shortest_path_length(topology)
+        routes = dict(nx.all_pairs_shortest_path_length(topology))
         return [(o, d) for o in routes for d in routes[o] if o != d]
     else:
         conn_comp = nx.connected_components(topology)
@@ -489,13 +489,13 @@ def fan_in_out_capacities(topology):
         topology = topology.to_directed()
     fan_in = {}
     fan_out = {}
-    for node in topology.nodes_iter():
+    for node in topology.nodes():
         node_fan_in = 0
         node_fan_out = 0
         for predecessor in topology.predecessors(node):
-            node_fan_in += topology.edge[predecessor][node]['capacity']
+            node_fan_in += topology.adj[predecessor][node]['capacity']
         for successor in topology.successors(node):
-            node_fan_out += topology.edge[node][successor]['capacity']
+            node_fan_out += topology.adj[node][successor]['capacity']
         fan_in[node] = node_fan_in
         fan_out[node] = node_fan_out
     return fan_in, fan_out
@@ -525,10 +525,10 @@ def rename_edge_attribute(topology, old_attr, new_attr):
     >>> topo.edges(data=True)
     [(1, 2, {'weight': 1}), (2, 3, {'weight': 2})]
     """
-    for u, v in topology.edges_iter():
-        if old_attr in topology.edge[u][v]:
-            topology.edge[u][v][new_attr] = topology.edge[u][v][old_attr]
-            del topology.edge[u][v][old_attr]
+    for u, v in topology.edges():
+        if old_attr in topology.adj[u][v]:
+            topology.adj[u][v][new_attr] = topology.edge[u][v][old_attr]
+            del topology.adj[u][v][old_attr]
 
 
 def rename_node_attribute(topology, old_attr, new_attr):
@@ -555,8 +555,8 @@ def rename_node_attribute(topology, old_attr, new_attr):
     >>> topo.edges(data=True)
     [(1, {'coordinates': (0, 0)}), (2, {'coordinates': (1, 1)})]
     """
-    for v in topology.nodes_iter():
-        if old_attr in topology.edge[v]:
+    for v in topology.nodes():
+        if old_attr in topology.adj[v]:
             topology.node[v][new_attr] = topology.node[v][old_attr]
             del topology.node[v][old_attr]
 
@@ -625,7 +625,7 @@ def read_topology(path, encoding='utf-8'):
         for prop in edge.findall('property'):
             name = prop.attrib['name']
             value = util.xml_cast_type(prop.attrib['type'], prop.text)
-            topology.edge[u][v][name] = value
+            topology.adj[u][v][name] = value
     return topology
 
 
@@ -651,7 +651,7 @@ def write_topology(topology, path, encoding='utf-8', prettyprint=True):
         prop.attrib['name'] = name
         prop.attrib['type'] = util.xml_type(value)
         prop.text = str(value)
-    for v in topology.nodes_iter():
+    for v in topology.nodes():
         node = ET.SubElement(head, 'node')
         node.attrib['id'] = str(v)
         node.attrib['id.type'] = util.xml_type(v)
@@ -683,7 +683,7 @@ def write_topology(topology, path, encoding='utf-8', prettyprint=True):
                 prop.attrib['name'] = name
                 prop.attrib['type'] = util.xml_type(value)
                 prop.text = str(value)
-    for u, v in topology.edges_iter():
+    for u, v in topology.edges():
         link = ET.SubElement(head, 'link')
         from_node = ET.SubElement(link, 'from')
         from_node.attrib['type'] = util.xml_type(u)
@@ -691,7 +691,7 @@ def write_topology(topology, path, encoding='utf-8', prettyprint=True):
         to_node = ET.SubElement(link, 'to')
         to_node.attrib['type'] = util.xml_type(v)
         to_node.text = str(v)
-        for name, value in topology.edge[u][v].items():
+        for name, value in topology.adj[u][v].items():
             prop = ET.SubElement(link, 'property')
             prop.attrib['name'] = name
             prop.attrib['type'] = util.xml_type(value)

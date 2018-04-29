@@ -117,7 +117,7 @@ def waxman_1_topology(n, alpha=0.4, beta=0.1, L=1.0,
 
     G.name = "waxman_1_topology(%s, %s, %s, %s)" % (n, alpha, beta, L)
     G.add_nodes_from(range(n))
-    nodes = G.nodes()
+    nodes = list(G.nodes())
     while nodes:
         u = nodes.pop()
         for v in nodes:
@@ -189,12 +189,12 @@ def waxman_2_topology(n, alpha=0.4, beta=0.1, domain=(0, 0, 1, 1),
     G.add_nodes_from(range(n))
 
 
-    for v in G.nodes_iter():
+    for v in G.nodes():
         G.node[v]['latitude'] = (ymin + (ymax - ymin)) * random.random()
         G.node[v]['longitude'] = (xmin + (xmax - xmin)) * random.random()
 
     l = {}
-    nodes = G.nodes()
+    nodes = list(G.nodes())
     while nodes:
         u = nodes.pop()
         for v in nodes:
@@ -260,9 +260,9 @@ def barabasi_albert_topology(n, m, m0, seed=None):
     """
     def calc_pi(G):
         """Calculate BA Pi function for all nodes of the graph"""
-        degree = G.degree()
+        degree = dict(G.degree())
         den = float(sum(degree.values()))
-        return {node: degree[node] / den for node in G.nodes_iter()}
+        return {node: degree[node] / den for node in G.nodes()}
 
     # input parameters
     if n < 1 or m < 1 or m0 < 1:
@@ -346,9 +346,9 @@ def extended_barabasi_albert_topology(n, m, m0, p, q, seed=None):
     """
     def calc_pi(G):
         """Calculate extended-BA Pi function for all nodes of the graph"""
-        degree = G.degree()
+        degree = dict(G.degree())
         den = float(sum(degree.values()) + G.number_of_nodes())
-        return {node: (degree[node] + 1) / den for node in G.nodes_iter()}
+        return {node: (degree[node] + 1) / den for node in G.nodes()}
 
     # input parameters
     if n < 1 or m < 1 or m0 < 1:
@@ -393,10 +393,10 @@ def extended_barabasi_albert_topology(n, m, m0, p, q, seed=None):
             # rewire m links with probability q
             rewired_links = 0
             while rewired_links < m:
-                i = random.choice(G.nodes())  # pick up node randomly (uniform)
-                if len(G.edge[i]) is 0:  # if i has no edges, I cannot rewire
+                i = random.choice(list(G.nodes()))  # pick up node randomly (uniform)
+                if len(G.adj[i]) is 0:  # if i has no edges, I cannot rewire
                     break
-                j = random.choice(list(G.edge[i].keys()))  # node to be disconnected
+                j = random.choice(list(G.adj[i].keys()))  # node to be disconnected
                 k = random_from_pdf(pi)  # new node to be connected
                 if i is not k and j is not k and not G.has_edge(i, k):
                     G.remove_edge(i, j)
@@ -467,9 +467,9 @@ def glp_topology(n, m, m0, p, beta, seed=None):
         # validate input parameter
         if beta >= 1:
             raise ValueError('beta must be < 1')
-        degree = G.degree()
+        degree = dict(G.degree())
         den = float(sum(degree.values()) - (G.number_of_nodes() * beta))
-        return {node: (degree[node] - beta) / den for node in G.nodes_iter()}
+        return {node: (degree[node] - beta) / den for node in G.nodes()}
 
     def add_m_links(G, pi):
         """Add m links between existing nodes to the graph"""

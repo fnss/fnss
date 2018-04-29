@@ -11,9 +11,9 @@ class Test(unittest.TestCase):
         # set up topology used for all traffic matrix tests
         cls.topo = fnss.k_ary_tree_topology(3, 4)
         cls.capacities = [10, 20]
-        cls.odd_links = [(u, v) for (u, v) in cls.topo.edges_iter()
+        cls.odd_links = [(u, v) for (u, v) in cls.topo.edges()
                          if (u + v) % 2 == 1]
-        cls.even_links = [(u, v) for (u, v) in cls.topo.edges_iter()
+        cls.even_links = [(u, v) for (u, v) in cls.topo.edges()
                           if (u + v) % 2 == 0]
         fnss.set_capacities_random_uniform(cls.topo, cls.capacities)
         fnss.set_delays_constant(cls.topo, 3, 'ms', cls.odd_links)
@@ -32,18 +32,18 @@ class Test(unittest.TestCase):
     def test_weights_constant(self):
         fnss.set_weights_constant(self.topo, 2, self.odd_links)
         fnss.set_weights_constant(self.topo, 5, self.even_links)
-        self.assertTrue(all(self.topo.edge[u][v]['weight'] in [2, 5]
-                            for (u, v) in self.topo.edges_iter()))
+        self.assertTrue(all(self.topo.adj[u][v]['weight'] in [2, 5]
+                            for (u, v) in self.topo.edges()))
 
     def test_weights_inverse_capacity(self):
         fnss.set_weights_inverse_capacity(self.topo)
-        self.assertTrue(all(self.topo.edge[u][v]['weight'] in [1, 2]
-                            for (u, v) in self.topo.edges_iter()))
+        self.assertTrue(all(self.topo.adj[u][v]['weight'] in [1, 2]
+                            for (u, v) in self.topo.edges()))
 
     def test_weights_delays(self):
         fnss.set_weights_delays(self.topo)
-        self.assertTrue(all(self.topo.edge[u][v]['weight'] in [1, 4]
-                            for (u, v) in self.topo.edges_iter()))
+        self.assertTrue(all(self.topo.adj[u][v]['weight'] in [1, 4]
+                            for (u, v) in self.topo.edges()))
 
     def test_clear_weights(self):
         # create new topology to avoid parameters pollution

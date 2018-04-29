@@ -34,7 +34,7 @@ if set_delays: delay_norm = time_units[topology.graph['delay_unit']]
 set ns [new Simulator]
 
 # Create nodes
-% for node in topology.nodes_iter():
+% for node in topology.nodes():
 set n${str(node)} [$ns node]
 % endfor
 
@@ -42,40 +42,40 @@ set n${str(node)} [$ns node]
 set qtype DropTail
 ## if topology is undirected, create duplex links, otherwise simplex links
 % if topology.is_directed():
-    % for u, v in topology.edges_iter():
-<% delay = "0" if not set_delays else str(topology.edge[u][v]['delay'] * delay_norm) %>\
-${"$ns simplex-link $n%s $n%s %sMb %sms $qtype" % (str(u), str(v), str(topology.edge[u][v]['capacity'] * capacity_norm), delay)}
+    % for u, v in topology.edges():
+<% delay = "0" if not set_delays else str(topology.adj[u][v]['delay'] * delay_norm) %>\
+${"$ns simplex-link $n%s $n%s %sMb %sms $qtype" % (str(u), str(v), str(topology.adj[u][v]['capacity'] * capacity_norm), delay)}
     % endfor
 % else:
-    % for u, v in topology.edges_iter():
-<% delay = "0" if not set_delays else str(topology.edge[u][v]['delay'] * delay_norm) %>\
-${"$ns duplex-link $n%s $n%s %sMb %sms $qtype" % (str(u), str(v), str(topology.edge[u][v]['capacity'] * capacity_norm), delay)}
+    % for u, v in topology.edges():
+<% delay = "0" if not set_delays else str(topology.adj[u][v]['delay'] * delay_norm) %>\
+${"$ns duplex-link $n%s $n%s %sMb %sms $qtype" % (str(u), str(v), str(topology.adj[u][v]['capacity'] * capacity_norm), delay)}
     % endfor
 %endif
 
 % if set_weights:
 # Set link weights
-    % for u, v in topology.edges_iter():
-${"$ns cost $n%s $n%s %s" % (str(u), str(v), str(topology.edge[u][v]['weight']))}
+    % for u, v in topology.edges():
+${"$ns cost $n%s $n%s %s" % (str(u), str(v), str(topology.adj[u][v]['weight']))}
         % if not topology.is_directed():
-${"$ns cost $n%s $n%s %s" % (str(v), str(u), str(topology.edge[v][u]['weight']))}
+${"$ns cost $n%s $n%s %s" % (str(v), str(u), str(topology.adj[v][u]['weight']))}
         % endif
     % endfor
 % endif
 
 % if set_buffers:
 # Set queue sizes
-    % for u, v in topology.edges_iter():
-${"$ns queue-limit $n%s $n%s %s" % (str(u), str(v), str(topology.edge[u][v]['buffer']))}
+    % for u, v in topology.edges():
+${"$ns queue-limit $n%s $n%s %s" % (str(u), str(v), str(topology.adj[u][v]['buffer']))}
         % if not topology.is_directed():
-${"$ns queue-limit $n%s $n%s %s" % (str(v), str(u), str(topology.edge[v][u]['buffer']))}
+${"$ns queue-limit $n%s $n%s %s" % (str(v), str(u), str(topology.adj[v][u]['buffer']))}
         % endif
     % endfor
 % endif
 
 % if deploy_stacks:
 # Deploy applications and agents
-    % for node in topology.nodes_iter():
+    % for node in topology.nodes():
 <%
 stack = get_stack(topology, node)
 if stack is None:
@@ -121,7 +121,7 @@ def validate_ns2_stacks(topology):
     valid : bool
         *True* if stacks are valid ns-2 stacks, *False* otherwise
     """
-    for node in topology.nodes_iter():
+    for node in topology.nodes():
         applications = get_application_names(topology, node)
         for name in applications:
             if not 'class' in get_application_properties(topology, node, name):
@@ -171,8 +171,8 @@ def to_ns2(topology, path, stacks=True):
     set_buffers = True
     set_delays = True
     # if all links are annotated with weights, then set weights
-    set_weights = all('weight' in topology.edge[u][v]
-                      for u, v in topology.edges_iter())
+    set_weights = all('weight' in topology.adj[u][v]
+                      for u, v in topology.edges())
 
     if not 'capacity_unit' in topology.graph:
         raise ValueError('The given topology does not have capacity data.')
@@ -196,7 +196,7 @@ def to_ns2(topology, path, stacks=True):
             warn('Some application stacks cannot be parsed correctly. The '
                  'output file will be generated without stack assignments.')
             stacks = False
-        if not any('stack' in topology.node[v] for v in topology.nodes_iter()):
+        if not any('stack' in topology.node[v] for v in topology.nodes()):
             stacks = False
     template = Template(__TEMPLATE)
     variables = {

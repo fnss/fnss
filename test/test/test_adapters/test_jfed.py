@@ -23,8 +23,8 @@ class Test(unittest.TestCase):
         t_out = fnss.from_jfed(f)
         self.assertEqual(t_in.number_of_nodes(), t_out.number_of_nodes())
         self.assertEqual(t_in.number_of_edges(), t_out.number_of_edges())
-        self.assertEqual(set(t_in.degree().values()),
-                         set(t_out.degree().values()))
+        self.assertEqual(set(dict(t_in.degree()).values()),
+                         set(dict(t_out.degree()).values()))
 
     @unittest.skipIf(TMP_DIR is None, "Temp folder not present")
     def test_to_jfed(self):

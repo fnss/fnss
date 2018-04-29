@@ -45,7 +45,7 @@ class Test(unittest.TestCase):
         self.assertEqual(fnss.get_stack(self.topo, 1, data=True), ('s_name', {'att1': 'val1', 'att2': 'val2'}))
 
     def test_add_get_remove_stack(self):
-        for v in self.topo.nodes_iter():
+        for v in self.topo.nodes():
             self.assertIsNone(fnss.get_stack(self.topo, v))
         fnss.add_stack(self.topo, 12, self.stack_1_name, self.stack_1_props)
         self.assertEqual(2, len(fnss.get_stack(self.topo, 12)))
@@ -62,14 +62,14 @@ class Test(unittest.TestCase):
         self.assertIsNone(fnss.get_stack(self.topo, 12))
 
     def test_clear_stacks(self):
-        for v in self.topo.nodes_iter():
+        for v in self.topo.nodes():
             fnss.add_stack(self.topo, v, self.stack_1_name, self.stack_1_props)
         fnss.clear_stacks(self.topo)
-        for v in self.topo.nodes_iter():
+        for v in self.topo.nodes():
             self.assertIsNone(fnss.get_stack(self.topo, v))
 
     def test_add_get_remove_applications(self):
-        for v in self.topo.nodes_iter():
+        for v in self.topo.nodes():
             self.assertEqual([], fnss.get_application_names(self.topo, v))
         fnss.add_application(self.topo, 10, self.app_1_name, self.app_1_props)
         self.assertEqual([self.app_1_name],

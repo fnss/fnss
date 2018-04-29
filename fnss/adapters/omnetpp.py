@@ -32,8 +32,8 @@ name = topology.name
 name = "net" if name == "" else re.sub("[^A-Za-z0-9]", "_", name).strip(" _")
 
 # Get numerical ID of a node
-nodes = topology.nodes()
-node_map = dict((nodes[i], i) for i in range(len(nodes)))
+nodes = list(topology.nodes())
+node_map = {node: i for i, node in enumerate(nodes)}
 
 %>
 // This is the module modelling the nodes of network
@@ -44,14 +44,14 @@ module node {
 // Create network
 network ${name} {
     connections allowunconnected:
-% for u, v in topology.edges_iter():
+% for u, v in topology.edges():
     <%
     attr_str = ""
     if set_delays:
-        delay = delay_norm * topology.edge[u][v]['delay']
+        delay = delay_norm * topology.adj[u][v]['delay']
         attr_str += " delay=%sms;" % (str(delay))
     if set_capacities:
-        capacity = capacity_norm * topology.edge[u][v]['capacity']
+        capacity = capacity_norm * topology.adj[u][v]['capacity']
         attr_str += " datarate=%sMbps;" % (str(capacity))
     %>
     ${"node[%s].ppg$o++ --> {%s} --> node[%s].pppg$i++;" % (str(node_map[u]), attr_str.strip(), str(node_map[v]))}
