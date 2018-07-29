@@ -31,7 +31,7 @@ install: clean
 upload: clean doc
 	python setup.py sdist bdist_wheel upload
 
-# Upload documentation to FNSS website (requirs write permission to fnss/fnss.github.io)
+# Upload documentation to FNSS website (requires write permission to fnss/fnss.github.io)
 docupload:
 	make -C $(DOC_DIR) upload
 

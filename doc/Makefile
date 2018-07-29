@@ -21,7 +21,7 @@ ALLSPHINXOPTS   = -d $(BUILDDIR)/doctrees $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) $(S
 # the i18n builder cannot share the environment and doctrees with the others
 I18NSPHINXOPTS  = $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) $(SRCDIR)
 
-.PHONY: help init clean html dirhtml singlehtml pickle json htmlhelp qthelp devhelp epub latex latexpdf text man changes linkcheck doctest gettext
+.PHONY: help init clean html dirhtml singlehtml pickle json htmlhelp qthelp devhelp epub latex latexpdf text man changes linkcheck doctest gettext upload
 
 help:
 	@echo "Please use \`make <target>' where <target> is one of"
@@ -173,5 +173,6 @@ upload: html
 	@git clone git@github.com:fnss/fnss.github.io.git $(BUILDDIR)/website
 	@rm -rf $(BUILDDIR)/website/doc/core/
 	@cp -r $(BUILDDIR)/html $(BUILDDIR)/website/doc/core
+	@git --git-dir=$(BUILDDIR)/website/.git --work-tree=$(BUILDDIR)/website add .
 	@git --git-dir=$(BUILDDIR)/website/.git --work-tree=$(BUILDDIR)/website commit -a -m "Update core library documentation"
 	@git --git-dir $(BUILDDIR)/website/.git push origin master
