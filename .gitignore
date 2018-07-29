@@ -15,3 +15,7 @@ MANIFEST
 doc/build
 doc/source/apidoc/generated
 doc/source/examples
+
+# Ignore local files
+notes
+secrets
