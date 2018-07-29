@@ -3,34 +3,36 @@ sudo: false
 language: python
 
 python:
-  - "2.7"
-  - "3.4"
-  - "3.5"
-  - "3.6"
+- '2.7'
+- '3.4'
+- '3.5'
+- '3.6'
 
 addons:
   apt:
     packages:
-      - libatlas-dev
-      - libatlas-base-dev
-      - liblapack-dev
-      - gfortran
-      - libsuitesparse-dev
-      - libgdal-dev
-      - graphviz
-      - mono-devel
+    - libatlas-dev
+    - libatlas-base-dev
+    - liblapack-dev
+    - gfortran
+    - libsuitesparse-dev
+    - libgdal-dev
+    - graphviz
+    - mono-devel
 
 install:
-  - travis_wait 30 make install # Building Scipy from sources on Python 2.7 may take more than 10 minutes
+- travis_wait 30 make install # Building Scipy from sources on Python 2.7 may take more than 10 minutes
 
 script:
-  - make test
+- make test
 
 deploy:
   provider: pypi
-  user: $PYPI_USER
+  skip_existing: true # Ensure it runs once per build: https://stackoverflow.com/a/50054594/6431286
+  user: fnss
   password:
-    secure: $PYPI_PASSWD
+    secure: Jjb4Ap3mthOOx3KmMgfba/JkJq58ij0dhE4DHXVxqGruQGbExHkrkvPSas4vkGlPBHy6nW6FiKHxwgv07QfIC4IdC+ySXE2U25bDtzrT1SRyqhfEoOb3+qXwgpeEEV6qaq/kBvbu1BViiPospTQr/0G8NZDdWPWqPyaf5p3bdgE=
   on:
     tags: true
-    condition: $TRAVIS_PYTHON_VERSION = "2.7" # Ensure it runs once per build
+    distributions: sdist bdist_wheel
+    repo: fnss/fnss
