@@ -3,6 +3,9 @@ scipy
 
 # Testing
 pytest
+pylama
+flake8-import-order
+tox
 
 # Documentation
 numpydoc
