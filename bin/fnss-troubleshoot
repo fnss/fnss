@@ -21,10 +21,8 @@ packages = [
         'networkx',
         'numpy',
         'scipy',
-        'nose',
         'sphinx',
         'numpydoc',
-        'unittest2',
         'argparse',
         'mininet',
         'mako',
@@ -34,7 +32,6 @@ packages = [
 def usage():
     """Print usage information and exit"""
     sys.exit(__doc__)
-
 
 def main():
     """Troubleshooting script
