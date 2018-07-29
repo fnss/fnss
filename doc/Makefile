@@ -168,3 +168,10 @@ doctest: init
 	$(SPHINXBUILD) -b doctest $(ALLSPHINXOPTS) $(BUILDDIR)/doctest
 	@echo "Testing of doctests in the sources finished, look at the " \
 	      "results in $(BUILDDIR)/doctest/output.txt."
+
+upload: html
+	@git clone git@github.com:fnss/fnss.github.io.git $(BUILDDIR)/website
+	@rm -rf $(BUILDDIR)/website/doc/core/
+	@cp -r $(BUILDDIR)/html $(BUILDDIR)/website/doc/core
+	@git --git-dir=$(BUILDDIR)/website/.git --work-tree=$(BUILDDIR)/website commit -a -m "Update core library documentation"
+	@git --git-dir $(BUILDDIR)/website/.git push origin master
