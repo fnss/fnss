@@ -15,7 +15,7 @@ test:
 
 # Build HTML documentation
 doc: docclean
-	cd $(DOC_DIR); make html
+	make -C $(DOC_DIR) html
 
 # Create distribution package
 dist: clean doc
@@ -33,7 +33,7 @@ upload: clean doc
 
 # Clean documentation
 docclean:
-	cd $(DOC_DIR); make clean
+	make -C $(DOC_DIR) clean
 
 # Clean dist files
 distclean:
