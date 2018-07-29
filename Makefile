@@ -29,7 +29,7 @@ install: clean
 
 # Upload FNSS to Python Package Index (you need PyPI credentials on your machine)
 upload: clean doc
-	python setup.py sdist upload
+	python setup.py sdist bdist_wheel upload
 
 # Clean documentation
 docclean:
