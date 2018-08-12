@@ -48,7 +48,6 @@ Contents
    :maxdepth: 4
 
    architecture
-   install
    apidoc/index
    examples/index
 
