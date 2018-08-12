@@ -43,7 +43,7 @@ This will automatically pull the latest version and install all dependencies.
 
 ## Usage
 Once the package is successfully installed, you can start using FNSS straight away.
-Look at the documentation and examples for getting started.
+Look at the documentation and examples for getting started. You can find the documentation online on [Read The Docs](https://fnss.readthedocs.io).
 
 FNSS also provides a `mn-fnss` which can be used to start Mininet with
 an FNSS-generated network topology.
