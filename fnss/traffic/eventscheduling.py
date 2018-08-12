@@ -284,8 +284,8 @@ def poisson_process_event_schedule(avg_interval, t_start, duration, t_unit,
     event_schedule : EventSchedule
         An EventSchedule object
 
-    Example
-    -------
+    Examples
+    --------
     >>> import random, fnss
     >>> def my_event_gen(p):
     ...     event_props = {}

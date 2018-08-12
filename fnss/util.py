@@ -32,8 +32,8 @@ def split_list(l, size):
     -------
     A list of sub-lists
 
-    Example
-    -------
+    Examples
+    --------
     >>> from fnss.util import split_list
     >>> split_list([1, 2, 3, 4, 5, 6], 2)
     [[1, 2], [3, 4], [5, 6]]
@@ -57,8 +57,8 @@ def random_from_pdf(pdf, seed=None):
     key : key of pdf
         A randomly selected key from the keyset of the *pdf* parameter
 
-    Example
-    -------
+    Examples
+    --------
     >>> pdf = {100: 0.5, 200: 0.5}
     >>> random_from_pdf(pdf)
     100 # random

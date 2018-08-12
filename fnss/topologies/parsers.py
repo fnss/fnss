@@ -181,8 +181,8 @@ def parse_rocketfuel_isp_latency(latencies_path, weights_path=None):
      * **delay** : int
      * **wdights** : float (only if a weights file was specified)
 
-    Raises:
-    -------
+    Raises
+    ------
     ValueError
         If the provided file cannot be parsed correctly
 
