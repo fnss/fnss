@@ -1,8 +1,5 @@
 #!/usr/bin/env python
-"""
-Generate the .rst files for classes and functions description
-
-"""
+"""Generate the .rst files for classes and functions description"""
 import os
 import sys
 import glob
@@ -65,8 +62,7 @@ def print_functions(f, outdir):
 
 
 def main(rstfile, outdir):
-    """Generate an rst file listing all classes and functions.
-    """
+    """Generate an rst file listing all classes and functions."""
     with open(rstfile, 'w+') as f:
         print_classes(f, outdir)
         print_functions(f, outdir)
