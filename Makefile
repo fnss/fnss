@@ -22,7 +22,7 @@ dist: clean doc
 	python setup.py sdist
 
 # Install the library in development mode
-install: clean
+install:
 	pip install --upgrade pip setuptools
 	pip install --upgrade -r requirements.txt
 	pip install --upgrade -e .

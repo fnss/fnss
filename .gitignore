@@ -15,6 +15,7 @@ MANIFEST
 doc/build
 doc/source/apidoc/generated
 doc/source/examples
+doc/tmp
 
 # Ignore local files
 notes

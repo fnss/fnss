@@ -23,17 +23,21 @@ help:
 
 # Autogenerate documentation for examples and all classes and functions
 init:
-	rm -rf $(TMPDIR)
-	rm -rf $(EXSRCDOCDIR)
-	rm -rf $(GENAPIDOCDIR)
-	mkdir -p $(TMPDIR)
-	cp $(SOURCEDIR)/conf.py $(TMPDIR)/conf.py
-	python $(SCRIPTSDIR)/make_apidoc.py $(TMPDIR)/index.rst $(GENAPIDOCDIR)
-	sphinx-build -b linkcheck $(TMPDIR) $(BUILDDIR)
-	rm -rf $(TMPDIR)
-	python $(SCRIPTSDIR)/make_examples.py $(EXCODEDIR) $(EXSRCDOCDIR)
+	@rm -rf $(TMPDIR)
+	@rm -rf $(EXSRCDOCDIR)
+	@rm -rf $(GENAPIDOCDIR)
+	@mkdir -p $(TMPDIR)
+	@cp $(SOURCEDIR)/conf.py $(TMPDIR)/conf.py
+	@python $(SCRIPTSDIR)/make_apidoc.py $(TMPDIR)/index.rst $(GENAPIDOCDIR)
+	@sphinx-build -b linkcheck $(TMPDIR) $(BUILDDIR)
+	@rm -rf $(TMPDIR)
+	@python $(SCRIPTSDIR)/make_examples.py $(EXCODEDIR) $(EXSRCDOCDIR)
 
 # Catch-all target: route all unknown targets to Sphinx using the new
 # "make mode" option.  $(O) is meant as a shortcut for $(SPHINXOPTS).
 %: Makefile init
 	@$(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
+
+clean:
+	@rm -rf $(TMPDIR)
+	@$(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) clean
