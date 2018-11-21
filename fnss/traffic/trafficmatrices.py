@@ -802,7 +802,7 @@ def __calc_nfur(topology, fast, parallelize=True):
                                      weight='weight')
     if fast:
         return betw
-    edges = topology.edges()
+    edges = list(topology.edges())
     if not parallelize:
         # execute the NFUR calculation in one single process
         # Recommended only if the size of the topology is so small that the

@@ -151,6 +151,14 @@ class Test(unittest.TestCase):
         self.assertAlmostEqual(0.9, max(fnss.link_loads(self.G, tm).values()))
         self.assertLessEqual(0, min(fnss.link_loads(self.G, tm).values()))
 
+    def test_static_traffic_matrix_parallel(self):
+        # If number of edges is greater than 100, computation is parallelized
+        G = fnss.full_mesh_topology(15)
+        fnss.set_capacities_constant(G, 10, capacity_unit='Mbps')
+        tm = fnss.static_traffic_matrix(G, 10, 8, max_u=0.9)
+        self.assertAlmostEqual(0.9, max(fnss.link_loads(G, tm).values()))
+        self.assertLessEqual(0, min(fnss.link_loads(G, tm).values()))
+
     def test_static_traffic_matrix_partial_od_pairs(self):
         origin_nodes = [1, 2, 3]
         destination_nodes = [3, 4, 5]
