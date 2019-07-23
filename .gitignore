@@ -1,6 +1,7 @@
 # Ignore binaries and temp files
 *.py[cod]
 __pycache__
+test/tmp
 
 # Ignore all files starting with . (e.g., .*project) but not .gitignore and .travis.yml
 .*
@@ -8,6 +9,7 @@ __pycache__
 !.travis.yml
 
 # Ignore build files
+venv
 dist
 build
 fnss.egg-info
