@@ -87,7 +87,7 @@ class BaseTopology(object):
         return nx.get_node_attributes(self, 'application')
 
 
-class Topology(nx.Graph, BaseTopology):
+class Topology(nx.OrderedMultiGraph, BaseTopology):
     """Base class for undirected topology"""
 
     def __init__(self, data=None, name="", **kwargs):
@@ -253,7 +253,7 @@ class Topology(nx.Graph, BaseTopology):
         return Topology(super(Topology, self).to_undirected())
 
 
-class DirectedTopology(nx.DiGraph, BaseTopology):
+class DirectedTopology(nx.OrderedMultiDiGraph, BaseTopology):
     """Base class for directed topology"""
 
     def __init__(self, data=None, name="", **kwargs):

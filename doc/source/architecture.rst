@@ -16,10 +16,10 @@ All functionalities are splitted in four main packages:
  
 In addition, the library also comprises a set of classes to model specific entities. These classes are:
  * **Topology**: a base undirected topology. Comprises methods for adding, editing and removing nodes and links. 
-   This class inherits from `NetworkX <http://networkx.github.io>`_ Graph class. 
+   This class inherits from `NetworkX <http://networkx.github.io>`_ OrderedMultiGraph class.
    As a result, all graph algorithms and visualization tools provided by NetworkX can be used on Topology objects as well. 
  * **DirectedTopology**: a base directed topology. It shares most of the code of the Topology class but in this class links are directed.
-   Similarly to the Topology class, this class inherits from `NetworkX <http://networkx.github.io>`_ DiGraph class. 
+   Similarly to the Topology class, this class inherits from `NetworkX <http://networkx.github.io>`_ OrderedMultiDiGraph class.
  * **DatacenterTopology**: a datacenter topology.
    It inherits from the Topology class and comprises additional methods relevant only for datacenter topologies. 
  * **TrafficMatrix**: a traffic matrix, capturing the average traffic on a network at a specific point in time.
