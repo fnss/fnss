@@ -7,7 +7,7 @@ from distutils.version import LooseVersion
 
 import networkx as nx
 
-from fnss.util import random_from_pdf
+from fnss.util import random_from_pdf, extend_link_list_to_all_parallel
 from fnss.units import capacity_units
 
 
@@ -68,7 +68,7 @@ def set_capacities_constant(topology, capacity, capacity_unit='Mbps',
                                 / capacity_units[curr_capacity_unit]
     else:
         topology.graph['capacity_unit'] = capacity_unit
-    edges = links or topology.edges(keys=True)
+    edges = extend_link_list_to_all_parallel(topology, links) if links is not None else topology.edges(keys=True)
     for u, v, key in edges:
         topology.adj[u][v][key]['capacity'] = capacity * conversion_factor
     return

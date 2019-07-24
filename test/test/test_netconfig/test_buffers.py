@@ -2,6 +2,7 @@ import unittest
 
 import fnss
 
+
 class Test(unittest.TestCase):
 
     @classmethod
@@ -39,8 +40,8 @@ class Test(unittest.TestCase):
         fnss.set_capacities_constant(topo, 10)
         fnss.set_delays_constant(topo, 2)
         fnss.set_buffer_sizes_bw_delay_prod(topo)
-        self.assertTrue(all((topo.adj[u][v]['buffer'] is not None
-                         for (u, v) in topo.edges())))
+        self.assertTrue(all((topo.adj[u][v][key]['buffer'] is not None
+                             for (u, v, key) in topo.edges(keys=True))))
 
     def test_buffer_sizes_bw_delay_prod_unused_links_no_return_path(self):
         topo = fnss.DirectedTopology()
@@ -62,8 +63,8 @@ class Test(unittest.TestCase):
 
     def test_buffers_size_link_bandwidth(self):
         fnss.set_buffer_sizes_link_bandwidth(self.topo)
-        self.assertTrue(all(self.topo.adj[u][v]['buffer'] is not None
-                         for (u, v) in self.topo.edges()))
+        self.assertTrue(all(self.topo.adj[u][v][key]['buffer'] is not None
+                            for (u, v, key) in self.topo.edges(keys=True)))
 
     def test_buffers_size_link_bandwidth_default_size(self):
         topo = fnss.line_topology(4)
@@ -71,17 +72,17 @@ class Test(unittest.TestCase):
         fnss.set_capacities_constant(topo, 16, 'Mbps', [(1, 2)])
         fnss.set_buffer_sizes_link_bandwidth(topo, buffer_unit='bytes', default_size=10)
         self.assertEquals(topo.graph['buffer_unit'], 'bytes')
-        self.assertEquals(topo.adj[0][1]['buffer'], 1000000)
-        self.assertEquals(topo.adj[1][2]['buffer'], 2000000)
-        self.assertEquals(topo.adj[2][3]['buffer'], 10)
+        self.assertEquals(topo.adj[0][1][0]['buffer'], 1000000)
+        self.assertEquals(topo.adj[1][2][0]['buffer'], 2000000)
+        self.assertEquals(topo.adj[2][3][0]['buffer'], 10)
         fnss.clear_buffer_sizes(topo)
-        self.assertTrue('capacity' not in topo.adj[2][3])
+        self.assertTrue('capacity' not in topo.adj[2][3][0])
         self.assertRaises(ValueError, fnss.set_buffer_sizes_link_bandwidth, topo)
 
     def test_buffers_size_constant(self):
         fnss.set_buffer_sizes_constant(self.topo, 65000, buffer_unit='bytes')
-        self.assertTrue(all(self.topo.adj[u][v]['buffer'] == 65000
-                         for (u, v) in self.topo.edges()))
+        self.assertTrue(all(self.topo.adj[u][v][key]['buffer'] == 65000
+                         for (u, v, key) in self.topo.edges(keys=True)))
 
     def test_buffers_size_constant_unit_mismatch(self):
         # If I try to set buffer sizes to some interfaces using a unit and some
@@ -95,4 +96,4 @@ class Test(unittest.TestCase):
     def test_get_buffer_sizes(self):
         fnss.set_buffer_sizes_constant(self.topo, 65000, buffer_unit='bytes')
         buffers = fnss.get_buffer_sizes(self.topo)
-        self.assertTrue(all(buffers[(u, v)] == 65000 for (u, v) in buffers))
+        self.assertEqual(sum(buffer_size == 65000 for buffer_size in buffers.values()), len(self.topo.edges))

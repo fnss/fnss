@@ -59,7 +59,7 @@ def set_delays_constant(topology, delay=1.0, delay_unit='ms', links=None):
                                 / time_units[curr_delay_unit]
     else:
         topology.graph['delay_unit'] = delay_unit
-    edges = extend_link_list_to_all_parallel(topology, links) or topology.edges(keys=True)
+    edges = extend_link_list_to_all_parallel(topology, links) if links is not None else topology.edges(keys=True)
     for u, v, key in edges:
         topology.adj[u][v][key]['delay'] = delay * conversion_factor
 

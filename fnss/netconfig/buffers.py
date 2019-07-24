@@ -3,7 +3,7 @@ import networkx as nx
 from numpy import mean
 
 from fnss.units import capacity_units, time_units
-from fnss.util import find_link_between_nodes_with_smallest_weight
+from fnss.util import find_link_between_nodes_with_smallest_weight, extend_link_list_to_all_parallel
 
 __all__ = [
     'set_buffer_sizes_bw_delay_prod',
@@ -11,7 +11,7 @@ __all__ = [
     'set_buffer_sizes_constant',
     'get_buffer_sizes',
     'clear_buffer_sizes',
-           ]
+]
 
 
 def set_buffer_sizes_bw_delay_prod(topology, buffer_unit='bytes',
@@ -96,15 +96,15 @@ def set_buffer_sizes_bw_delay_prod(topology, buffer_unit='bytes',
             # In this case we arbitrarily set the RTT as the RTT between the
             # link endpoint if that link was used, i.e. twice the delay of the
             # link
-            if (v, u) in edges:
-                mean_rtt = topology.adj[u][v]['delay'] + \
-                           topology.adj[v][u]['delay']
+            if (v, u, key) in edges:
+                mean_rtt = topology.adj[u][v][key]['delay'] + \
+                           topology.adj[v][u][key]['delay']
             else:
                 try:
-                    mean_rtt = topology.adj[u][v]['delay'] + e2e_delay[v][u]
+                    mean_rtt = topology.adj[u][v][key]['delay'] + e2e_delay[v][u]
                 except KeyError:
                     raise ValueError('Cannot assign buffer sizes because some '
-                                 'paths do not have corresponding return path')
+                                     'paths do not have corresponding return path')
         mean_rtt_dict[(u, v)] = mean_rtt
     norm_factor = capacity_units[capacity_unit] * \
                   time_units[delay_unit] / 8000.0
@@ -160,8 +160,8 @@ def set_buffer_sizes_link_bandwidth(topology, k=1.0, default_size=None,
         raise ValueError('k must be a positive number')
     if default_size is None:
         if 'capacity_unit' not in topology.graph \
-                or not all('capacity' in topology.adj[u][v]
-                           for u, v in topology.edges()):
+                or not all('capacity' in topology.adj[u][v][key]
+                           for u, v, key in topology.edges(keys=True)):
             raise ValueError('All links must have a capacity attribute. '
                              'Set capacity or specify a default buffer size')
     topology.graph['buffer_unit'] = buffer_unit
@@ -169,13 +169,13 @@ def set_buffer_sizes_link_bandwidth(topology, k=1.0, default_size=None,
     norm_factor = capacity_units[topology.graph['capacity_unit']] / 8.0
     if buffer_unit == 'packets':
         norm_factor /= packet_size
-    for u, v in topology.edges():
-        if 'capacity' in topology.adj[u][v]:
-            capacity = topology.adj[u][v]['capacity']
+    for u, v, key in topology.edges(keys=True):
+        if 'capacity' in topology.adj[u][v][key]:
+            capacity = topology.adj[u][v][key]['capacity']
             buffer_size = int(k * capacity * norm_factor)
         else:
             buffer_size = default_size
-        topology.adj[u][v]['buffer'] = buffer_size
+        topology.adj[u][v][key]['buffer'] = buffer_size
 
 
 def set_buffer_sizes_constant(topology, buffer_size, buffer_unit='bytes',
@@ -215,7 +215,7 @@ def set_buffer_sizes_constant(topology, buffer_size, buffer_unit='bytes',
                              'expressed in %s. Use that unit instead of %s' \
                              % (curr_buffer_unit, buffer_unit))
     topology.graph['buffer_unit'] = buffer_unit
-    edges = topology.edges(keys=True) if interfaces is None else interfaces
+    edges = topology.edges(keys=True) if interfaces is None else extend_link_list_to_all_parallel(topology, interfaces)
     for u, v, key in edges:
         topology.adj[u][v][key]['buffer'] = buffer_size
 
