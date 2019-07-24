@@ -32,18 +32,18 @@ class Test(unittest.TestCase):
     def test_weights_constant(self):
         fnss.set_weights_constant(self.topo, 2, self.odd_links)
         fnss.set_weights_constant(self.topo, 5, self.even_links)
-        self.assertTrue(all(self.topo.adj[u][v]['weight'] in [2, 5]
-                            for (u, v) in self.topo.edges()))
+        self.assertTrue(all(self.topo.adj[u][v][key]['weight'] in [2, 5]
+                            for (u, v, key) in self.topo.edges(keys=True)))
 
     def test_weights_inverse_capacity(self):
         fnss.set_weights_inverse_capacity(self.topo)
-        self.assertTrue(all(self.topo.adj[u][v]['weight'] in [1, 2]
-                            for (u, v) in self.topo.edges()))
+        self.assertTrue(all(self.topo.adj[u][v][key]['weight'] in [1, 2]
+                            for (u, v, key) in self.topo.edges(keys=True)))
 
     def test_weights_delays(self):
         fnss.set_weights_delays(self.topo)
-        self.assertTrue(all(self.topo.adj[u][v]['weight'] in [1, 4]
-                            for (u, v) in self.topo.edges()))
+        self.assertTrue(all(self.topo.adj[u][v][key]['weight'] in [1, 4]
+                            for (u, v, key) in self.topo.edges(keys=True)))
 
     def test_clear_weights(self):
         # create new topology to avoid parameters pollution

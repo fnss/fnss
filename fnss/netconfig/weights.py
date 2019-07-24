@@ -1,6 +1,8 @@
 """Functions to assign and manipulate link weights to a network topology."""
 import networkx as nx
 
+from fnss.util import extend_link_list_to_all_parallel
+
 __all__ = [
     'set_weights_inverse_capacity',
     'set_weights_constant',
@@ -29,14 +31,14 @@ def set_weights_inverse_capacity(topology):
     >>> fnss.set_weights_inverse_capacity(topology)
     """
     try:
-        max_capacity = float(max((topology.adj[u][v]['capacity']
-                                  for u, v in topology.edges())))
+        max_capacity = float(max((topology.adj[u][v][key]['capacity']
+                                  for u, v, key in topology.edges(keys=True))))
     except KeyError:
         raise ValueError('All links must have a capacity attribute')
-    for u, v in topology.edges():
-        capacity = topology.adj[u][v]['capacity']
+    for u, v, key in topology.edges(keys=True):
+        capacity = topology.adj[u][v][key]['capacity']
         weight = max_capacity / capacity
-        topology.adj[u][v]['weight'] = weight
+        topology.adj[u][v][key]['weight'] = weight
 
 
 def set_weights_delays(topology):
@@ -58,14 +60,14 @@ def set_weights_delays(topology):
 
     """
     try:
-        min_delay = float(min((topology.adj[u][v]['delay']
-                               for u, v in topology.edges())))
+        min_delay = float(min((topology.adj[u][v][key]['delay']
+                               for u, v, key in topology.edges(keys=True))))
     except KeyError:
         raise ValueError('All links must have a delay attribute')
-    for u, v in topology.edges():
-        delay = topology.adj[u][v]['delay']
+    for u, v, key in topology.edges(keys=True):
+        delay = topology.adj[u][v][key]['delay']
         weight = delay / min_delay
-        topology.adj[u][v]['weight'] = weight
+        topology.adj[u][v][key]['weight'] = weight
 
 
 def set_weights_constant(topology, weight=1.0, links=None):
@@ -89,9 +91,9 @@ def set_weights_constant(topology, weight=1.0, links=None):
     >>> topology.add_edges_from([(1, 2), (5, 8), (4, 5), (1, 7)])
     >>> fnss.set_weights_constant(topology, weight=1.0, links=[(1, 2), (5, 8), (4, 5)])
     """
-    edges = links or topology.edges()
-    for u, v in edges:
-        topology.adj[u][v]['weight'] = weight
+    edges = extend_link_list_to_all_parallel(topology, links) if links is not None else topology.edges(keys=True)
+    for u, v, key in edges:
+        topology.adj[u][v][key]['weight'] = weight
 
 
 def get_weights(topology):
@@ -128,5 +130,5 @@ def clear_weights(topology):
     ----------
     topology : Topology
     """
-    for u, v in topology.edges():
-        topology.adj[u][v].pop('weight', None)
+    for u, v, key in topology.edges(keys=True):
+        topology.adj[u][v][key].pop('weight', None)
