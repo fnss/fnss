@@ -106,9 +106,9 @@ def set_delays_geo_distance(topology, specific_delay, default_delay=None,
     if distance_unit not in distance_units:
         raise ValueError("The distance_unit attribute of the provided " \
                          "topology (%s) is not valid" % distance_unit)
-    edges = links or topology.edges()
+    edges = extend_link_list_to_all_parallel(topology, links) if links is not None else topology.edges(keys=True)
     if default_delay is None:
-        if any(('length' not in topology.adj[u][v] for u, v in edges)):
+        if any(('length' not in topology.adj[u][v][key] for u, v, key in edges)):
             raise ValueError('All links must have a length attribute')
     if 'delay_unit' in topology.graph and links is not None:
         # If a delay_unit is set, that means that some links have already
@@ -124,13 +124,13 @@ def set_delays_geo_distance(topology, specific_delay, default_delay=None,
     length_conv_factor = distance_units[distance_unit]
     # factor to convert default delay in target delay unit
     default_conv_factor = time_units[delay_unit] / time_units[curr_delay_unit]
-    for u, v in edges:
-        if 'length' in topology.adj[u][v]:
-            length = topology.adj[u][v]['length'] * length_conv_factor
+    for u, v, key in edges:
+        if 'length' in topology.adj[u][v][key]:
+            length = topology.adj[u][v][key]['length'] * length_conv_factor
             delay = specific_delay * length * conv_factor
         else:
             delay = default_delay * default_conv_factor
-        topology.adj[u][v]['delay'] = delay
+        topology.adj[u][v][key]['delay'] = delay
 
 
 def get_delays(topology):
@@ -169,5 +169,5 @@ def clear_delays(topology):
     topology : Topology
     """
     topology.graph.pop('delay_unit', None)
-    for u, v in topology.edges():
-        topology.adj[u][v].pop('delay', None)
+    for u, v, key in topology.edges(keys=True):
+        topology.adj[u][v][key].pop('delay', None)
