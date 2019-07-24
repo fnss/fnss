@@ -7,7 +7,7 @@ from distutils.version import LooseVersion
 
 import networkx as nx
 
-from fnss.util import random_from_pdf, extend_link_list_to_all_parallel
+from fnss.util import random_from_pdf, extend_link_list_to_all_parallel, find_all_link_keys_with_smallest_weight
 from fnss.units import capacity_units
 
 
@@ -272,8 +272,8 @@ def set_capacities_degree_gravity(topology, capacities, capacity_unit='Mbps'):
                    for (u, v) in topology.edges()}
     else:
         degree = nx.degree_centrality(topology)
-        gravity = {(u, v): degree[u] * degree[v]
-                   for (u, v) in topology.edges()}
+        gravity = {(u, v, key): degree[u] * degree[v]
+                   for (u, v, key) in topology.edges(keys=True)}
     _set_capacities_proportionally(topology, capacities, gravity,
                                    capacity_unit=capacity_unit)
 
@@ -403,6 +403,14 @@ def set_capacities_edge_betweenness(topology, capacities, capacity_unit='Mbps',
     weight = 'weight' if weighted else None
     centrality = nx.edge_betweenness_centrality(topology, normalized=False,
                                                 weight=weight)
+    # adjust edge betweenness to multigraph:
+    # apply to all shortest links between nodes, 0 for other links
+    centrality = {(u, v, key): (val if (u, v, key) in shortest_links else 0)
+                  for ((u, v), val) in centrality.items()
+                  for (key, (shortest_links, _)) in
+                  ((key, find_all_link_keys_with_smallest_weight(topology, u, v, weight))
+                   for key in topology.adj[u][v])}
+
     _set_capacities_proportionally(topology, capacities, centrality,
                                    capacity_unit=capacity_unit)
 
@@ -447,8 +455,8 @@ def _set_capacities_gravity(topology, capacities, node_metric,
     capacity_unit : str, optional
         The unit in which capacity value is expressed (e.g. Mbps, Gbps etc..)
     """
-    gravity = {(u, v): node_metric[u] * node_metric[v]
-               for (u, v) in topology.edges()}
+    gravity = {(u, v, key): node_metric[u] * node_metric[v]
+               for (u, v, key) in topology.edges(keys=True)}
     _set_capacities_proportionally(topology, capacities, gravity,
                                    capacity_unit=capacity_unit)
 
@@ -504,11 +512,11 @@ def _set_capacities_proportionally(topology, capacities, metric,
     # to prevent float rounding errors
     metric_boundaries[-1] = max_metric + 0.1
 
-    for (u, v), metric_value in metric.items():
+    for (u, v, key), metric_value in metric.items():
         for i, boundary in enumerate(metric_boundaries):
             if metric_value <= boundary:
                 capacity = capacities[i]
-                topology.adj[u][v]['capacity'] = capacity
+                topology.adj[u][v][key]['capacity'] = capacity
                 break
         # if the loop is not stopped yet, it means that because of float
         # rounding error, max_capacity <  metric_boundaries[-1], so we set the
@@ -516,7 +524,8 @@ def _set_capacities_proportionally(topology, capacities, metric,
         # Anyway, the code should never reach this point, because before the
         # for loop we are already adjusting the value of metric_boundaries[-1]
         # to make it > max_capacity
-        else: topology.adj[u][v]['capacity'] = capacities[-1]
+        else:
+            topology.adj[u][v]['capacity'] = capacities[-1]
 
 
 def get_capacities(topology):
@@ -555,5 +564,5 @@ def clear_capacities(topology):
     topology : Topology
     """
     topology.graph.pop('capacity_unit', None)
-    for u, v in topology.edges():
-        topology.adj[u][v].pop('capacity', None)
+    for u, v, key in topology.edges(keys=True):
+        topology.adj[u][v][key].pop('capacity', None)
