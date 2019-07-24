@@ -35,12 +35,14 @@ class Test(unittest.TestCase):
         self.assertTrue(all(self.topo.adj[u][v][key]['capacity'] in self.capacities
                             for (u, v, key) in self.topo.edges(keys=True)))
 
+    @unittest.skip('communicability is not implemented for multigraph')
     @unittest.skipUnless(package_available('scipy'), 'Requires Scipy')
     def test_capacities_edge_communicability(self):
         fnss.set_capacities_edge_communicability(self.topo, self.capacities)
         self.assertTrue(all(self.topo.adj[u][v][key]['capacity'] in self.capacities
                             for (u, v, key) in self.topo.edges(keys=True)))
 
+    @unittest.skip('communicability is not implemented for multigraph')
     @unittest.skipUnless(package_available('scipy'), 'Requires Scipy')
     def test_capacities_edge_communicability_one_capacity(self):
         fnss.set_capacities_edge_communicability(self.topo, [10])
@@ -63,11 +65,13 @@ class Test(unittest.TestCase):
         self.assertTrue(all(self.topo.adj[u][v][key]['capacity'] in self.capacities
                             for (u, v, key) in self.topo.edges(keys=True)))
 
+    @unittest.skip('eigenvector_centrality is not implemented for multigraph')
     def test_capacities_eigenvector_gravity(self):
         fnss.set_capacities_eigenvector_gravity(self.topo, self.capacities)
         self.assertTrue(all(self.topo.adj[u][v][key]['capacity'] in self.capacities
                             for (u, v, key) in self.topo.edges(keys=True)))
 
+    @unittest.skip('eigenvector_centrality is not implemented for multigraph')
     def test_capacities_eigenvector_gravity_one_capacity(self):
         fnss.set_capacities_eigenvector_gravity(self.topo, [10])
         self.assertTrue(all(self.topo.adj[u][v][key]['capacity'] == 10
