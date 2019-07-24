@@ -1,6 +1,7 @@
 """Functions to assign and manipulate link delays."""
 import networkx as nx
 from fnss.units import time_units, distance_units
+from fnss.util import extend_link_list_to_all_parallel
 
 __all__ = [
     'PROPAGATION_DELAY_VACUUM',
@@ -9,7 +10,7 @@ __all__ = [
     'set_delays_geo_distance',
     'get_delays',
     'clear_delays'
-           ]
+]
 
 # Propagation delay of light in the vacuum
 PROPAGATION_DELAY_VACUUM = 1.0 / 300  # ms/Km
@@ -58,9 +59,9 @@ def set_delays_constant(topology, delay=1.0, delay_unit='ms', links=None):
                                 / time_units[curr_delay_unit]
     else:
         topology.graph['delay_unit'] = delay_unit
-    edges = links or topology.edges()
-    for u, v in edges:
-        topology.adj[u][v]['delay'] = delay * conversion_factor
+    edges = extend_link_list_to_all_parallel(topology, links) or topology.edges(keys=True)
+    for u, v, key in edges:
+        topology.adj[u][v][key]['delay'] = delay * conversion_factor
 
 
 def set_delays_geo_distance(topology, specific_delay, default_delay=None,
@@ -99,11 +100,11 @@ def set_delays_geo_distance(topology, specific_delay, default_delay=None,
     if not delay_unit in time_units:
         raise ValueError("The delay_unit argument is not valid")
     if not 'distance_unit' in topology.graph:
-        raise ValueError("The provided topology does not have a "\
+        raise ValueError("The provided topology does not have a " \
                          "distance_unit attribute")
     distance_unit = topology.graph['distance_unit']
     if distance_unit not in distance_units:
-        raise ValueError("The distance_unit attribute of the provided "\
+        raise ValueError("The distance_unit attribute of the provided " \
                          "topology (%s) is not valid" % distance_unit)
     edges = links or topology.edges()
     if default_delay is None:

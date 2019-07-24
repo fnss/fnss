@@ -28,8 +28,8 @@ class Test(unittest.TestCase):
 
     def test_buffer_sizes_bw_delay_prod(self):
         fnss.set_buffer_sizes_bw_delay_prod(self.topo)
-        self.assertTrue(all(self.topo.adj[u][v]['buffer'] is not None
-                         for (u, v) in self.topo.edges()))
+        self.assertTrue(all(self.topo.adj[u][v][key]['buffer'] is not None
+                            for (u, v, key) in self.topo.edges(keys=True)))
 
     def test_buffer_sizes_bw_delay_prod_unused_links(self):
         topo = fnss.Topology()

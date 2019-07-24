@@ -41,7 +41,7 @@ def set_capacities_constant(topology, capacity, capacity_unit='Mbps',
     capacity : float
         The value of capacity to set
     links : iterable, optional
-        Iterable container of links, represented as (u, v) tuples to which
+        Iterable container of links, represented as (u, v, key) tuples to which
         capacity will be set. If None or not specified, the capacity will be
         applied to all links.
     capacity_unit : str, optional
@@ -68,9 +68,9 @@ def set_capacities_constant(topology, capacity, capacity_unit='Mbps',
                                 / capacity_units[curr_capacity_unit]
     else:
         topology.graph['capacity_unit'] = capacity_unit
-    edges = links or topology.edges()
-    for u, v in edges:
-        topology.adj[u][v]['capacity'] = capacity * conversion_factor
+    edges = links or topology.edges(keys=True)
+    for u, v, key in edges:
+        topology.adj[u][v][key]['capacity'] = capacity * conversion_factor
     return
 
 
@@ -105,8 +105,8 @@ def set_capacities_random(topology, capacity_pdf, capacity_unit='Mbps'):
     if any((capacity < 0 for capacity in capacity_pdf.keys())):
         raise ValueError('All capacities in capacity_pdf must be positive')
     topology.graph['capacity_unit'] = capacity_unit
-    for u, v in topology.edges():
-        topology.adj[u][v]['capacity'] = random_from_pdf(capacity_pdf)
+    for u, v, key in topology.edges(keys=True):
+        topology.adj[u][v][key]['capacity'] = random_from_pdf(capacity_pdf)
     return
 
 
