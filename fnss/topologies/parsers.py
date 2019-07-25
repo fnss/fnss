@@ -276,7 +276,8 @@ def parse_rocketfuel_isp_latency(latencies_path, weights_path=None):
                     raise ValueError("The weight file includes edge (%s, %s), "
                                      "which was not included in the latencies file"
                                      % (u_str, v_str))
-                topology.adj[u][v]['weight'] = weight
+                # assume no parallel links exist
+                topology.adj[u][v][0]['weight'] = weight
     return topology
 
 
@@ -413,8 +414,8 @@ def parse_abilene(topology_path, links_path=None):
     topology : DirectedTopology
     """
     topology = DirectedTopology(type='abilene',
-                         capacity_unit='kbps',
-                         distance_unit='Km')
+                                capacity_unit='kbps',
+                                distance_unit='Km')
     comment_char = '#'
     link_type_dict = {0: 'internal', 1: 'inbound', 2: 'outbound'}
     line_type = None
@@ -436,12 +437,12 @@ def parse_abilene(topology_path, links_path=None):
                         latitude = float(node_entry[2])
                         longitude = float(node_entry[3])
                     except (ValueError, IndexError):
-                        raise ValueError('Invalid input file. Parsing failed '\
+                        raise ValueError('Invalid input file. Parsing failed '
                                          'while trying to parse a router')
                     topology.add_node(name, city=city, latitude=latitude,
-                               longitude=longitude)
+                                      longitude=longitude)
                 elif line_type == 'link':
-                    sep = re.compile('[\s\t]')
+                    sep = re.compile(r'[\s]')
                     link_entry = sep.split(line)
                     try:
                         u = link_entry[0]
@@ -454,22 +455,22 @@ def parse_abilene(topology_path, links_path=None):
                         length = geographical_distance(lat_v, lon_v, lat_u, lon_u)
                         weight = int(link_entry[3])
                     except (ValueError, IndexError):
-                        raise ValueError('Invalid input file. Parsing failed '\
+                        raise ValueError('Invalid input file. Parsing failed '
                                          'while trying to parse a link')
                     topology.add_edge(u, v, capacity=capacity,
-                               weight=weight, length=length)
+                                      weight=weight, length=length)
                 else:
-                    raise ValueError('Invalid input file. Found a line that '\
+                    raise ValueError('Invalid input file. Found a line that '
                                      'I cannot interpret')
     if links_path:
-        with  open(links_path, "r") as f:
+        with open(links_path, "r") as f:
             for line in f.readlines():
                 if comment_char in line:
                     # split on comment char, keep only the part before
                     line, _ = line.split(comment_char, 1)
                 line = line.strip()
                 if len(line) > 0:
-                    sep = re.compile('[\s\t]')
+                    sep = re.compile(r'[\s]')
                     link_entry = sep.split(line)
                     try:
                         u, v = link_entry[0].split(',', 1)
@@ -478,11 +479,12 @@ def parse_abilene(topology_path, links_path=None):
                         link_index = int(link_entry[1])
                         link_type = link_type_dict[int(link_entry[2])]
                     except (ValueError, IndexError):
-                        raise ValueError('Invalid input file. '\
-                                         'Parsing failed while trying to '\
+                        raise ValueError('Invalid input file. '
+                                         'Parsing failed while trying to '
                                          'parse a link from links_file')
-                    topology.adj[u][v]['link_index'] = link_index
-                    topology.adj[u][v]['link_type'] = link_type
+                    # assume max. 1 link per node pair
+                    topology.adj[u][v][0]['link_index'] = link_index
+                    topology.adj[u][v][0]['link_type'] = link_type
     return topology
 
 
@@ -592,18 +594,6 @@ def parse_topology_zoo(path):
     -------
     topology : Topology or DirectedTopology
         The parsed topology.
-
-    Notes
-    -----
-    If the parsed topology contains bundled links, i.e. multiple links between
-    the same pair or nodes, the topology is parsed correctly but each bundle of
-    links is represented as a single link whose capacity is the sum of the
-    capacities of the links of the bundle (if capacity values were provided).
-    The returned topology has a boolean attribute named *link_bundling* which
-    is True if the topology contains at list one bundled link or False
-    otherwise. If the topology contains bundled links, then each link has an
-    additional boolean attribute named *bundle* which is True if that specific
-    link was bundled in the original topology or False otherwise.
     """
     def try_convert_int(value):
         """
@@ -624,51 +614,49 @@ def parse_topology_zoo(path):
         raise ValueError('Invalid input file format. It must either be a GML '\
                          'or GraphML file (with extensions .gml or .graphml)')
     topology = DirectedTopology() if topo_zoo_graph.is_directed() \
-               else Topology()
+        else Topology()
     topology.graph['type'] = 'topology_zoo'
     topology.graph['distance_unit'] = 'Km'
-    topology.graph['link_bundling'] = topo_zoo_graph.is_multigraph()
-    for tv in topo_zoo_graph.nodes():
-        v = try_convert_int(tv)
-        topology.add_node(v)
-        if 'label' in topo_zoo_graph.node[tv]:
-            topology.node[v]['label'] = topo_zoo_graph.node[tv]['label']
+    for tu in topo_zoo_graph.nodes():
+        u = try_convert_int(tu)
+        topology.add_node(u)
+        if 'label' in topo_zoo_graph.node[tu]:
+            topology.node[u]['label'] = topo_zoo_graph.node[tu]['label']
         try:
-            longitude = topo_zoo_graph.node[tv]['Longitude']
-            latitude = topo_zoo_graph.node[tv]['Latitude']
-            topology.node[v]['longitude'] = longitude
-            topology.node[v]['latitude'] = latitude
+            longitude = topo_zoo_graph.node[tu]['Longitude']
+            latitude = topo_zoo_graph.node[tu]['Latitude']
+            topology.node[u]['longitude'] = longitude
+            topology.node[u]['latitude'] = latitude
         except KeyError:
             pass
-    for tv, tu in topo_zoo_graph.edges():
-        v = try_convert_int(tv)
+    is_multigraph = topo_zoo_graph.is_multigraph()
+    edges_params = {'keys': True} if is_multigraph else dict()
+    for tu, tv, tkey in (link if is_multigraph else link + (0,)
+                         for link in topo_zoo_graph.edges(**edges_params)):
+
+        topo_zoo_edge_data_dict = topo_zoo_graph.adj[tu][tv][tkey] if is_multigraph \
+            else topo_zoo_graph.adj[tu][tv]
+
         u = try_convert_int(tu)
+        v = try_convert_int(tv)
+        key = try_convert_int(tkey)
         if u == v:
             continue
-        topology.add_edge(v, u)
-        if 'Latitude' in topo_zoo_graph.node[tv] and \
-                'Longitude' in topo_zoo_graph.node[tv] and \
-                'Latitude' in topo_zoo_graph.node[tu] and \
-                'Longitude' in topo_zoo_graph.node[tu]:
-            lat_v = topo_zoo_graph.node[tv]['Latitude']
-            lon_v = topo_zoo_graph.node[tv]['Longitude']
-            lat_u = topo_zoo_graph.node[tu]['Latitude']
-            lon_u = topo_zoo_graph.node[tu]['Longitude']
-            length = geographical_distance(lat_v, lon_v, lat_u, lon_u)
-            topology.adj[v][u]['length'] = length
-        if topo_zoo_graph.is_multigraph():
-            edge = topo_zoo_graph.adj[tv][tu]
-            topology.adj[v][u]['bundle'] = True if len(edge) > 1 else False
-            capacity = 0
-            for edge_attr in list(edge.values()):
-                if 'LinkSpeedRaw' in edge_attr:
-                    capacity += edge_attr['LinkSpeedRaw']
-            if capacity > 0:
-                topology.adj[v][u]['capacity'] = capacity
-        else:
-            if 'LinkSpeedRaw' in topo_zoo_graph.adj[tv][tu]:
-                topology.adj[v][u]['capacity'] = \
-                        topo_zoo_graph.adj[tv][tu]['LinkSpeedRaw']
+        topology.add_edge(u, v, key)
+        edge_data_dict = topology.adj[u][v][key]
+
+        if 'Latitude' in topo_zoo_graph.node[tu] and \
+                'Longitude' in topo_zoo_graph.node[tu] and \
+                'Latitude' in topo_zoo_graph.node[tv] and \
+                'Longitude' in topo_zoo_graph.node[tv]:
+            lat_v = topo_zoo_graph.node[tu]['Latitude']
+            lon_v = topo_zoo_graph.node[tu]['Longitude']
+            lat_u = topo_zoo_graph.node[tv]['Latitude']
+            lon_u = topo_zoo_graph.node[tv]['Longitude']
+            length = geographical_distance(lat_u, lon_u, lat_v, lon_v)
+            edge_data_dict['length'] = length
+        if 'LinkSpeedRaw' in topo_zoo_edge_data_dict:
+            edge_data_dict['capacity'] = topo_zoo_edge_data_dict['LinkSpeedRaw']
     if len(nx.get_edge_attributes(topology, 'capacity')) > 0:
         topology.graph['capacity_unit'] = 'bps'
     return topology
@@ -694,7 +682,7 @@ def parse_ashiip(path):
             # There is no documented aShiip format but we assume that if the line
             # does not start with a number it is not part of the topology
             if line[0].isdigit():
-                node_ids = re.findall("\d+", line)
+                node_ids = re.findall(r"\d+", line)
                 if len(node_ids) < 3:
                     raise ValueError('Invalid input file. Parsing failed while '\
                                      'trying to parse a line')
@@ -702,5 +690,8 @@ def parse_ashiip(path):
                 level = int(node_ids[1])
                 topology.add_node(node, level=level)
                 for i in range(2, len(node_ids)):
-                    topology.add_edge(node, int(node_ids[i]))
+                    v = int(node_ids[i])
+                    # test expects no parallel links exist
+                    if not topology.has_edge(node, v):
+                        topology.add_edge(node, v)
     return topology

@@ -21,8 +21,8 @@ class Test(unittest.TestCase):
         self.assertTrue(all('link_index' in topology.adj[u][v]
                             and 'link_type' in topology.adj[u][v])
                         for u, v in topology.edges())
-        self.assertTrue(all(topology.adj[u][v]['length'] >= 0
-                            for u, v in topology.edges()))
+        self.assertTrue(all(topology.adj[u][v][key]['length'] >= 0
+                            for u, v, key in topology.edges(keys=True)))
 
     @unittest.skipIf(RES_DIR is None, "Resources folder not present")
     def test_parse_rockefuel_isp_map(self):
@@ -90,7 +90,7 @@ class Test(unittest.TestCase):
         with open(ashiip_file, "r") as f:
             for line in f.readlines():
                 if line.startswith(' Size :'):
-                    size = int(findall('\d+', line)[0])
+                    size = int(findall(r'\d+', line)[0])
                     break
         print("Expected number of nodes: ", size)
         print("Actual number of nodes: ", topology.number_of_nodes())
@@ -103,7 +103,7 @@ class Test(unittest.TestCase):
         topology = fnss.parse_caida_as_relationships(caida_file)
         self.assertEqual(41203, topology.number_of_nodes())
         self.assertEqual(121309, topology.number_of_edges())
-        self.assertEqual('customer', topology.adj[263053][28163]['type'])
+        self.assertEqual('customer', topology.adj[263053][28163][0]['type'])
 
     @unittest.skipIf(RES_DIR is None, "Resources folder not present")
     def test_parse_inet(self):
@@ -117,42 +117,44 @@ class Test(unittest.TestCase):
         topozoo_file = path.join(RES_DIR, 'topozoo-arnes.graphml')
         topology = fnss.parse_topology_zoo(topozoo_file)
         self.assertEqual(type(topology), fnss.Topology)
-        self.assertFalse(topology.is_multigraph())
+        self.assertFalse(topology.is_directed())
+
+        self.assertTrue(topology.is_multigraph())
+        self.assertEqual(2, len(topology.adj[4][7]))
+
         self.assertEqual(34, topology.number_of_nodes())
-        self.assertEqual(46, topology.number_of_edges())
-        self.assertEqual(1000000000.0, topology.adj[4][15]['capacity'])
+        self.assertEqual(47, topology.number_of_edges())
+        self.assertEqual(1000000000.0, topology.adj[4][15][0]['capacity'])
         self.assertEquals('bps', topology.graph['capacity_unit'])
-        self.assertTrue(all(topology.adj[u][v]['length'] >= 0
-                    for u, v in topology.edges()
-                    if 'length' in topology.adj[u][v]))
+        self.assertTrue(all(topology.adj[u][v][key]['length'] >= 0
+                            for u, v, key in topology.edges(keys=True)
+                            if 'length' in topology.adj[u][v][key]))
 
     @unittest.skipIf(RES_DIR is None, "Resources folder not present")
     def test_parse_topology_zoo_multigraph(self):
         topozoo_file = path.join(RES_DIR, 'topozoo-garr.graphml')
         topology = fnss.parse_topology_zoo(topozoo_file)
         self.assertEqual(type(topology), fnss.Topology)
-        self.assertFalse(topology.is_multigraph())
-        self.assertTrue(topology.graph['link_bundling'])
+        self.assertTrue(topology.is_multigraph())
         self.assertEqual(61, topology.number_of_nodes())
-        self.assertEqual(75, topology.number_of_edges())
+        self.assertEqual(89, topology.number_of_edges())
         self.assertEquals('bps', topology.graph['capacity_unit'])
-        self.assertEquals(2000000000, topology.adj[37][58]['capacity'])
-        bundled_links = [(43, 18), (49, 32), (41, 18), (4, 7),
+        self.assertEquals(1000000000, topology.adj[37][58][0]['capacity'])
+        self.assertEquals(1000000000, topology.adj[37][58][1]['capacity'])
+        parallel_links = [(43, 18), (49, 32), (41, 18), (4, 7),
                           (6, 55), (9, 58), (58, 37), (10, 55),
-                         (14, 57), (14, 35), (18, 41), (18, 43),
-                         (31, 33), (31, 34), (32, 49), (37, 58)]
+                          (14, 57), (14, 35), (18, 41), (18, 43),
+                          (31, 33), (31, 34), (32, 49), (37, 58)]
         for u, v in topology.edges():
-            print(u, v)
-            self.assertEquals((u, v) in bundled_links,
-                              topology.adj[u][v]['bundle'])
+            self.assertEquals((u, v) in parallel_links,
+                              len(topology.adj[u][v]) > 1)
 
     @unittest.skipIf(RES_DIR is None, "Resources folder not present")
     def test_parse_topology_zoo_multigraph_directed_topology(self):
         topozoo_file = path.join(RES_DIR, 'topozoo-kdl.graphml')
         topology = fnss.parse_topology_zoo(topozoo_file)
         self.assertEqual(type(topology), fnss.DirectedTopology)
-        self.assertFalse(topology.is_multigraph())
-        self.assertTrue(topology.graph['link_bundling'])
+        self.assertTrue(topology.is_multigraph())
 
     @unittest.skipIf(RES_DIR is None, "Resources folder not present")
     def test_parse_brite_as(self):
@@ -167,9 +169,9 @@ class Test(unittest.TestCase):
         self.assertEqual(980, topology.node[851]['latitude'])
         self.assertEqual('AS_NODE', topology.node[851]['type'])
         # 1478    716    230    212.11553455605272    0.7075412636166207    0.0011145252848059164    716    230    E_AS    U
-        self.assertEquals(1478, topology.adj[716][230]['id'])
+        self.assertEquals(1478, topology.adj[716][230][0]['id'])
         self.assertAlmostEquals(212.11553455605272,
-                                topology.adj[716][230]['length'], 0.01)
+                                topology.adj[716][230][0]['length'], 0.01)
 
     @unittest.skipIf(RES_DIR is None, "Resources folder not present")
     def test_parse_brite_router(self):
