@@ -50,7 +50,7 @@ class Test(unittest.TestCase):
         capacities = topology.capacities()
         delays = topology.delays()
         buffer_sizes = topology.buffers()
-        for e in topology.edges():
+        for e in topology.edges(keys=True):
             self.assertEqual(weight, weights[e])
             self.assertEqual(capacity, capacities[e])
             self.assertEqual(delay, delays[e])
@@ -60,11 +60,14 @@ class Test(unittest.TestCase):
         topology = fnss.Topology()
         topology.add_edge(1, 2)
         self.assertEqual(1, topology.number_of_edges())
+        # add parallel link
         topology.add_edge(2, 1)
-        self.assertEqual(1, topology.number_of_edges())
+        self.assertEqual(2, topology.number_of_edges())
+        # add 2 new nodes with string names
         topology.add_edge('1', '2')
         topology.add_edge('2', '1')
-        self.assertEqual(2, topology.number_of_edges())
+        self.assertEqual(4, topology.number_of_edges())
+        self.assertEqual(4, topology.number_of_nodes())
 
     def test_directed_topology_class(self):
         topology = fnss.DirectedTopology()

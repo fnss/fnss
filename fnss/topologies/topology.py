@@ -493,9 +493,11 @@ def fan_in_out_capacities(topology):
         node_fan_in = 0
         node_fan_out = 0
         for predecessor in topology.predecessors(node):
-            node_fan_in += topology.adj[predecessor][node]['capacity']
-        for successor in topology.successors(node):
-            node_fan_out += topology.adj[node][successor]['capacity']
+            for key, data_dict in topology.adj[predecessor][node].items():
+                node_fan_in += data_dict['capacity']
+        for successor, key_dict in topology.adj[node].items():
+            for key, data_dict in key_dict.items():
+                node_fan_out += data_dict['capacity']
         fan_in[node] = node_fan_in
         fan_out[node] = node_fan_out
     return fan_in, fan_out
@@ -618,14 +620,14 @@ def read_topology(path, encoding='utf-8'):
                 topology.node[v]['application'][app_name] = app_props
     for edge in head.findall('link'):
         u = util.xml_cast_type(edge.find('from').attrib['type'],
-                           edge.find('from').text)
+                               edge.find('from').text)
         v = util.xml_cast_type(edge.find('to').attrib['type'],
-                           edge.find('to').text)
-        topology.add_edge(u, v)
+                               edge.find('to').text)
+        key = topology.add_edge(u, v)
         for prop in edge.findall('property'):
             name = prop.attrib['name']
             value = util.xml_cast_type(prop.attrib['type'], prop.text)
-            topology.adj[u][v][name] = value
+            topology.adj[u][v][key][name] = value
     return topology
 
 
@@ -683,7 +685,7 @@ def write_topology(topology, path, encoding='utf-8', prettyprint=True):
                 prop.attrib['name'] = name
                 prop.attrib['type'] = util.xml_type(value)
                 prop.text = str(value)
-    for u, v in topology.edges():
+    for u, v, key in topology.edges(keys=True):
         link = ET.SubElement(head, 'link')
         from_node = ET.SubElement(link, 'from')
         from_node.attrib['type'] = util.xml_type(u)
@@ -691,7 +693,7 @@ def write_topology(topology, path, encoding='utf-8', prettyprint=True):
         to_node = ET.SubElement(link, 'to')
         to_node.attrib['type'] = util.xml_type(v)
         to_node.text = str(v)
-        for name, value in topology.adj[u][v].items():
+        for name, value in topology.adj[u][v][key].items():
             prop = ET.SubElement(link, 'property')
             prop.attrib['name'] = name
             prop.attrib['type'] = util.xml_type(value)
