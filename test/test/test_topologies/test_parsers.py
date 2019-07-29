@@ -146,8 +146,10 @@ class Test(unittest.TestCase):
                           (14, 57), (14, 35), (18, 41), (18, 43),
                           (31, 33), (31, 34), (32, 49), (37, 58)]
         for u, v in topology.edges():
-            self.assertEquals((u, v) in parallel_links,
-                              len(topology.adj[u][v]) > 1)
+            self.assertEquals(
+                (u, v) in parallel_links or
+                (v, u) in parallel_links,
+                len(topology.adj[u][v]) > 1)
 
     @unittest.skipIf(RES_DIR is None, "Resources folder not present")
     def test_parse_topology_zoo_multigraph_directed_topology(self):
