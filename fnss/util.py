@@ -254,7 +254,7 @@ def find_link_key_with_smallest_weight(topology, u, v, weight_attr):
     """
     v_dict = topology.adj[u]
     if v in v_dict:
-        key, data_dict = min(v_dict[v].items(), default=(None, None),
+        key, data_dict = min(v_dict[v].items(),
                              key=lambda t:
                              t[1][weight_attr] if weight_attr is not None
                              else 1)
