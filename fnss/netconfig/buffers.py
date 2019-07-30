@@ -42,7 +42,7 @@ def set_buffer_sizes_bw_delay_prod(topology, buffer_unit='bytes',
     >>> fnss.set_buffer_sizes_bw_delay_prod(topology)
     """
     try:
-        assert all(({'capacity', 'delay'} <= data.keys()
+        assert all(({'capacity', 'delay'} <= set(data.keys())  # set() for Python 2 compatibility
                     for data in topology.edges.values()))
         capacity_unit = topology.graph['capacity_unit']
         delay_unit = topology.graph['delay_unit']
