@@ -88,7 +88,7 @@ def two_tier_topology(n_core, n_edge, n_hosts):
         topo.node[u]['tier'] = 'core'
         topo.node[u]['type'] = 'switch'
         for v in topo.adj[u]:
-            topo.adj[u][v][0]['type'] = 'core_edge'
+            topo.adj[u][v]['type'] = 'core_edge'
     for u in range(n_core, n_core + n_edge):
         topo.node[u]['tier'] = 'edge'
         topo.node[u]['type'] = 'switch'
@@ -158,7 +158,7 @@ def three_tier_topology(n_core, n_aggregation, n_edge, n_hosts):
         topo.node[u]['tier'] = 'core'
         topo.node[u]['type'] = 'switch'
         for v in topo.adj[u]:
-            topo.adj[u][v][0]['type'] = 'core_aggregation'
+            topo.adj[u][v]['type'] = 'core_aggregation'
     for u in range(n_core, n_core + n_aggregation):
         topo.node[u]['tier'] = 'aggregation'
         topo.node[u]['type'] = 'switch'
