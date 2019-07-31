@@ -290,22 +290,17 @@ def find_all_link_keys_with_smallest_weight(topology, u, v, weight_attr):
 
     Note: if weight_attr is None, every weight is 1.
     """
+    v_dict = topology.adj[u]
 
-    if not topology.is_multigraph():
-        v_dict = topology.adj[u]
-        if v in v_dict:
-            return [(u, v)], 1 if weight_attr is None else v_dict[v][weight_attr]
+    if v not in v_dict:
+        return [], None
+    elif not topology.is_multigraph():
+        return [(u, v)], 1 if weight_attr is None else v_dict[v][weight_attr]
     elif weight_attr is None:
-        v_dict = topology.adj[u]
-        if v in v_dict:
-            return [(u, v, key) for key in v_dict[v]], 1
+        return [(u, v, key) for key in v_dict[v]], 1
     else:
         link, weight = find_link_key_with_smallest_weight(topology, u, v, weight_attr)
-        if link is not None:
-            return [(u, v, key) for key, data_dict in topology.adj[u][v].items() if data_dict[weight_attr] == weight], \
-                   weight
-
-    return [], None
+        return [(u, v, key) for key, data_dict in v_dict[v].items() if data_dict[weight_attr] == weight], weight
 
 
 def find_link_between_nodes_with_smallest_weight(topology, node1, node2, weight_attr, both_directions=False):
