@@ -31,14 +31,14 @@ def set_weights_inverse_capacity(topology):
     >>> fnss.set_weights_inverse_capacity(topology)
     """
     try:
-        max_capacity = float(max((topology.adj[u][v][key]['capacity']
-                                  for u, v, key in topology.edges(keys=True))))
+        max_capacity = float(max(data_dict['capacity']
+                                 for data_dict in topology.edges.values()))
     except KeyError:
         raise ValueError('All links must have a capacity attribute')
-    for u, v, key in topology.edges(keys=True):
-        capacity = topology.adj[u][v][key]['capacity']
+    for data_dict in topology.edges.values():
+        capacity = data_dict['capacity']
         weight = max_capacity / capacity
-        topology.adj[u][v][key]['weight'] = weight
+        data_dict['weight'] = weight
 
 
 def set_weights_delays(topology):
@@ -60,14 +60,14 @@ def set_weights_delays(topology):
 
     """
     try:
-        min_delay = float(min((topology.adj[u][v][key]['delay']
-                               for u, v, key in topology.edges(keys=True))))
+        min_delay = float(min(data_dict['delay']
+                              for data_dict in topology.edges.values()))
     except KeyError:
         raise ValueError('All links must have a delay attribute')
-    for u, v, key in topology.edges(keys=True):
-        delay = topology.adj[u][v][key]['delay']
+    for data_dict in topology.edges.values():
+        delay = data_dict['delay']
         weight = delay / min_delay
-        topology.adj[u][v][key]['weight'] = weight
+        data_dict['weight'] = weight
 
 
 def set_weights_constant(topology, weight=1.0, links=None):
@@ -81,8 +81,9 @@ def set_weights_constant(topology, weight=1.0, links=None):
     weight : float, optional
         The constant weight to be applied to all links
     links : iterable, optional
-        Iterable container of selected links on which weights are applied.
-        If it is None, all links are selected
+        Iterable container of links, represented as (u, v) tuples to which weight will be set.
+        For multigraphs (u, v, key) specifies a link, and (u, v) tuple means every parallel link.
+        If None or not specified, the weight will be applied to all links.
 
     Examples
     --------
@@ -91,9 +92,9 @@ def set_weights_constant(topology, weight=1.0, links=None):
     >>> topology.add_edges_from([(1, 2), (5, 8), (4, 5), (1, 7)])
     >>> fnss.set_weights_constant(topology, weight=1.0, links=[(1, 2), (5, 8), (4, 5)])
     """
-    edges = extend_link_list_to_all_parallel(topology, links) if links is not None else topology.edges(keys=True)
-    for u, v, key in edges:
-        topology.adj[u][v][key]['weight'] = weight
+    links = topology.edges if links is None else extend_link_list_to_all_parallel(topology, links)
+    for link in links:
+        topology.edges[link]['weight'] = weight
 
 
 def get_weights(topology):
@@ -130,5 +131,5 @@ def clear_weights(topology):
     ----------
     topology : Topology
     """
-    for u, v, key in topology.edges(keys=True):
-        topology.adj[u][v][key].pop('weight', None)
+    for data_dict in topology.edges.values():
+        data_dict.pop('weight', None)
