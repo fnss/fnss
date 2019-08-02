@@ -18,11 +18,10 @@ class Test(unittest.TestCase):
         topology = fnss.parse_abilene(abilene_topo_file, abilene_links_file)
         self.assertEquals(12, topology.number_of_nodes())
         self.assertEquals(30, topology.number_of_edges())
-        self.assertTrue(all('link_index' in topology.adj[u][v]
-                            and 'link_type' in topology.adj[u][v])
-                        for u, v in topology.edges())
-        self.assertTrue(all(topology.adj[u][v][key]['length'] >= 0
-                            for u, v, key in topology.edges(keys=True)))
+        self.assertTrue(all(({'link_index', 'link_type'} <= set(data_dict.keys())  # set() for Python 2 compatibility
+                             for data_dict in topology.edges.values())))
+        self.assertTrue(all(data_dict['length'] >= 0
+                            for data_dict in topology.edges.values()))
 
     @unittest.skipIf(RES_DIR is None, "Resources folder not present")
     def test_parse_rockefuel_isp_map(self):
