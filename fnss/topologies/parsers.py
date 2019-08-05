@@ -4,9 +4,8 @@ import math
 
 import networkx as nx
 
-from fnss.topologies.topology import Topology, DirectedTopology
+from fnss.topologies.topology import Topology, DirectedTopology, MultiTopology, MultiDirectedTopology
 from fnss.util import geographical_distance
-
 
 __all__ = [
     'parse_rocketfuel_isp_map',
@@ -17,7 +16,10 @@ __all__ = [
     'parse_brite',
     'parse_topology_zoo',
     'parse_ashiip'
-          ]
+]
+
+LONGITUDE = 'Longitude'
+LATITUDE = 'Latitude'
 
 
 # Parser for RocketFuel ISP (router-level) maps .cch files
@@ -579,19 +581,37 @@ def parse_brite(path, capacity_unit='Mbps', delay_unit='ms',
     return topology
 
 
-def parse_topology_zoo(path):
+def parse_topology_zoo(path, use_multigraph=False, topology_cls=None):
     """
     Parse a topology from the Topology Zoo dataset.
 
     Parameters
     ----------
     path : str
-        The path to the Topology Zoo file
+        The path to the Topology Zoo file.
+    use_multigraph : bool
+        Use MultiTopology or MultiDirectedTopology topology if true and topology_cls is None.
+        Otherwise Topology or DirectedTopology.
+    topology_cls : optional
+        The topology class (descendant of BaseTopology) which is instantiated
+        to store the parsed topology. This option overrides use_multigraph.
 
     Returns
     -------
-    topology : Topology or DirectedTopology
+    topology : Topology, DirectedTopology, MultiTopology, MultiDirectedTopology
         The parsed topology.
+
+    Notes
+    -----
+    If simple graph topology is used for parsing and the original topology contains bundled links,
+    i.e. multiple links between the same pair of nodes, the topology is parsed correctly
+    but each bundle of links is represented as a single link whose capacity is the sum of the
+    capacities of the links of the bundle (if capacity values were provided).
+    The returned topology has a boolean attribute named *link_bundling* which
+    is True if the topology contains at list one bundled link or False
+    otherwise. If the topology contains bundled links, then each link has an
+    additional boolean attribute named *bundle* which is True if that specific
+    link was bundled in the original topology or False otherwise.
     """
     def try_convert_int(value):
         """
@@ -609,52 +629,75 @@ def parse_topology_zoo(path):
     elif path.endswith('.graphml'):
         topo_zoo_graph = nx.read_graphml(path)
     else:
-        raise ValueError('Invalid input file format. It must either be a GML '\
+        raise ValueError('Invalid input file format. It must either be a GML ' \
                          'or GraphML file (with extensions .gml or .graphml)')
-    topology = DirectedTopology() if topo_zoo_graph.is_directed() \
-        else Topology()
+    is_src_multigraph = topo_zoo_graph.is_multigraph()
+
+    if topology_cls is None:
+        if use_multigraph:
+            topology_cls = MultiDirectedTopology if topo_zoo_graph.is_directed() \
+                else MultiTopology
+        else:
+            topology_cls = DirectedTopology if topo_zoo_graph.is_directed() \
+                else Topology
+
+    topology = topology_cls()
+    is_dst_multigraph = topology.is_multigraph()
+
     topology.graph['type'] = 'topology_zoo'
     topology.graph['distance_unit'] = 'Km'
+    if not is_dst_multigraph:
+        topology.graph['link_bundling'] = is_src_multigraph
+
     for tu in topo_zoo_graph.nodes():
         u = try_convert_int(tu)
         topology.add_node(u)
         if 'label' in topo_zoo_graph.node[tu]:
             topology.node[u]['label'] = topo_zoo_graph.node[tu]['label']
         try:
-            longitude = topo_zoo_graph.node[tu]['Longitude']
-            latitude = topo_zoo_graph.node[tu]['Latitude']
+            longitude = topo_zoo_graph.node[tu][LONGITUDE]
+            latitude = topo_zoo_graph.node[tu][LATITUDE]
             topology.node[u]['longitude'] = longitude
             topology.node[u]['latitude'] = latitude
         except KeyError:
             pass
-    is_multigraph = topo_zoo_graph.is_multigraph()
-    edges_params = {'keys': True} if is_multigraph else dict()
-    for tu, tv, tkey in (link if is_multigraph else link + (0,)
-                         for link in topo_zoo_graph.edges(**edges_params)):
 
-        topo_zoo_edge_data_dict = topo_zoo_graph.adj[tu][tv][tkey] if is_multigraph \
-            else topo_zoo_graph.adj[tu][tv]
+    for link, topo_zoo_edge_data_dict in topo_zoo_graph.edges.items():
+        tu = link[0]
+        tv = link[1]
+        tkey = link[2] if is_src_multigraph else None
 
         u = try_convert_int(tu)
         v = try_convert_int(tv)
-        key = try_convert_int(tkey)
+        key = try_convert_int(tkey) if is_src_multigraph else None
+
         if u == v:
             continue
-        topology.add_edge(u, v, key)
-        edge_data_dict = topology.adj[u][v][key]
 
-        if 'Latitude' in topo_zoo_graph.node[tu] and \
-                'Longitude' in topo_zoo_graph.node[tu] and \
-                'Latitude' in topo_zoo_graph.node[tv] and \
-                'Longitude' in topo_zoo_graph.node[tv]:
-            lat_v = topo_zoo_graph.node[tu]['Latitude']
-            lon_v = topo_zoo_graph.node[tu]['Longitude']
-            lat_u = topo_zoo_graph.node[tv]['Latitude']
-            lon_u = topo_zoo_graph.node[tv]['Longitude']
+        if is_dst_multigraph:
+            # it's ok that key is None if source is simple graph, since None is the default value
+            key = topology.add_edge(u, v, key)
+            edge_data_dict = topology[u][v][key]
+        else:
+            # the edge might have exist before if source has parallel edges
+            topology.add_edge(u, v)
+            edge_data_dict = topology[u][v]
+            if is_src_multigraph:
+                edge_data_dict['bundle'] = len(topo_zoo_graph[tu][tv]) > 1
+
+        both_attributes = {LATITUDE, LONGITUDE}
+        # set() for Python 2 compatibility
+        if both_attributes <= set(topo_zoo_graph.node[tu].keys()) and \
+                both_attributes <= set(topo_zoo_graph.node[tv].keys()):
+            lat_v = topo_zoo_graph.node[tu][LATITUDE]
+            lon_v = topo_zoo_graph.node[tu][LONGITUDE]
+            lat_u = topo_zoo_graph.node[tv][LATITUDE]
+            lon_u = topo_zoo_graph.node[tv][LONGITUDE]
             length = geographical_distance(lat_u, lon_u, lat_v, lon_v)
             edge_data_dict['length'] = length
         if 'LinkSpeedRaw' in topo_zoo_edge_data_dict:
-            edge_data_dict['capacity'] = topo_zoo_edge_data_dict['LinkSpeedRaw']
+            edge_data_dict['capacity'] = edge_data_dict.get('capacity', 0) + topo_zoo_edge_data_dict['LinkSpeedRaw']
+
     if len(nx.get_edge_attributes(topology, 'capacity')) > 0:
         topology.graph['capacity_unit'] = 'bps'
     return topology
