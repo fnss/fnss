@@ -7,6 +7,8 @@ import fnss.util as util
 __all__ = [
     'Topology',
     'DirectedTopology',
+    'MultiTopology',
+    'MultiDirectedTopology',
     'od_pairs_from_topology',
     'fan_in_out_capacities',
     'rename_edge_attribute',
@@ -87,7 +89,7 @@ class BaseTopology(object):
         return nx.get_node_attributes(self, 'application')
 
 
-class Topology(nx.OrderedMultiGraph, BaseTopology):
+class Topology(nx.Graph, BaseTopology):
     """Base class for undirected topology"""
 
     def __init__(self, data=None, name="", **kwargs):
@@ -253,7 +255,7 @@ class Topology(nx.OrderedMultiGraph, BaseTopology):
         return Topology(super(Topology, self).to_undirected())
 
 
-class DirectedTopology(nx.OrderedMultiDiGraph, BaseTopology):
+class DirectedTopology(nx.DiGraph, BaseTopology):
     """Base class for directed topology"""
 
     def __init__(self, data=None, name="", **kwargs):
@@ -418,6 +420,337 @@ class DirectedTopology(nx.OrderedMultiDiGraph, BaseTopology):
         return Topology(super(DirectedTopology, self).to_undirected())
 
 
+class MultiTopology(nx.OrderedMultiGraph, BaseTopology):
+    """Base class for undirected multigraph topology"""
+
+    def __init__(self, data=None, name="", **kwargs):
+        """Initialize the topology
+
+        Parameters
+        ----------
+        data : input graph
+            Data to initialize the topology.  If data=None (default) an empty
+            topology is created. The data can be an edge list, or any
+            FNSS Topology or NetworkX graph object.  If the corresponding
+            optional Python packages are installed the data can also be a NumPy
+            matrix or 2d ndarray, a SciPy sparse matrix, or a PyGraphviz graph.
+        name : string, optional
+            An optional name for the graph. Default is ""
+        **kwargs : keyword arguments, optional
+            Attributes to add to graph as key=value pairs.
+        """
+        super(MultiTopology, self).__init__(data, name=name, **kwargs)
+
+    def copy(self):
+        """Return a copy of the topology.
+
+        Returns
+        -------
+        topology : MultiTopology
+            A copy of the topology.
+
+        See Also
+        --------
+        to_directed: return a directed copy of the topology.
+
+        Notes
+        -----
+        This makes a complete copy of the topology including all of the
+        node or edge attributes.
+
+        Examples
+        --------
+        >>> topo = Topology()
+        >>> topo.add_path([0,1,2,3])
+        >>> copied_topo = topo.copy()
+
+        """
+        return Topology(super(MultiTopology, self).copy())
+
+    def subgraph(self, nbunch):
+        """Return the subgraph induced on nodes in nbunch.
+
+        The induced subgraph of the graph contains the nodes in nbunch
+        and the edges between those nodes.
+
+        Parameters
+        ----------
+        nbunch : list, iterable
+            A container of nodes which will be iterated through once.
+
+        Returns
+        -------
+        topology : MultiTopology
+            A subgraph of the graph with the same edge attributes.
+
+        Notes
+        -----
+        The graph, edge or node attributes just point to the original graph.
+        So changes to the node or edge structure will not be reflected in
+        the original graph while changes to the attributes will.
+
+        To create a subgraph with its own copy of the edge/node attributes use:
+        MultiTopology(G.subgraph(nbunch))
+
+        If edge attributes are containers, a deep copy can be obtained using:
+        G.subgraph(nbunch).copy()
+
+        For an inplace reduction of a graph to a subgraph you can remove nodes:
+        G.remove_nodes_from([ n in G if n not in set(nbunch)])
+
+        Examples
+        --------
+        >>> topo = Topology()
+        >>> topo.add_path([0,1,2,3])
+        >>> topo2 = topo.subgraph([0,1,2])
+        >>> topo2.edges()
+        [(0, 1), (1, 2)]
+        """
+        return Topology(super(MultiTopology, self).subgraph(nbunch))
+
+    def to_directed(self):
+        """Return a directed representation of the topology.
+
+        Returns
+        -------
+        topology : MultiDirectedTopology
+            A directed multigraph topology with the same name, same nodes, and with
+            each edge (u,v,data) replaced by two directed edges
+            (u,v,data) and (v,u,data).
+
+        Notes
+        -----
+        This returns a 'deepcopy' of the edge, node, and
+        graph attributes which attempts to completely copy
+        all of the data and references.
+
+        This is in contrast to the similar D=DirectedTopology(G) which returns
+        a shallow copy of the data.
+
+        See the Python copy module for more information on shallow
+        and deep copies, http://docs.python.org/library/copy.html.
+
+        Examples
+        --------
+        >>> topo = Topology()
+        >>> topo.add_path([0,1])
+        >>> topo2 = topo.to_directed()
+        >>> topo2.edges()
+        [(0, 1), (1, 0)]
+
+        If already directed, return a (deep) copy
+
+        >>> topo = DirectedTopology()
+        >>> topo.add_path([0,1])
+        >>> topo2 = topo.to_directed()
+        >>> topo2.edges()
+        [(0, 1)]
+        """
+        return MultiDirectedTopology(super(MultiTopology, self).to_directed())
+
+    def to_undirected(self):
+        """Return an undirected copy of the topology.
+
+        Returns
+        -------
+        topology : MultiTopology
+            A undirected copy of the topology.
+
+        See Also
+        --------
+        copy, add_edge, add_edges_from
+
+        Notes
+        -----
+        This returns a 'deepcopy' of the edge, node, and
+        graph attributes which attempts to completely copy
+        all of the data and references.
+
+        This is in contrast to the similar G=MultiTopology(D) which returns a
+        shallow copy of the data.
+
+        See the Python copy module for more information on shallow
+        and deep copies, http://docs.python.org/library/copy.html.
+
+        Examples
+        --------
+        >>> topo = Topology()   # or MultiGraph, etc
+        >>> topo.add_path([0,1])
+        >>> topo2 = topo.to_directed()
+        >>> topo2.edges()
+        [(0, 1), (1, 0)]
+        >>> topo3 = topo2.to_undirected()
+        >>> topo3.edges()
+        [(0, 1)]
+        """
+        return MultiTopology(super(MultiTopology, self).to_undirected())
+
+
+class MultiDirectedTopology(nx.OrderedMultiDiGraph, BaseTopology):
+    """Base class for directed multigraph topology"""
+
+    def __init__(self, data=None, name="", **kwargs):
+        """Initialize the topology
+
+        Parameters
+        ----------
+        data : input graph
+            Data to initialize the topology.  If data=None (default) an empty
+            topology is created. The data can be an edge list, or any
+            FNSS Topology or NetworkX graph object.  If the corresponding
+            optional Python packages are installed the data can also be a NumPy
+            matrix or 2d ndarray, a SciPy sparse matrix, or a PyGraphviz graph.
+        name : string, optional
+            An optional name for the graph. Default is ""
+        **kwargs : keyword arguments, optional
+            Attributes to add to graph as key=value pairs.
+        """
+        super(MultiDirectedTopology, self).__init__(data, name=name, **kwargs)
+
+    def copy(self):
+        """Return a copy of the topology.
+
+        Returns
+        -------
+        topology : MultiDirectedTopology
+            A copy of the topology.
+
+        See Also
+        --------
+        to_undirected: return a undirected copy of the topology.
+
+        Notes
+        -----
+        This makes a complete copy of the topology including all of the
+        node or edge attributes.
+
+        Examples
+        --------
+        >>> topo = DirectedTopology()
+        >>> topo.add_path([0,1,2,3])
+        >>> copied_topo = topo.copy()
+        """
+        return MultiDirectedTopology(super(MultiDirectedTopology, self).copy())
+
+    def subgraph(self, nbunch):
+        """Return the subgraph induced on nodes in nbunch.
+
+        The induced subgraph of the graph contains the nodes in nbunch
+        and the edges between those nodes.
+
+        Parameters
+        ----------
+        nbunch : list, iterable
+            A container of nodes which will be iterated through once.
+
+        Returns
+        -------
+        topology : MultiDirectedTopology
+            A subgraph of the graph with the same edge attributes.
+
+        Notes
+        -----
+        The graph, edge or node attributes just point to the original graph.
+        So changes to the node or edge structure will not be reflected in
+        the original graph while changes to the attributes will.
+
+        To create a subgraph with its own copy of the edge/node attributes use:
+        MultiDirectedTopology(G.subgraph(nbunch))
+
+        If edge attributes are containers, a deep copy can be obtained using:
+        G.subgraph(nbunch).copy()
+
+        For an inplace reduction of a graph to a subgraph you can remove nodes:
+        G.remove_nodes_from([ n in G if n not in set(nbunch)])
+
+        Examples
+        --------
+        >>> topo = Topology()
+        >>> topo.add_path([0,1,2,3])
+        >>> topo2 = topo.subgraph([0,1,2])
+        >>> topo2.edges()
+        [(0, 1), (1, 2)]
+        """
+        return MultiDirectedTopology(super(MultiDirectedTopology, self).subgraph(nbunch))
+
+    def to_directed(self):
+        """Return a directed representation of the topology.
+
+        Returns
+        -------
+        topology : MultiDirectedTopology
+            A directed topology with the same name, same nodes, and with
+            each edge (u,v,data) replaced by two directed edges
+            (u,v,data) and (v,u,data).
+
+        Notes
+        -----
+        This returns a 'deepcopy' of the edge, node, and
+        graph attributes which attempts to completely copy
+        all of the data and references.
+
+        This is in contrast to the similar D=DirectedTopology(G) which returns
+        a shallow copy of the data.
+
+        See the Python copy module for more information on shallow
+        and deep copies, http://docs.python.org/library/copy.html.
+
+        Examples
+        --------
+        >>> topo = Topology()
+        >>> topo.add_path([0,1])
+        >>> topo2 = topo.to_directed()
+        >>> topo2.edges()
+        [(0, 1), (1, 0)]
+
+        If already directed, return a (deep) copy
+
+        >>> topo = DirectedTopology()
+        >>> topo.add_path([0,1])
+        >>> topo2 = topo.to_directed()
+        >>> topo2.edges()
+        [(0, 1)]
+        """
+        return MultiDirectedTopology(super(MultiDirectedTopology, self).to_directed())
+
+    def to_undirected(self):
+        """Return an undirected copy of the topology.
+
+        Returns
+        -------
+        topology : MultiTopology
+            A undirected copy of the topology.
+
+        See Also
+        --------
+        copy, add_edge, add_edges_from
+
+        Notes
+        -----
+        This returns a 'deepcopy' of the edge, node, and
+        graph attributes which attempts to completely copy
+        all of the data and references.
+
+        This is in contrast to the similar G=Topology(D) which returns a
+        shallow copy of the data.
+
+        See the Python copy module for more information on shallow
+        and deep copies, http://docs.python.org/library/copy.html.
+
+        Examples
+        --------
+        >>> topo = Topology()   # or MultiGraph, etc
+        >>> topo.add_path([0,1])
+        >>> topo2 = topo.to_directed()
+        >>> topo2.edges()
+        [(0, 1), (1, 0)]
+        >>> topo3 = topo2.to_undirected()
+        >>> topo3.edges()
+        [(0, 1)]
+        """
+        return MultiTopology(super(MultiDirectedTopology, self).to_undirected())
+
+
 def od_pairs_from_topology(topology):
     """Calculate all possible origin-destination pairs of the topology.
     This function does not simply calculate all possible pairs of the topology
@@ -426,7 +759,7 @@ def od_pairs_from_topology(topology):
 
     Parameters
     ----------
-    topology : Topology or DirectedTopology
+    topology : Topology, DirectedTopology, MultiTopology, MultiDirectedTopology
         The topology whose OD pairs are calculated
 
     Returns
@@ -458,7 +791,7 @@ def fan_in_out_capacities(topology):
 
     Parameters
     ----------
-    topology : Topology
+    topology : Topology, DirectedTopology, MultiTopology, MultiDirectedTopology
         The topology object whose fan-in and fan-out capacities are calculated.
         This topology must be annotated with link capacities.
 
@@ -493,11 +826,18 @@ def fan_in_out_capacities(topology):
         node_fan_in = 0
         node_fan_out = 0
         for predecessor in topology.predecessors(node):
-            for key, data_dict in topology.adj[predecessor][node].items():
-                node_fan_in += data_dict['capacity']
-        for successor, key_dict in topology.adj[node].items():
-            for key, data_dict in key_dict.items():
-                node_fan_out += data_dict['capacity']
+            key_or_data_dict_in = topology.adj[predecessor][node]
+            if topology.is_multigraph():
+                for key, data_dict in key_or_data_dict_in.items():
+                    node_fan_in += data_dict['capacity']
+            else:
+                node_fan_in += key_or_data_dict_in['capacity']
+        for successor, key_or_data_dict_out in topology.adj[node].items():
+            if topology.is_multigraph():
+                for key, data_dict in key_or_data_dict_out.items():
+                    node_fan_out += data_dict['capacity']
+            else:
+                node_fan_out += key_or_data_dict_out['capacity']
         fan_in[node] = node_fan_in
         fan_out[node] = node_fan_out
     return fan_in, fan_out
@@ -508,7 +848,7 @@ def rename_edge_attribute(topology, old_attr, new_attr):
 
     Parameters
     ----------
-    topology : Topology
+    topology : Topology, DirectedTopology, MultiTopology, MultiDirectedTopology
         The topology object
     old_attr : any hashable type
         Old attribute name
@@ -527,10 +867,10 @@ def rename_edge_attribute(topology, old_attr, new_attr):
     >>> topo.edges(data=True)
     [(1, 2, {'weight': 1}), (2, 3, {'weight': 2})]
     """
-    for u, v in topology.edges():
-        if old_attr in topology.adj[u][v]:
-            topology.adj[u][v][new_attr] = topology.edge[u][v][old_attr]
-            del topology.adj[u][v][old_attr]
+    for data_dict in topology.edges.values():
+        if old_attr in data_dict:
+            data_dict[new_attr] = data_dict[old_attr]
+            del data_dict[old_attr]
 
 
 def rename_node_attribute(topology, old_attr, new_attr):
@@ -538,7 +878,7 @@ def rename_node_attribute(topology, old_attr, new_attr):
 
     Parameters
     ----------
-    topology : Topology
+    topology : Topology, DirectedTopology, MultiTopology, MultiDirectedTopology
         The topology object
     old_attr : any hashable type
         Old attribute name
@@ -557,10 +897,10 @@ def rename_node_attribute(topology, old_attr, new_attr):
     >>> topo.edges(data=True)
     [(1, {'coordinates': (0, 0)}), (2, {'coordinates': (1, 1)})]
     """
-    for v in topology.nodes():
-        if old_attr in topology.adj[v]:
-            topology.node[v][new_attr] = topology.node[v][old_attr]
-            del topology.node[v][old_attr]
+    for data_dict in topology.nodes.values():
+        if old_attr in data_dict:
+            data_dict[new_attr] = data_dict[old_attr]
+            del data_dict[old_attr]
 
 
 def read_topology(path, encoding='utf-8'):
@@ -624,10 +964,15 @@ def read_topology(path, encoding='utf-8'):
         v = util.xml_cast_type(edge.find('to').attrib['type'],
                                edge.find('to').text)
         key = topology.add_edge(u, v)
+
+        data_dict = topology.adj[u][v]
+        if topology.is_multigraph():
+            data_dict = data_dict[key]
+
         for prop in edge.findall('property'):
             name = prop.attrib['name']
             value = util.xml_cast_type(prop.attrib['type'], prop.text)
-            topology.adj[u][v][key][name] = value
+            data_dict[name] = value
     return topology
 
 
@@ -685,16 +1030,19 @@ def write_topology(topology, path, encoding='utf-8', prettyprint=True):
                 prop.attrib['name'] = name
                 prop.attrib['type'] = util.xml_type(value)
                 prop.text = str(value)
-    for u, v, key in topology.edges(keys=True):
-        link = ET.SubElement(head, 'link')
-        from_node = ET.SubElement(link, 'from')
+    for link, data_dict in topology.edges.items():
+        u = link[0]
+        v = link[1]
+
+        link_node = ET.SubElement(head, 'link')
+        from_node = ET.SubElement(link_node, 'from')
         from_node.attrib['type'] = util.xml_type(u)
         from_node.text = str(u)
-        to_node = ET.SubElement(link, 'to')
+        to_node = ET.SubElement(link_node, 'to')
         to_node.attrib['type'] = util.xml_type(v)
         to_node.text = str(v)
-        for name, value in topology.adj[u][v][key].items():
-            prop = ET.SubElement(link, 'property')
+        for name, value in data_dict.items():
+            prop = ET.SubElement(link_node, 'property')
             prop.attrib['name'] = name
             prop.attrib['type'] = util.xml_type(value)
             prop.text = str(value)
