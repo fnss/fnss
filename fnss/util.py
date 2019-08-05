@@ -15,6 +15,7 @@ __all__ = [
     'xml_indent',
     'geographical_distance',
     'package_available',
+    'extend_link_with_0_key',
     'extend_link_tuple_to_all_parallel',
     'extend_link_list_to_all_parallel',
     'find_link_key_with_smallest_weight',
@@ -233,11 +234,23 @@ def geographical_distance(lat_u, lon_u, lat_v, lon_v):
                                     * sin((lon_u - lon_v) / 2) ** 2))
 
 
-def extend_link_tuple_to_all_parallel(topology, link):
+def extend_link_with_0_key(topology, *link_parts):
+    """
+    For multigraphs convert (u,v) link tuple to (u,v,0). For simple graph return (u,v).
+    """
+    link = link_parts[0] if len(link_parts) == 1 else link_parts
+    if not topology.is_multigraph() or len(link) == 3:
+        return link
+    else:
+        return link + (0,)
+
+
+def extend_link_tuple_to_all_parallel(topology, *link_parts):
     """
     For multigraphs convert (u,v) link tuple to [(u,v,key),...] list including all possible keys.
     For simple graph return [link]
     """
+    link = link_parts[0] if len(link_parts) == 1 else link_parts
     if not topology.is_multigraph() or len(link) == 3:
         return [link]
     else:
