@@ -235,10 +235,10 @@ def geographical_distance(lat_u, lon_u, lat_v, lon_v):
 
 def extend_link_tuple_to_all_parallel(topology, link):
     """
-    For multigraphs convert (u,v) link tuples to [(u,v,key),...] list including all possible keys.
+    For multigraphs convert (u,v) link tuple to [(u,v,key),...] list including all possible keys.
     For simple graph return [link]
     """
-    if len(link) == 3:
+    if not topology.is_multigraph() or len(link) == 3:
         return [link]
     else:
         u, v = link
