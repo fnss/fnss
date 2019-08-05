@@ -276,8 +276,7 @@ def parse_rocketfuel_isp_latency(latencies_path, weights_path=None):
                     raise ValueError("The weight file includes edge (%s, %s), "
                                      "which was not included in the latencies file"
                                      % (u_str, v_str))
-                # assume no parallel links exist
-                topology.adj[u][v][0]['weight'] = weight
+                topology.adj[u][v]['weight'] = weight
     return topology
 
 
@@ -482,9 +481,8 @@ def parse_abilene(topology_path, links_path=None):
                         raise ValueError('Invalid input file. '
                                          'Parsing failed while trying to '
                                          'parse a link from links_file')
-                    # assume max. 1 link per node pair
-                    topology.adj[u][v][0]['link_index'] = link_index
-                    topology.adj[u][v][0]['link_type'] = link_type
+                    topology.adj[u][v]['link_index'] = link_index
+                    topology.adj[u][v]['link_type'] = link_type
     return topology
 
 
