@@ -3,6 +3,8 @@ import unittest
 import networkx as nx
 
 import fnss
+from fnss.util import extend_link_with_0_key
+
 
 class Test(unittest.TestCase):
 
@@ -30,8 +32,8 @@ class Test(unittest.TestCase):
         fnss.set_delays_constant(topo, 2, 's', odd_links)
         fnss.set_delays_constant(topo, 5000000, 'us', even_links)
         self.assertEqual('s', topo.graph['delay_unit'])
-        self.assertTrue(all(topo.adj[u][v][key]['delay'] in [2, 5]
-                            for (u, v, key) in topo.edges(keys=True)))
+        self.assertTrue(all(data_dict['delay'] in [2, 5]
+                            for data_dict in topo.edges.values()))
 
     def test_delays_geo_distance(self):
         specific_delay = 1.2
@@ -39,8 +41,8 @@ class Test(unittest.TestCase):
         G_len = fnss.waxman_1_topology(100, L=L)
         G_xy = fnss.waxman_2_topology(100, domain=(0, 0, 3, 4))
         # leave only node coordinate to trigger failure
-        for u, v, key in G_xy.edges(keys=True):
-            del G_xy.adj[u][v][key]['length']
+        for data_dict in G_xy.edges.values():
+            del data_dict['length']
         self.assertRaises(ValueError, fnss.set_delays_geo_distance,
                           G_len, 2, delay_unit='Km')
         self.assertRaises(ValueError, fnss.set_delays_geo_distance,
@@ -54,16 +56,24 @@ class Test(unittest.TestCase):
 
     def test_delays_geo_distance_conversions(self):
         topology = fnss.Topology(distance_unit='m')
+
+        def edges(u, v):
+            return topology.edges[extend_link_with_0_key(topology, u, v)]
+
         topology.add_edge(1, 2, length=2000)
         specific_delay = 1.2
         fnss.set_delays_geo_distance(topology, specific_delay, None, 'us')
-        self.assertAlmostEqual(topology.adj[1][2][0]['delay'], 2400)
+        self.assertAlmostEqual(edges(1, 2)['delay'], 2400)
         fnss.clear_delays(topology)
         fnss.set_delays_geo_distance(topology, specific_delay, None, 's')
-        self.assertAlmostEqual(topology.adj[1][2][0]['delay'], 0.0024)
+        self.assertAlmostEqual(edges(1, 2)['delay'], 0.0024)
 
     def test_delays_geo_distance_conversions_partial_assignments(self):
         topology = fnss.Topology(distance_unit='m')
+
+        def edges(u, v):
+            return topology.edges[extend_link_with_0_key(topology, u, v)]
+        
         topology.add_edge(1, 2, length=2000)
         topology.add_edge(2, 3, length=3000)
         topology.add_edge(3, 4)
@@ -74,12 +84,16 @@ class Test(unittest.TestCase):
                                      3, 's', links=[(2, 3), (3, 4)])
         self.assertEquals(topology.graph['distance_unit'], 'm')
         self.assertEquals(topology.graph['delay_unit'], 'us')
-        self.assertAlmostEqual(topology.adj[1][2][0]['delay'], 2400)
-        self.assertAlmostEqual(topology.adj[2][3][0]['delay'], 3600)
-        self.assertAlmostEqual(topology.adj[3][4][0]['delay'], 3000000)
+        self.assertAlmostEqual(edges(1, 2)['delay'], 2400)
+        self.assertAlmostEqual(edges(2, 3)['delay'], 3600)
+        self.assertAlmostEqual(edges(3, 4)['delay'], 3000000)
 
     def test_delays_geo_distance_conversions_defaults(self):
         topology = fnss.Topology(distance_unit='m')
+
+        def edges(u, v):
+            return topology.edges[extend_link_with_0_key(topology, u, v)]
+
         topology.add_edge(1, 2, length=2000)
         topology.add_edge(2, 3, length=3000)
         topology.add_edge(3, 4)
@@ -87,9 +101,9 @@ class Test(unittest.TestCase):
         fnss.set_delays_geo_distance(topology, specific_delay, 3, 's', None)
         self.assertEquals(topology.graph['distance_unit'], 'm')
         self.assertEquals(topology.graph['delay_unit'], 's')
-        self.assertAlmostEqual(topology.adj[1][2][0]['delay'], 0.0024)
-        self.assertAlmostEqual(topology.adj[2][3][0]['delay'], 0.0036)
-        self.assertAlmostEqual(topology.adj[3][4][0]['delay'], 3)
+        self.assertAlmostEqual(edges(1, 2)['delay'], 0.0024)
+        self.assertAlmostEqual(edges(2, 3)['delay'], 0.0036)
+        self.assertAlmostEqual(edges(3, 4)['delay'], 3)
 
     def test_clear_delays(self):
         topo = fnss.star_topology(12)

@@ -102,7 +102,7 @@ class Test(unittest.TestCase):
         topology = fnss.parse_caida_as_relationships(caida_file)
         self.assertEqual(41203, topology.number_of_nodes())
         self.assertEqual(121309, topology.number_of_edges())
-        self.assertEqual('customer', topology.adj[263053][28163][0]['type'])
+        self.assertEqual('customer', topology.adj[263053][28163]['type'])
 
     @unittest.skipIf(RES_DIR is None, "Resources folder not present")
     def test_parse_inet(self):
@@ -170,9 +170,9 @@ class Test(unittest.TestCase):
         self.assertEqual(980, topology.node[851]['latitude'])
         self.assertEqual('AS_NODE', topology.node[851]['type'])
         # 1478    716    230    212.11553455605272    0.7075412636166207    0.0011145252848059164    716    230    E_AS    U
-        self.assertEquals(1478, topology.adj[716][230][0]['id'])
+        self.assertEquals(1478, topology.adj[716][230]['id'])
         self.assertAlmostEquals(212.11553455605272,
-                                topology.adj[716][230][0]['length'], 0.01)
+                                topology.adj[716][230]['length'], 0.01)
 
     @unittest.skipIf(RES_DIR is None, "Resources folder not present")
     def test_parse_brite_router(self):
