@@ -4,6 +4,7 @@ from re import findall
 import pytest
 
 import fnss
+from fnss.util import extend_link_with_0_key, extend_link_tuple_to_all_parallel
 
 RES_DIR = environ['test.res.dir'] if 'test.res.dir' in environ else None
 
@@ -114,54 +115,77 @@ def test_parse_inet():
     assert 6146 == topology.number_of_edges()
 
 
-# TODO
-@pytest.mark.skip('Skip temporarily')
-def test_parse_topology_zoo():
+@pytest.mark.parametrize('use_multigraph', [True, False])
+def test_parse_topology_zoo(use_multigraph):
     topozoo_file = path.join(RES_DIR, 'topozoo-arnes.graphml')
-    topology = fnss.parse_topology_zoo(topozoo_file)
-    assert type(topology) == fnss.Topology
-    assert not topology.is_directed()
+    topology = fnss.parse_topology_zoo(topozoo_file, use_multigraph)
 
-    assert topology.is_multigraph()
-    assert 2 == len(topology.adj[4][7])
+    assert not topology.is_directed()
+    assert use_multigraph == topology.is_multigraph()
+
+    if use_multigraph:
+        assert isinstance(topology, fnss.MultiTopology)
+        assert 47 == topology.number_of_edges()
+
+        assert 2 == len(topology.adj[4][7])
+    else:
+        assert isinstance(topology, fnss.Topology)
+        assert 46 == topology.number_of_edges()
 
     assert 34 == topology.number_of_nodes()
-    assert 47 == topology.number_of_edges()
-    assert 1000000000.0 == topology.adj[4][15][0]['capacity']
+    assert 1000000000.0 == topology.edges[extend_link_with_0_key(topology, 4, 15)]['capacity']
     assert 'bps' == topology.graph['capacity_unit']
-    assert all(topology.adj[u][v][key]['length'] >= 0
-               for u, v, key in topology.edges(keys=True)
-               if 'length' in topology.adj[u][v][key])
+    assert all(data_dict['length'] >= 0
+               for data_dict in topology.edges.values()
+               if 'length' in data_dict)
 
 
-# TODO
-@pytest.mark.skip('Skip temporarily')
-def test_parse_topology_zoo_multigraph():
+@pytest.mark.parametrize('use_multigraph', [True, False])
+def test_parse_topology_zoo_multigraph(use_multigraph):
     topozoo_file = path.join(RES_DIR, 'topozoo-garr.graphml')
-    topology = fnss.parse_topology_zoo(topozoo_file)
-    assert type(topology) == fnss.Topology
-    assert topology.is_multigraph()
+    topology = fnss.parse_topology_zoo(topozoo_file, use_multigraph)
+
+    if use_multigraph:
+        assert isinstance(topology, fnss.MultiTopology)
+        assert 'link_bundling' not in topology.graph
+        assert topology.is_multigraph()
+        assert 89 == topology.number_of_edges()
+    else:
+        assert isinstance(topology, fnss.Topology)
+        assert topology.graph['link_bundling']
+        assert not topology.is_multigraph()
+        assert 75 == topology.number_of_edges()
+
     assert 61 == topology.number_of_nodes()
-    assert 89 == topology.number_of_edges()
     assert 'bps' == topology.graph['capacity_unit']
-    assert 1000000000 == topology.adj[37][58][0]['capacity']
-    assert 1000000000 == topology.adj[37][58][1]['capacity']
-    parallel_links = [(43, 18), (49, 32), (41, 18), (4, 7),
-                      (6, 55), (9, 58), (58, 37), (10, 55),
-                      (14, 57), (14, 35), (18, 41), (18, 43),
-                      (31, 33), (31, 34), (32, 49), (37, 58)]
+    assert 2000000000 == sum(topology.edges[link]['capacity']
+                             for link in extend_link_tuple_to_all_parallel(topology, 37, 58))
+
+    bundled_links = [(43, 18), (49, 32), (41, 18), (4, 7),
+                     (6, 55), (9, 58), (58, 37), (10, 55),
+                     (14, 57), (14, 35), (18, 41), (18, 43),
+                     (31, 33), (31, 34), (32, 49), (37, 58)]
     for u, v in topology.edges():
-        assert ((u, v) in parallel_links or (v, u) in parallel_links) == \
-               len(topology.adj[u][v]) > 1
+        is_bundled = (u, v) in bundled_links or (v, u) in bundled_links
+        if use_multigraph:
+            assert is_bundled == (len(topology.adj[u][v]) > 1)
+        else:
+            assert is_bundled == topology.adj[u][v]['bundle']
 
 
-# TODO
-@pytest.mark.skip('Skip temporarily')
-def test_parse_topology_zoo_multigraph_directed_topology():
+@pytest.mark.parametrize('use_multigraph', [True, False])
+def test_parse_topology_zoo_multigraph_directed_topology(use_multigraph):
     topozoo_file = path.join(RES_DIR, 'topozoo-kdl.graphml')
-    topology = fnss.parse_topology_zoo(topozoo_file)
-    assert type(topology) == fnss.DirectedTopology
-    assert topology.is_multigraph()
+    topology = fnss.parse_topology_zoo(topozoo_file, use_multigraph)
+
+    if use_multigraph:
+        assert isinstance(topology, fnss.MultiDirectedTopology)
+        assert topology.is_multigraph()
+        assert 'link_bundling' not in topology.graph
+    else:
+        assert isinstance(topology, fnss.DirectedTopology)
+        assert not topology.is_multigraph()
+        assert topology.graph['link_bundling']
 
 
 def test_parse_brite_as():
