@@ -29,8 +29,6 @@ class DatacenterTopologiesTest(unittest.TestCase):
         self.assertRaises(ValueError, fnss.fat_tree_topology, -1)  # negative k
         self.assertRaises(ValueError, fnss.fat_tree_topology, 11)  # odd k
 
-    # TODO
-    @unittest.skip('Skip until refactoring of topology classes')
     def test_two_tier(self):
         topology = fnss.two_tier_topology(10, 20, 30)
         self.assertEqual(len(topology), 10 + 20 + 20 * 30)
@@ -45,8 +43,6 @@ class DatacenterTopologiesTest(unittest.TestCase):
         self.assertRaises(ValueError, fnss.two_tier_topology, 10, -1, 12)
         self.assertRaises(ValueError, fnss.two_tier_topology, 12, 10, -1)
 
-    # TODO
-    @unittest.skip('Skip until refactoring of topology classes')
     def test_three_tier(self):
         topology = fnss.three_tier_topology(10, 20, 5, 6)
         self.assertEqual(len(topology), 10 + 20 + 20 * 5 + 20 * 5 * 6)

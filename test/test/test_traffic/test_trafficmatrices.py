@@ -9,7 +9,6 @@ import fnss
 TMP_DIR = environ['test.tmp.dir'] if 'test.tmp.dir' in environ else None
 
 
-@unittest.skip('TODO')
 class Test(unittest.TestCase):
 
     @classmethod

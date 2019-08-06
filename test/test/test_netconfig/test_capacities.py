@@ -35,14 +35,12 @@ class Test(unittest.TestCase):
         self.assertTrue(all(data_dict['capacity'] in self.capacities
                             for data_dict in self.topo.edges.values()))
 
-    @unittest.skip('communicability is not implemented for multigraph')
     @unittest.skipUnless(package_available('scipy'), 'Requires Scipy')
     def test_capacities_edge_communicability(self):
         fnss.set_capacities_edge_communicability(self.topo, self.capacities)
         self.assertTrue(all(data_dict['capacity'] in self.capacities
                             for data_dict in self.topo.edges.values()))
 
-    @unittest.skip('communicability is not implemented for multigraph')
     @unittest.skipUnless(package_available('scipy'), 'Requires Scipy')
     def test_capacities_edge_communicability_one_capacity(self):
         fnss.set_capacities_edge_communicability(self.topo, [10])
@@ -54,7 +52,6 @@ class Test(unittest.TestCase):
         self.assertTrue(all(data_dict['capacity'] in self.capacities
                             for data_dict in self.topo.edges.values()))
 
-    @unittest.skip('subgraph_centrality is not implemented for multigraph')
     def test_capacities_communicability_gravity(self):
         fnss.set_capacities_communicability_gravity(self.topo, self.capacities)
         self.assertTrue(all(data_dict['capacity'] in self.capacities
@@ -65,13 +62,11 @@ class Test(unittest.TestCase):
         self.assertTrue(all(data_dict['capacity'] in self.capacities
                             for data_dict in self.topo.edges.values()))
 
-    @unittest.skip('eigenvector_centrality is not implemented for multigraph')
     def test_capacities_eigenvector_gravity(self):
         fnss.set_capacities_eigenvector_gravity(self.topo, self.capacities)
         self.assertTrue(all(data_dict['capacity'] in self.capacities
                             for data_dict in self.topo.edges.values()))
 
-    @unittest.skip('eigenvector_centrality is not implemented for multigraph')
     def test_capacities_eigenvector_gravity_one_capacity(self):
         fnss.set_capacities_eigenvector_gravity(self.topo, [10])
         self.assertTrue(all(data_dict['capacity'] == 10

@@ -6,6 +6,7 @@ import fnss
 TMP_DIR = environ['test.tmp.dir'] if 'test.tmp.dir' in environ else None
 
 
+# TODO add multigraph tests
 class Test(unittest.TestCase):
 
     @classmethod
@@ -35,8 +36,6 @@ class Test(unittest.TestCase):
     def tearDown(self):
         pass
 
-    # TODO
-    @unittest.skip('Skip temporarily')
     def test_base_topology_class(self):
         weight = 2
         capacity = 3
@@ -52,26 +51,32 @@ class Test(unittest.TestCase):
         capacities = topology.capacities()
         delays = topology.delays()
         buffer_sizes = topology.buffers()
-        for e in topology.edges(keys=True):
+        for e in topology.edges:
             self.assertEqual(weight, weights[e])
             self.assertEqual(capacity, capacities[e])
             self.assertEqual(delay, delays[e])
             self.assertEqual(buffer_size, buffer_sizes[e])
 
-    # TODO
-    @unittest.skip('Skip temporarily')
     def test_topology_class(self):
         topology = fnss.Topology()
         topology.add_edge(1, 2)
         self.assertEqual(1, topology.number_of_edges())
-        # add parallel link
+        # add parallel link if it is multigraph
         topology.add_edge(2, 1)
-        self.assertEqual(2, topology.number_of_edges())
-        # add 2 new nodes with string names
+        if topology.is_multigraph():
+            self.assertEqual(2, topology.number_of_edges())
+        else:
+            self.assertEqual(1, topology.number_of_edges())
+
+        # add 2 new nodes with string names, 2 edges for multigraph, 1 edge for simple graphs
         topology.add_edge('1', '2')
         topology.add_edge('2', '1')
-        self.assertEqual(4, topology.number_of_edges())
+
         self.assertEqual(4, topology.number_of_nodes())
+        if topology.is_multigraph():
+            self.assertEqual(4, topology.number_of_edges())
+        else:
+            self.assertEqual(2, topology.number_of_edges())
 
     def test_directed_topology_class(self):
         topology = fnss.DirectedTopology()
