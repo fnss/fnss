@@ -952,7 +952,7 @@ def rename_node_attribute(topology, old_attr, new_attr):
             del data_dict[old_attr]
 
 
-def read_topology(path, encoding='utf-8'):
+def read_topology(path):
     """Read a topology from an XML file and returns either a Topology or a
     DirectedTopology object
 
@@ -960,8 +960,6 @@ def read_topology(path, encoding='utf-8'):
     ----------
     path : str
         The path of the topology XML file to parse
-    encoding : str, optional
-        The encoding of the file
 
     Returns
     -------
