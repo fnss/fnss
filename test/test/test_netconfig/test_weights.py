@@ -29,7 +29,7 @@ class Test(unittest.TestCase):
         pass
 
     def tearDown(self):
-        fnss.clear_weights(self.topo)
+        pass
 
     def test_weights_constant(self):
         fnss.set_weights_constant(self.topo, 2, self.odd_links)
