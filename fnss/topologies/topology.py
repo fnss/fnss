@@ -1,8 +1,9 @@
 """Basic functions and classes for operating on network topologies."""
 import xml.etree.cElementTree as ET
-import networkx as nx
-import fnss.util as util
 
+import networkx as nx
+
+import fnss.util as util
 
 __all__ = [
     'Topology',
@@ -254,6 +255,18 @@ class Topology(nx.Graph, BaseTopology):
         """
         return Topology(super(Topology, self).to_undirected())
 
+    def to_multigraph(self):
+        """Return a multigraph representation of the topology.
+
+        Returns
+        -------
+        topology : MultiTopology
+            A copy of the topology in multigraph.
+            Simple graphs copied into a MultiTopology, directed graphs into MultiDirectedTopology.
+
+        """
+        return MultiTopology(self.copy())
+
 
 class DirectedTopology(nx.DiGraph, BaseTopology):
     """Base class for directed topology"""
@@ -418,6 +431,18 @@ class DirectedTopology(nx.DiGraph, BaseTopology):
         [(0, 1)]
         """
         return Topology(super(DirectedTopology, self).to_undirected())
+
+    def to_multigraph(self):
+        """Return a multigraph representation of the topology.
+
+        Returns
+        -------
+        topology : MultiDirectedTopology
+            A copy of the topology in multigraph.
+            Simple graphs copied into a MultiTopology, directed graphs into MultiDirectedTopology.
+
+        """
+        return MultiDirectedTopology(self.copy())
 
 
 class MultiTopology(nx.OrderedMultiGraph, BaseTopology):
@@ -585,6 +610,18 @@ class MultiTopology(nx.OrderedMultiGraph, BaseTopology):
         """
         return MultiTopology(super(MultiTopology, self).to_undirected())
 
+    def to_multigraph(self):
+        """Return a multigraph representation of the topology.
+
+        Returns
+        -------
+        topology : MultiTopology
+            A copy of the topology in multigraph.
+            Simple graphs copied into a MultiTopology, directed graphs into MultiDirectedTopology.
+
+        """
+        return self.copy()
+
 
 class MultiDirectedTopology(nx.OrderedMultiDiGraph, BaseTopology):
     """Base class for directed multigraph topology"""
@@ -749,6 +786,18 @@ class MultiDirectedTopology(nx.OrderedMultiDiGraph, BaseTopology):
         [(0, 1)]
         """
         return MultiTopology(super(MultiDirectedTopology, self).to_undirected())
+
+    def to_multigraph(self):
+        """Return a multigraph representation of the topology.
+
+        Returns
+        -------
+        topology : MultiDirectedTopology
+            A copy of the topology in multigraph.
+            Simple graphs copied into a MultiTopology, directed graphs into MultiDirectedTopology.
+
+        """
+        return self.copy()
 
 
 def od_pairs_from_topology(topology):
