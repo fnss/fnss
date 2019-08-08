@@ -7,7 +7,7 @@ import fnss
 from fnss.util import extend_link_with_0_key, extend_link_tuple_to_all_parallel
 # required import for pytest fixture
 # noinspection PyUnresolvedReferences
-from test_topology import use_multigraph
+from test_topologies.test_topology import use_multigraph
 
 RES_DIR = environ['test.res.dir'] if 'test.res.dir' in environ else None
 
