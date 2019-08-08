@@ -952,24 +952,39 @@ def rename_node_attribute(topology, old_attr, new_attr):
             del data_dict[old_attr]
 
 
-def read_topology(path):
-    """Read a topology from an XML file and returns either a Topology or a
-    DirectedTopology object
+def read_topology(path, use_multigraph=False, topology_cls=None):
+    """Read a topology from an XML file and returns a (Multi)(Directed)Topology
 
     Parameters
     ----------
     path : str
         The path of the topology XML file to parse
+    use_multigraph : bool
+        Use MultiTopology or MultiDirectedTopology topology if true and topology_cls is None.
+        Otherwise Topology or DirectedTopology.
+    topology_cls : optional
+        The topology class (descendant of BaseTopology) which is instantiated
+        to store the parsed topology. This option overrides use_multigraph.
 
     Returns
     -------
-    topology: Topology or DirectedTopology
-        The parsed topology
+    topology : Topology, DirectedTopology, MultiTopology, MultiDirectedTopology
+        The parsed topology.
     """
     tree = ET.parse(path)
     head = tree.getroot()
-    topology = Topology() if head.attrib['linkdefault'] == 'undirected' \
-                   else DirectedTopology()
+
+    is_directed = head.attrib['linkdefault'] == 'directed'
+    if topology_cls is None:
+        if use_multigraph:
+            topology_cls = MultiDirectedTopology if is_directed \
+                else MultiTopology
+        else:
+            topology_cls = DirectedTopology if is_directed \
+                else Topology
+
+    topology = topology_cls()
+
     for prop in head.findall('property'):
         name = prop.attrib['name']
         value = util.xml_cast_type(prop.attrib['type'], prop.text)
