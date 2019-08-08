@@ -5,6 +5,9 @@ import pytest
 
 import fnss
 from fnss.util import extend_link_with_0_key, extend_link_tuple_to_all_parallel
+# required import for pytest fixture
+# noinspection PyUnresolvedReferences
+from test_topology import use_multigraph
 
 RES_DIR = environ['test.res.dir'] if 'test.res.dir' in environ else None
 
@@ -115,7 +118,6 @@ def test_parse_inet():
     assert 6146 == topology.number_of_edges()
 
 
-@pytest.mark.parametrize('use_multigraph', [True, False])
 def test_parse_topology_zoo(use_multigraph):
     topozoo_file = path.join(RES_DIR, 'topozoo-arnes.graphml')
     topology = fnss.parse_topology_zoo(topozoo_file, use_multigraph)
@@ -140,7 +142,6 @@ def test_parse_topology_zoo(use_multigraph):
                if 'length' in data_dict)
 
 
-@pytest.mark.parametrize('use_multigraph', [True, False])
 def test_parse_topology_zoo_multigraph(use_multigraph):
     topozoo_file = path.join(RES_DIR, 'topozoo-garr.graphml')
     topology = fnss.parse_topology_zoo(topozoo_file, use_multigraph)
@@ -173,7 +174,6 @@ def test_parse_topology_zoo_multigraph(use_multigraph):
             assert is_bundled == topology.adj[u][v]['bundle']
 
 
-@pytest.mark.parametrize('use_multigraph', [True, False])
 def test_parse_topology_zoo_multigraph_directed_topology(use_multigraph):
     topozoo_file = path.join(RES_DIR, 'topozoo-kdl.graphml')
     topology = fnss.parse_topology_zoo(topozoo_file, use_multigraph)
