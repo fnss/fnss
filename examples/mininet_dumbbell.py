@@ -34,7 +34,7 @@ fnss_topo = fnss.dumbbell_topology(5, 4)
 # this return a dictionary of egdes and value of attribute type
 # This function is provided by the NetworkX library.
 # Since FNSS Topology and DirecteedTopology objects inherit from NetworkX's
-# OrderedMultiGraph and OrderedMultiDiGraph, respectively, NetworkX functions can be used in FNSS too.
+# Graph and DiGraph, respectively, NetworkX functions can be used in FNSS too.
 link_types = nx.get_edge_attributes(fnss_topo, 'type')
 core_links = [links for links in link_types if link_types[links] == 'core']
 edge_links = [links for links in link_types
