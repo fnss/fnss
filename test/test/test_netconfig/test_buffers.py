@@ -1,7 +1,9 @@
+from functools import partial
+
 import pytest
 
 import fnss
-from fnss.util import extend_link_with_0_key
+from test_topologies.test_topology import get_default_edge
 
 
 class Test:
@@ -64,8 +66,7 @@ class Test:
     def test_buffers_size_link_bandwidth_default_size(self):
         topo = fnss.line_topology(4)
 
-        def edges(u, v):
-            return topo.edges[extend_link_with_0_key(topo, u, v)]
+        edges = partial(get_default_edge, topo)
 
         fnss.set_capacities_constant(topo, 8, 'Mbps', [(0, 1)])
         fnss.set_capacities_constant(topo, 16, 'Mbps', [(1, 2)])

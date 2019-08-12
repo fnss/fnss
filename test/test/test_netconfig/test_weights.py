@@ -2,7 +2,7 @@ import networkx as nx
 import pytest
 
 import fnss
-from test_topologies.test_topology import has_parallel_edges
+from test_topologies.test_topology import duplicate_edge
 # required import for pytest fixture
 # noinspection PyUnresolvedReferences
 from test_topologies.test_topology import use_multigraph, topology_converter
@@ -13,9 +13,7 @@ def topology_info(topology_converter, use_multigraph):
     # set up topology used for all traffic matrix tests
     topo = topology_converter(fnss.k_ary_tree_topology(3, 4))
 
-    # duplicate an edge, no effect for simple graphs
-    topo.add_edge(*next(iter(topo.edges.keys()))[:2])
-    assert has_parallel_edges(topo) == use_multigraph
+    duplicate_edge(topo, use_multigraph)
 
     capacities = [10, 20]
     odd_links = [link for link in topo.edges
@@ -56,9 +54,7 @@ def test_clear_weights(topology_converter, use_multigraph):
     # create new topology to avoid parameters pollution
     topo = topology_converter(fnss.star_topology(12))
 
-    # duplicate an edge, no effect for simple graphs
-    topo.add_edge(*next(iter(topo.edges.keys()))[:2])
-    assert has_parallel_edges(topo) == use_multigraph
+    duplicate_edge(topo, use_multigraph)
 
     fnss.set_weights_constant(topo, 3, None)
     assert topo.number_of_edges() == len(nx.get_edge_attributes(topo, 'weight'))

@@ -1,8 +1,10 @@
+from contextlib import contextmanager
 from os import path, environ
 
 import pytest
 
 import fnss
+from fnss.util import extend_link_with_0_key
 
 TMP_DIR = environ['test.tmp.dir'] if 'test.tmp.dir' in environ else None
 
@@ -12,6 +14,33 @@ def has_parallel_edges(graph):
            any(len(key_dict) > 1
                for u, v_dict in graph.adj.items()
                for v, key_dict in v_dict.items())
+
+
+def duplicate_edge(topology, use_multigraph):
+    """
+    Duplicate an edge, no effect for simple graphs.
+    Return original and duplicated edge in a list for multigraphs, otherwise None.
+    """
+    if use_multigraph:
+        link_orig, data_dict_orig = next(iter(topology.edges.items()))
+        key_new = topology.add_edge(*link_orig[:2])
+        link_new = link_orig[:2] + (key_new,)
+
+        topology.edges[link_new].update(data_dict_orig)
+        assert topology.edges[link_orig] == topology.edges[link_new]
+
+        return [link_orig, link_new]
+
+    assert has_parallel_edges(topology) == use_multigraph
+
+
+def get_default_edge(topology, u, v):
+    return topology.edges[extend_link_with_0_key(topology, u, v)]
+
+
+@contextmanager
+def does_not_raise():
+    yield
 
 
 @pytest.fixture(params=[True, False], ids=['multigraph', 'simple graph'])
@@ -59,9 +88,7 @@ def glp_topology(topology_converter, use_multigraph):
     # set up topology used for all traffic matrix tests
     topology = topology_converter(fnss.glp_topology(n=50, m=1, m0=10, p=0.2, beta=-2, seed=1))
 
-    # duplicate an edge, no effect for simple graphs
-    topology.add_edge(*next(iter(topology.edges.keys()))[:2])
-    assert has_parallel_edges(topology) == use_multigraph
+    duplicate_edge(topology, use_multigraph)
 
     fnss.set_capacities_random(topology, {10: 0.5, 20: 0.3, 40: 0.2},
                                capacity_unit='Mbps')

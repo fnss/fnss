@@ -4,7 +4,8 @@ from re import findall
 import pytest
 
 import fnss
-from fnss.util import extend_link_with_0_key, extend_link_tuple_to_all_parallel
+from fnss.util import extend_link_tuple_to_all_parallel
+from test_topologies.test_topology import get_default_edge
 # required import for pytest fixture
 # noinspection PyUnresolvedReferences
 from test_topologies.test_topology import use_multigraph
@@ -135,7 +136,7 @@ def test_parse_topology_zoo(use_multigraph):
         assert 46 == topology.number_of_edges()
 
     assert 34 == topology.number_of_nodes()
-    assert 1000000000.0 == topology.edges[extend_link_with_0_key(topology, 4, 15)]['capacity']
+    assert 1000000000.0 == get_default_edge(topology, 4, 15)['capacity']
     assert 'bps' == topology.graph['capacity_unit']
     assert all(data_dict['length'] >= 0
                for data_dict in topology.edges.values()

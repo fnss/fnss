@@ -1,7 +1,12 @@
 import pytest
+from networkx import NetworkXNotImplemented
 
 import fnss
 from fnss.util import package_available
+from test_topologies.test_topology import duplicate_edge, has_parallel_edges, does_not_raise
+# required import for pytest fixture
+# noinspection PyUnresolvedReferences
+from test_topologies.test_topology import use_multigraph
 
 
 class Test:
@@ -11,19 +16,32 @@ class Test:
     # of degrees
     # 50 nodes has been chosen because eigenvector centrality tests would
     # require considerably more time
-    topo = fnss.glp_topology(n=50, m=1, m0=10, p=0.2, beta=-2, seed=1)
+    topo = None
+    _topo_simple = fnss.glp_topology(n=50, m=1, m0=10, p=0.2, beta=-2, seed=1)
+
+    _topo_multi = _topo_simple.to_multigraph()
+    duplicate_edge(_topo_multi, True)
+
     capacities = [12, 25, 489, 1091]
 
     @pytest.fixture(autouse=True)
-    def clear_capacities(self):
-        yield
+    def init_topo(self, use_multigraph):
+        self.topo = self._topo_multi if use_multigraph \
+            else self._topo_simple
         fnss.clear_capacities(self.topo)
+
+        assert self.topo.is_multigraph() == use_multigraph
+        assert has_parallel_edges(self.topo) == use_multigraph
+
+        yield
+
+        self.topo = None
 
     def test_capacities_constant(self):
         odd_links = [link for link in self.topo.edges
-                     if (link[0] + link[1]) % 2 == 1]
+                     if sum(link) % 2 == 1]
         even_links = [link for link in self.topo.edges
-                      if (link[0] + link[1]) % 2 == 0]
+                      if sum(link) % 2 == 0]
         fnss.set_capacities_constant(self.topo, 2, 'Mbps', odd_links)
         fnss.set_capacities_constant(self.topo, 5000, 'Kbps', even_links)
         assert 'Mbps' == self.topo.graph['capacity_unit']
@@ -36,41 +54,56 @@ class Test:
                    for data_dict in self.topo.edges.values())
 
     @pytest.mark.skipif(not package_available('scipy'), reason='Requires Scipy')
-    def test_capacities_edge_communicability(self):
-        fnss.set_capacities_edge_communicability(self.topo, self.capacities)
-        assert all(data_dict['capacity'] in self.capacities
-                   for data_dict in self.topo.edges.values())
+    def test_capacities_edge_communicability(self, use_multigraph):
+        expectation = pytest.raises(NetworkXNotImplemented) if use_multigraph \
+            else does_not_raise()
+        with expectation:
+            fnss.set_capacities_edge_communicability(self.topo, self.capacities)
+            assert all(data_dict['capacity'] in self.capacities
+                       for data_dict in self.topo.edges.values())
 
     @pytest.mark.skipif(not package_available('scipy'), reason='Requires Scipy')
-    def test_capacities_edge_communicability_one_capacity(self):
-        fnss.set_capacities_edge_communicability(self.topo, [10])
-        assert all(data_dict['capacity'] == 10
-                   for data_dict in self.topo.edges.values())
+    def test_capacities_edge_communicability_one_capacity(self, use_multigraph):
+        expectation = pytest.raises(NetworkXNotImplemented) if use_multigraph \
+            else does_not_raise()
+        with expectation:
+            fnss.set_capacities_edge_communicability(self.topo, [10])
+            assert all(data_dict['capacity'] == 10
+                       for data_dict in self.topo.edges.values())
 
     def test_capacities_betweenness_gravity(self):
         fnss.set_capacities_betweenness_gravity(self.topo, self.capacities)
         assert all(data_dict['capacity'] in self.capacities
                    for data_dict in self.topo.edges.values())
 
-    def test_capacities_communicability_gravity(self):
-        fnss.set_capacities_communicability_gravity(self.topo, self.capacities)
-        assert all(data_dict['capacity'] in self.capacities
-                   for data_dict in self.topo.edges.values())
+    def test_capacities_communicability_gravity(self, use_multigraph):
+        expectation = pytest.raises(NetworkXNotImplemented) if use_multigraph \
+            else does_not_raise()
+        with expectation:
+            fnss.set_capacities_communicability_gravity(self.topo, self.capacities)
+            assert all(data_dict['capacity'] in self.capacities
+                       for data_dict in self.topo.edges.values())
 
     def test_capacities_degree_gravity(self):
         fnss.set_capacities_degree_gravity(self.topo, self.capacities)
         assert all(data_dict['capacity'] in self.capacities
                    for data_dict in self.topo.edges.values())
 
-    def test_capacities_eigenvector_gravity(self):
-        fnss.set_capacities_eigenvector_gravity(self.topo, self.capacities)
-        assert all(data_dict['capacity'] in self.capacities
-                   for data_dict in self.topo.edges.values())
+    def test_capacities_eigenvector_gravity(self, use_multigraph):
+        expectation = pytest.raises(NetworkXNotImplemented) if use_multigraph \
+            else does_not_raise()
+        with expectation:
+            fnss.set_capacities_eigenvector_gravity(self.topo, self.capacities)
+            assert all(data_dict['capacity'] in self.capacities
+                       for data_dict in self.topo.edges.values())
 
-    def test_capacities_eigenvector_gravity_one_capacity(self):
-        fnss.set_capacities_eigenvector_gravity(self.topo, [10])
-        assert all(data_dict['capacity'] == 10
-                   for data_dict in self.topo.edges.values())
+    def test_capacities_eigenvector_gravity_one_capacity(self, use_multigraph):
+        expectation = pytest.raises(NetworkXNotImplemented) if use_multigraph \
+            else does_not_raise()
+        with expectation:
+            fnss.set_capacities_eigenvector_gravity(self.topo, [10])
+            assert all(data_dict['capacity'] == 10
+                       for data_dict in self.topo.edges.values())
 
     def test_capacities_pagerank_gravity(self):
         fnss.set_capacities_pagerank_gravity(self.topo, self.capacities)
