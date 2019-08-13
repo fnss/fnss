@@ -5,7 +5,6 @@ import fnss
 
 TMP_DIR = environ['test.tmp.dir'] if 'test.tmp.dir' in environ else None
 
-
 class Test(unittest.TestCase):
 
     def setUp(self):

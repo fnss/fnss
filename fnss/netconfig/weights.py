@@ -9,7 +9,7 @@ __all__ = [
     'set_weights_delays',
     'get_weights',
     'clear_weights'
-           ]
+]
 
 
 def set_weights_inverse_capacity(topology):
