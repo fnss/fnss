@@ -98,8 +98,8 @@ class Test:
 
     def test_buffers_size_link_bandwidth_default_size(self, topology_converter, use_multigraph):
         topo = topology_converter(fnss.line_topology(4))
-        # duplicate every edge, strip edge key to add new edge
-        topo.add_edges_from(link[:2] for link in topo.edges.keys())
+        # duplicate every edge, strip edge key to add new edge (materialize before adding)
+        topo.add_edges_from([link[:2] for link in topo.edges.keys()])
 
         assert has_parallel_edges(topo) == use_multigraph
 
@@ -132,8 +132,8 @@ class Test:
         # other interfaces already have buffer sizes assigned using a different
         # unit, then raise an error and ask to use the unit previously used
         topo = topology_converter(fnss.line_topology(3))
-        # duplicate every edge, strip edge key to add new edge
-        topo.add_edges_from(link[:2] for link in topo.edges.keys())
+        # duplicate every edge, strip edge key to add new edge (materialize before adding)
+        topo.add_edges_from([link[:2] for link in topo.edges.keys()])
 
         assert has_parallel_edges(topo) == use_multigraph
 
