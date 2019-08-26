@@ -1,6 +1,7 @@
 """Functions to assign and manipulate link delays."""
 import networkx as nx
 from fnss.units import time_units, distance_units
+from fnss.util import extend_link_list_to_all_parallel
 
 __all__ = [
     'PROPAGATION_DELAY_VACUUM',
@@ -9,7 +10,7 @@ __all__ = [
     'set_delays_geo_distance',
     'get_delays',
     'clear_delays'
-           ]
+]
 
 # Propagation delay of light in the vacuum
 PROPAGATION_DELAY_VACUUM = 1.0 / 300  # ms/Km
@@ -31,9 +32,10 @@ def set_delays_constant(topology, delay=1.0, delay_unit='ms', links=None):
     delay_unit : string, optional
         The unit of delays. Supported units are: "us" (microseconds), "ms"
         (milliseconds) and "s" (seconds)
-    links : list, optional
-        List of selected links on which weights are applied. If it is None,
-        all links are selected
+    links : iterable, optional
+        Iterable container of links, represented as (u, v) tuples to which delay will be set.
+        For multigraphs (u, v, key) specifies a link, and (u, v) tuple means every parallel link.
+        If None or not specified, the delay will be applied to all links.
 
     Examples
     --------
@@ -45,7 +47,7 @@ def set_delays_constant(topology, delay=1.0, delay_unit='ms', links=None):
     >>> delay[(1, 2)]
     5.0
     """
-    if not delay_unit in time_units:
+    if delay_unit not in time_units:
         raise ValueError("The delay_unit argument is not valid")
     conversion_factor = 1
     if 'delay_unit' in topology.graph and links is not None:
@@ -58,9 +60,9 @@ def set_delays_constant(topology, delay=1.0, delay_unit='ms', links=None):
                                 / time_units[curr_delay_unit]
     else:
         topology.graph['delay_unit'] = delay_unit
-    edges = links or topology.edges()
-    for u, v in edges:
-        topology.adj[u][v]['delay'] = delay * conversion_factor
+    links = topology.edges if links is None else extend_link_list_to_all_parallel(topology, links)
+    for link in links:
+        topology.edges[link]['delay'] = delay * conversion_factor
 
 
 def set_delays_geo_distance(topology, specific_delay, default_delay=None,
@@ -85,9 +87,10 @@ def set_delays_geo_distance(topology, specific_delay, default_delay=None,
     delay_unit : string, optional
         The unit of delays. Supported units are: "us" (microseconds), "ms"
         (milliseconds) and "s" (seconds)
-    links : list, optional
-        List of selected links on which weights are applied. If it is None, all
-        links are selected
+    links : iterable, optional
+        Iterable container of links, represented as (u, v) tuples to which delay will be set.
+        For multigraphs (u, v, key) specifies a link, and (u, v) tuple means every parallel link.
+        If None or not specified, the delay will be applied to all links.
 
     Examples
     --------
@@ -96,18 +99,18 @@ def set_delays_geo_distance(topology, specific_delay, default_delay=None,
     >>> fnss.set_delays_geo_distance(topology, specific_delay=fnss.PROPAGATION_DELAY_FIBER)
     """
     # Validate input parameters
-    if not delay_unit in time_units:
+    if delay_unit not in time_units:
         raise ValueError("The delay_unit argument is not valid")
-    if not 'distance_unit' in topology.graph:
-        raise ValueError("The provided topology does not have a "\
+    if 'distance_unit' not in topology.graph:
+        raise ValueError("The provided topology does not have a "
                          "distance_unit attribute")
     distance_unit = topology.graph['distance_unit']
     if distance_unit not in distance_units:
-        raise ValueError("The distance_unit attribute of the provided "\
+        raise ValueError("The distance_unit attribute of the provided " \
                          "topology (%s) is not valid" % distance_unit)
-    edges = links or topology.edges()
+    links = topology.edges if links is None else extend_link_list_to_all_parallel(topology, links)
     if default_delay is None:
-        if any(('length' not in topology.adj[u][v] for u, v in edges)):
+        if any(('length' not in topology.edges[link] for link in links)):
             raise ValueError('All links must have a length attribute')
     if 'delay_unit' in topology.graph and links is not None:
         # If a delay_unit is set, that means that some links have already
@@ -123,13 +126,14 @@ def set_delays_geo_distance(topology, specific_delay, default_delay=None,
     length_conv_factor = distance_units[distance_unit]
     # factor to convert default delay in target delay unit
     default_conv_factor = time_units[delay_unit] / time_units[curr_delay_unit]
-    for u, v in edges:
-        if 'length' in topology.adj[u][v]:
-            length = topology.adj[u][v]['length'] * length_conv_factor
+    for link in links:
+        data_dict = topology.edges[link]
+        if 'length' in data_dict:
+            length = data_dict['length'] * length_conv_factor
             delay = specific_delay * length * conv_factor
         else:
             delay = default_delay * default_conv_factor
-        topology.adj[u][v]['delay'] = delay
+        data_dict['delay'] = delay
 
 
 def get_delays(topology):
@@ -168,5 +172,5 @@ def clear_delays(topology):
     topology : Topology
     """
     topology.graph.pop('delay_unit', None)
-    for u, v in topology.edges():
-        topology.adj[u][v].pop('delay', None)
+    for data_dict in topology.edges.values():
+        data_dict.pop('delay', None)

@@ -15,7 +15,14 @@ __all__ = [
     'xml_indent',
     'geographical_distance',
     'package_available',
-          ]
+    'extend_link_with_0_key',
+    'extend_link_tuple_to_all_parallel',
+    'extend_link_list_to_all_parallel',
+    'find_link_key_with_smallest_weight',
+    'find_all_link_keys_with_smallest_weight',
+    'find_link_between_nodes_with_smallest_weight',
+    'reverse_link',
+]
 
 
 def split_list(l, size):
@@ -195,6 +202,7 @@ def package_available(pkg):
     else:
         return True
 
+
 def geographical_distance(lat_u, lon_u, lat_v, lon_v):
     """Return geographical distance along the Earth surface between two points
     *u* and *v*
@@ -224,3 +232,108 @@ def geographical_distance(lat_u, lon_u, lat_v, lon_v):
     return 2 * EARTH_RADIUS * asin(sqrt(sin((lat_u - lat_v) / 2) ** 2 +
                                     cos(lat_v) * cos(lat_u)
                                     * sin((lon_u - lon_v) / 2) ** 2))
+
+
+def extend_link_with_0_key(topology, *link_parts):
+    """
+    For multigraphs convert (u,v) link tuple to (u,v,0). For simple graph return (u,v).
+    """
+    link = link_parts[0] if len(link_parts) == 1 else link_parts
+    if not topology.is_multigraph() or len(link) == 3:
+        return link
+    else:
+        return link + (0,)
+
+
+def extend_link_tuple_to_all_parallel(topology, *link_parts):
+    """
+    For multigraphs convert (u,v) link tuple to [(u,v,key),...] list including all possible keys.
+    For simple graph return [link]
+    """
+    link = link_parts[0] if len(link_parts) == 1 else link_parts
+    if not topology.is_multigraph() or len(link) == 3:
+        return [link]
+    else:
+        u, v = link
+        return [link + (key,) for key in topology.adj[u][v]]
+
+
+def extend_link_list_to_all_parallel(topology, links):
+    """
+    For multigraphs convert [(u,v),...] links to [(u,v,key),...] list including all possible keys for given (u,v) pair.
+    For simple graphs no conversion is made.
+    """
+    if topology.is_multigraph():
+        return [ext_link
+                for link in links
+                for ext_link in extend_link_tuple_to_all_parallel(topology, link)]
+    else:
+        return links
+
+
+def find_link_key_with_smallest_weight(topology, u, v, weight_attr):
+    """
+    For multigraphs return a single ((u,v,key), weight) for (u,v) links with the smallest `weight_attr` if exists,
+    otherwise (None, None). For simple graphs return the single link if exists.
+
+    Note: If weight_attr is None, every weight is 1.
+    """
+    v_dict = topology.adj[u]
+    if v in v_dict:
+        if not topology.is_multigraph():
+            link = (u, v)
+            data_dict = v_dict[v]
+        else:
+            key, data_dict = min(v_dict[v].items(),
+                                 key=lambda t:
+                                 t[1][weight_attr] if weight_attr is not None
+                                 else 1)
+            link = (u, v, key)
+
+        weight = 1 if weight_attr is None else data_dict[weight_attr]
+        return link, weight
+    else:
+        return None, None
+
+
+def find_all_link_keys_with_smallest_weight(topology, u, v, weight_attr):
+    """
+    For multigraphs return ([(u,v,key),...], weight) for all (u,v) links with the smallest `weight_attr` if link exists,
+    otherwise ([], None). For simple graphs return ([(u,v)], weight) if exists.
+
+    Note: if weight_attr is None, every weight is 1.
+    """
+    v_dict = topology.adj[u]
+
+    if v not in v_dict:
+        return [], None
+    elif not topology.is_multigraph():
+        return [(u, v)], 1 if weight_attr is None else v_dict[v][weight_attr]
+    elif weight_attr is None:
+        return [(u, v, key) for key in v_dict[v]], 1
+    else:
+        link, weight = find_link_key_with_smallest_weight(topology, u, v, weight_attr)
+        return [(u, v, key) for key, data_dict in v_dict[v].items() if data_dict[weight_attr] == weight], weight
+
+
+def find_link_between_nodes_with_smallest_weight(topology, node1, node2, weight_attr, both_directions=False):
+    """
+    For multigraphs return a single ((u,v,key), weight) link between the nodes having the smallest `weight_attr`
+    if link exists, otherwise (None, None). For simple graphs return the single link if exists.
+
+    Note: if weight_attr is None, every weight is 1.
+    """
+    link1_2, weight1_2 = find_link_key_with_smallest_weight(topology, node1, node2, weight_attr)
+    if not both_directions:
+        return link1_2, weight1_2
+
+    link2_1, weight2_1 = find_link_key_with_smallest_weight(topology, node2, node1, weight_attr)
+    if weight2_1 is None or (weight1_2 is not None and weight1_2 <= weight2_1):
+        return link1_2, weight1_2
+    else:
+        return link2_1, weight2_1
+
+
+def reverse_link(link):
+    """Convert (u, v) link to (v, u) or (u, v, key) link to (v, u, key)"""
+    return (link[1], link[0]) + link[2:]

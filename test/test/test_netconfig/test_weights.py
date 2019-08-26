@@ -1,55 +1,63 @@
-import unittest
-
 import networkx as nx
+import pytest
 
 import fnss
+from test_topologies.test_topology import duplicate_edge
+# required import for pytest fixture
+# noinspection PyUnresolvedReferences
+from test_topologies.test_topology import use_multigraph, topology_converter
 
-class Test(unittest.TestCase):
 
-    @classmethod
-    def setUpClass(cls):
-        # set up topology used for all traffic matrix tests
-        cls.topo = fnss.k_ary_tree_topology(3, 4)
-        cls.capacities = [10, 20]
-        cls.odd_links = [(u, v) for (u, v) in cls.topo.edges()
-                         if (u + v) % 2 == 1]
-        cls.even_links = [(u, v) for (u, v) in cls.topo.edges()
-                          if (u + v) % 2 == 0]
-        fnss.set_capacities_random_uniform(cls.topo, cls.capacities)
-        fnss.set_delays_constant(cls.topo, 3, 'ms', cls.odd_links)
-        fnss.set_delays_constant(cls.topo, 12, 'ms', cls.even_links)
+@pytest.fixture
+def topology_info(topology_converter, use_multigraph):
+    # set up topology used for all traffic matrix tests
+    topo = topology_converter(fnss.k_ary_tree_topology(3, 4))
 
-    @classmethod
-    def tearDownClass(cls):
-        pass
+    duplicate_edge(topo, use_multigraph)
 
-    def setUp(self):
-        pass
+    capacities = [10, 20]
+    odd_links = [link for link in topo.edges
+                 if sum(link) % 2 == 1]
+    even_links = [link for link in topo.edges
+                  if sum(link) % 2 == 0]
+    fnss.set_capacities_random_uniform(topo, capacities)
+    fnss.set_delays_constant(topo, 3, 'ms', odd_links)
+    fnss.set_delays_constant(topo, 12, 'ms', even_links)
 
-    def tearDown(self):
-        fnss.clear_weights(self.topo)
+    return topo, odd_links, even_links
 
-    def test_weights_constant(self):
-        fnss.set_weights_constant(self.topo, 2, self.odd_links)
-        fnss.set_weights_constant(self.topo, 5, self.even_links)
-        self.assertTrue(all(self.topo.adj[u][v]['weight'] in [2, 5]
-                            for (u, v) in self.topo.edges()))
 
-    def test_weights_inverse_capacity(self):
-        fnss.set_weights_inverse_capacity(self.topo)
-        self.assertTrue(all(self.topo.adj[u][v]['weight'] in [1, 2]
-                            for (u, v) in self.topo.edges()))
+def test_weights_constant(topology_info):
+    topo, odd_links, even_links = topology_info
 
-    def test_weights_delays(self):
-        fnss.set_weights_delays(self.topo)
-        self.assertTrue(all(self.topo.adj[u][v]['weight'] in [1, 4]
-                            for (u, v) in self.topo.edges()))
+    fnss.set_weights_constant(topo, 2, odd_links)
+    fnss.set_weights_constant(topo, 5, even_links)
+    assert all(data_dict['weight'] in [2, 5]
+               for data_dict in topo.edges.values())
 
-    def test_clear_weights(self):
-        # create new topology to avoid parameters pollution
-        G = fnss.star_topology(12)
-        fnss.set_weights_constant(G, 3, None)
-        self.assertEqual(G.number_of_edges(),
-                         len(nx.get_edge_attributes(G, 'weight')))
-        fnss.clear_weights(G)
-        self.assertEqual(0, len(nx.get_edge_attributes(G, 'weight')))
+
+def test_weights_inverse_capacity(topology_info):
+    topo, odd_links, even_links = topology_info
+    fnss.set_weights_inverse_capacity(topo)
+    assert all(data_dict['weight'] in [1, 2]
+               for data_dict in topo.edges.values())
+
+
+def test_weights_delays(topology_info):
+    topo, odd_links, even_links = topology_info
+    fnss.set_weights_delays(topo)
+    assert all(data_dict['weight'] in [1, 4]
+               for data_dict in topo.edges.values())
+
+
+def test_clear_weights(topology_converter, use_multigraph):
+    # create new topology to avoid parameters pollution
+    topo = topology_converter(fnss.star_topology(12))
+
+    duplicate_edge(topo, use_multigraph)
+
+    fnss.set_weights_constant(topo, 3, None)
+    assert topo.number_of_edges() == len(nx.get_edge_attributes(topo, 'weight'))
+
+    fnss.clear_weights(topo)
+    assert 0 == len(nx.get_edge_attributes(topo, 'weight'))

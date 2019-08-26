@@ -7,7 +7,7 @@ from distutils.version import LooseVersion
 
 import networkx as nx
 
-from fnss.util import random_from_pdf
+from fnss.util import random_from_pdf, extend_link_list_to_all_parallel, find_all_link_keys_with_smallest_weight
 from fnss.units import capacity_units
 
 
@@ -27,7 +27,8 @@ __all__ = [
     'set_capacities_edge_communicability',
     'get_capacities',
     'clear_capacities'
-           ]
+]
+
 
 def set_capacities_constant(topology, capacity, capacity_unit='Mbps',
                             links=None):
@@ -41,9 +42,9 @@ def set_capacities_constant(topology, capacity, capacity_unit='Mbps',
     capacity : float
         The value of capacity to set
     links : iterable, optional
-        Iterable container of links, represented as (u, v) tuples to which
-        capacity will be set. If None or not specified, the capacity will be
-        applied to all links.
+        Iterable container of links, represented as (u, v) tuples to which capacity will be set.
+        For multigraphs (u, v, key) specifies a link, and (u, v) tuple means every parallel link.
+        If None or not specified, the capacity will be applied to all links.
     capacity_unit : str, optional
         The unit in which capacity value is expressed (e.g. Mbps, Gbps etc..)
 
@@ -55,7 +56,7 @@ def set_capacities_constant(topology, capacity, capacity_unit='Mbps',
     """
     if capacity <= 0:
         raise ValueError('Capacity must be positive')
-    if not capacity_unit in capacity_units:
+    if capacity_unit not in capacity_units:
         raise ValueError("The capacity_unit argument is not valid")
     conversion_factor = 1
     if 'capacity_unit' in topology.graph and links is not None:
@@ -68,9 +69,9 @@ def set_capacities_constant(topology, capacity, capacity_unit='Mbps',
                                 / capacity_units[curr_capacity_unit]
     else:
         topology.graph['capacity_unit'] = capacity_unit
-    edges = links or topology.edges()
-    for u, v in edges:
-        topology.adj[u][v]['capacity'] = capacity * conversion_factor
+    links = topology.edges if links is None else extend_link_list_to_all_parallel(topology, links)
+    for link in links:
+        topology.edges[link]['capacity'] = capacity * conversion_factor
     return
 
 
@@ -88,10 +89,6 @@ def set_capacities_random(topology, capacity_pdf, capacity_unit='Mbps'):
         assigned to a link
     capacity_unit : str, optional
         The unit in which capacity value is expressed (e.g. Mbps, Gbps etc..)
-    links : list, optional
-        List of links, represented as (u, v) tuples to which capacity will be
-        set. If None or not specified, the capacity will be applied to all
-        links.
 
     Examples
     --------
@@ -105,9 +102,8 @@ def set_capacities_random(topology, capacity_pdf, capacity_unit='Mbps'):
     if any((capacity < 0 for capacity in capacity_pdf.keys())):
         raise ValueError('All capacities in capacity_pdf must be positive')
     topology.graph['capacity_unit'] = capacity_unit
-    for u, v in topology.edges():
-        topology.adj[u][v]['capacity'] = random_from_pdf(capacity_pdf)
-    return
+    for data_dict in topology.edges.values():
+        data_dict['capacity'] = random_from_pdf(capacity_pdf)
 
 
 def set_capacities_random_power_law(topology, capacities, capacity_unit='Mbps',
@@ -268,12 +264,10 @@ def set_capacities_degree_gravity(topology, capacities, capacity_unit='Mbps'):
     if topology.is_directed():
         in_degree = nx.in_degree_centrality(topology)
         out_degree = nx.out_degree_centrality(topology)
-        gravity = {(u, v): out_degree[u] * in_degree[v]
-                   for (u, v) in topology.edges()}
     else:
-        degree = nx.degree_centrality(topology)
-        gravity = {(u, v): degree[u] * degree[v]
-                   for (u, v) in topology.edges()}
+        in_degree = out_degree = nx.degree_centrality(topology)
+    gravity = {link: out_degree[link[0]] * in_degree[link[1]]
+               for link in topology.edges}
     _set_capacities_proportionally(topology, capacities, gravity,
                                    capacity_unit=capacity_unit)
 
@@ -400,9 +394,23 @@ def set_capacities_edge_betweenness(topology, capacities, capacity_unit='Mbps',
         paths. If links do not have link weights or this parameter is False,
         shortest paths are calculated based on hop count.
     """
-    weight = 'weight' if weighted else None
+    weight_attr = 'weight' if weighted else None
     centrality = nx.edge_betweenness_centrality(topology, normalized=False,
-                                                weight=weight)
+                                                weight=weight_attr)
+    if topology.is_multigraph():
+        # adjust edge betweenness to multigraph:
+        # use computed value to all shortest links between nodes, 0 for other links
+        centrality_multigraph = dict()
+        for (u, v), value in centrality.items():
+            shortest_links, weight = find_all_link_keys_with_smallest_weight(topology, u, v, weight_attr)
+            for key in topology.adj[u][v]:
+                link = (u, v, key)
+                centrality_multigraph[link] = \
+                    value if link in shortest_links\
+                    else 0
+
+        centrality = centrality_multigraph
+
     _set_capacities_proportionally(topology, capacities, centrality,
                                    capacity_unit=capacity_unit)
 
@@ -447,8 +455,8 @@ def _set_capacities_gravity(topology, capacities, node_metric,
     capacity_unit : str, optional
         The unit in which capacity value is expressed (e.g. Mbps, Gbps etc..)
     """
-    gravity = {(u, v): node_metric[u] * node_metric[v]
-               for (u, v) in topology.edges()}
+    gravity = {link: node_metric[link[0]] * node_metric[link[1]]
+               for link in topology.edges}
     _set_capacities_proportionally(topology, capacities, gravity,
                                    capacity_unit=capacity_unit)
 
@@ -470,7 +478,7 @@ def _set_capacities_proportionally(topology, capacities, metric,
     capacity_unit : str, optional
         The unit in which capacity value is expressed (e.g. Mbps, Gbps etc..)
     """
-    if not capacity_unit in capacity_units:
+    if capacity_unit not in capacity_units:
         raise ValueError("The capacity_unit argument is not valid")
     if any((capacity < 0 for capacity in capacities)):
         raise ValueError('All capacities must be positive')
@@ -504,11 +512,11 @@ def _set_capacities_proportionally(topology, capacities, metric,
     # to prevent float rounding errors
     metric_boundaries[-1] = max_metric + 0.1
 
-    for (u, v), metric_value in metric.items():
+    for link, metric_value in metric.items():
         for i, boundary in enumerate(metric_boundaries):
             if metric_value <= boundary:
                 capacity = capacities[i]
-                topology.adj[u][v]['capacity'] = capacity
+                topology.edges[link]['capacity'] = capacity
                 break
         # if the loop is not stopped yet, it means that because of float
         # rounding error, max_capacity <  metric_boundaries[-1], so we set the
@@ -516,7 +524,8 @@ def _set_capacities_proportionally(topology, capacities, metric,
         # Anyway, the code should never reach this point, because before the
         # for loop we are already adjusting the value of metric_boundaries[-1]
         # to make it > max_capacity
-        else: topology.adj[u][v]['capacity'] = capacities[-1]
+        else:
+            topology.edges[link]['capacity'] = capacities[-1]
 
 
 def get_capacities(topology):
@@ -555,5 +564,5 @@ def clear_capacities(topology):
     topology : Topology
     """
     topology.graph.pop('capacity_unit', None)
-    for u, v in topology.edges():
-        topology.adj[u][v].pop('capacity', None)
+    for link, data_dict in topology.edges.items():
+        data_dict.pop('capacity', None)
