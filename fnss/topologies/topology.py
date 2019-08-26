@@ -1043,7 +1043,7 @@ def write_topology(topology, path, encoding='utf-8', prettyprint=True):
 
     Parameters
     ----------
-    topology : Topology
+    topology : Topology, DirectedTopology, MultiTopology, MultiDirectedTopology
         The topology object to write
     path : str
         The file ob which the topology will be written
