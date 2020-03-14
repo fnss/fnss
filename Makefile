@@ -36,7 +36,7 @@ install:
 	pip install --upgrade -e .
 
 # Create distribution package
-dist: clean
+dist:
 	python setup.py sdist bdist_wheel
 
 # Clean documentation
