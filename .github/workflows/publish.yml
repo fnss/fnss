@@ -10,6 +10,8 @@ jobs:
       uses: actions/setup-python@v1
       with:
         python-version: 3.8
+    - name: Install wheel
+      run: pip install --upgrade wheel
     - name: Create distribution package
       run: make dist
     - name: Publish distribution package to Test PyPI

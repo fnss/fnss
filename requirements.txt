@@ -11,3 +11,6 @@ tox
 numpydoc
 sphinx
 sphinx_rtd_theme
+
+# Packaging
+wheel
