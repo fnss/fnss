@@ -1,11 +1,11 @@
-SHELL = /bin/sh
+SHELL = /bin/bash -euo pipefail
 
 BUILD_DIR = build
 DIST_DIR  = dist
 TEST_DIR  = test
 DOC_DIR   = doc
 
-.PHONY: clean dist doc test install upload distclean docclean
+.PHONY: clean dist doc test deps install upload dist-clean doc-clean
 
 all: install
 
@@ -14,12 +14,20 @@ test:
 	cd $(TEST_DIR); python test.py
 
 # Build HTML documentation
-doc: docclean
+doc: doc-clean
 	make -C $(DOC_DIR) html
 
-# Create distribution package
-dist: clean doc
-	python setup.py sdist
+# Install Debian packages needed by Python dependencies
+deps:
+	apt-get update -qq
+	apt-get install -y --no-install-recommends \
+		libatlas-base-dev \
+		liblapack-dev \
+		gfortran \
+		libsuitesparse-dev \
+		libgdal-dev \
+		graphviz \
+		mono-devel
 
 # Install the library in development mode
 install:
@@ -27,21 +35,20 @@ install:
 	pip install --upgrade -r requirements.txt
 	pip install --upgrade -e .
 
-# Upload FNSS to Python Package Index (you need PyPI credentials on your machine)
-upload: clean doc
-	python setup.py sdist bdist_wheel upload
+# Create distribution package
+dist: clean
+	python setup.py sdist bdist_wheel
 
 # Clean documentation
-docclean:
+doc-clean:
 	make -C $(DOC_DIR) clean
 
 # Clean dist files
-distclean:
+dist-clean:
 	rm -rf fnss.egg-info
 	rm -rf $(DIST_DIR)
 
 # Delete temp and build files
-clean: docclean distclean
-	find . -name "*__pycache__" | xargs rm -rf
-	find . -name "*.pyc" | xargs rm -rf
+clean: doc-clean dist-clean
+	find . -name "*.py[cod]" -o -name "*__pycache__" | xargs rm -rf
 	rm -rf $(BUILD_DIR) MANIFEST

@@ -15,16 +15,7 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
     - name: Install native dependencies
-      run: |
-        sudo apt-get update -qq
-        sudo apt-get install -y --no-install-recommends \
-          libatlas-base-dev \
-          liblapack-dev \
-          gfortran \
-          libsuitesparse-dev \
-          libgdal-dev \
-          graphviz \
-          mono-devel
+      run: sudo make deps
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v1
       with:
