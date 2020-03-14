@@ -1,0 +1,35 @@
+
+name: Test
+on:
+  push:
+  pull_request:
+  schedule:
+  - cron: 0 3 * * 6  # Every Saturday at 3:00 AM
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [2.7, 3.5, 3.6, 3.7, 3.8]
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+    - name: Install native dependencies
+      run: |
+        sudo apt-get update -qq
+        sudo apt-get install -y --no-install-recommends \
+          libatlas-base-dev \
+          liblapack-dev \
+          gfortran \
+          libsuitesparse-dev \
+          libgdal-dev \
+          graphviz \
+          mono-devel
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v1
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install package and dependencies
+      run: make install
+    - name: Run tests
+      run: make test

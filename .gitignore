@@ -5,6 +5,7 @@ __pycache__
 # Ignore all files starting with . (e.g., .*project) but not .gitignore and .travis.yml
 .*
 !.gitignore
+!.github
 !.travis.yml
 
 # Ignore build files
