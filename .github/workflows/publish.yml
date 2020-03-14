@@ -15,12 +15,14 @@ jobs:
     - name: Create distribution package
       run: make dist
     - name: Publish distribution package to Test PyPI
-      uses: pypa/gh-action-pypi-publish@master
+      uses: pypa/gh-action-pypi-publish@v1.1.0
       with:
+        user: __token__
         password: ${{ secrets.test_pypi_password }}
         repository_url: https://test.pypi.org/legacy/
     - name: Publish distribution package to PyPI
       if: startsWith(github.event.ref, 'refs/tags')
-      uses: pypa/gh-action-pypi-publish@master
+      uses: pypa/gh-action-pypi-publish@v1.1.0
       with:
+        user: __token__
         password: ${{ secrets.pypi_password }}
