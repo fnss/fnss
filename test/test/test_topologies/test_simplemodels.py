@@ -14,8 +14,8 @@ class Test(unittest.TestCase):
     def test_line_topology(self):
         def test_line_connectivity(n):
             G = fnss.line_topology(n)
-            self.assertEquals(n, G.number_of_nodes())
-            self.assertEquals(n - 1, G.number_of_edges())
+            self.assertEqual(n, G.number_of_nodes())
+            self.assertEqual(n - 1, G.number_of_edges())
             for i in range(n):
                 if i <= n - 2: self.assertTrue(G.has_edge(i, i + 1))
                 if i >= 1:   self.assertTrue(G.has_edge(i, i - 1))
@@ -28,9 +28,9 @@ class Test(unittest.TestCase):
         def test_K_ary_tree_connectivity(k, h):
             expected_degree = {'root': k, 'intermediate': k + 1, 'leaf': 1}
             G = fnss.k_ary_tree_topology(k, h)
-            self.assertEquals(sum(k ** d for d in range(h + 1)),
+            self.assertEqual(sum(k ** d for d in range(h + 1)),
                               G.number_of_nodes())
-            self.assertEquals(sum(k ** d for d in range(1, h + 1)),
+            self.assertEqual(sum(k ** d for d in range(1, h + 1)),
                               G.number_of_edges())
             degree = G.degree()
             for v in G.nodes():
@@ -57,8 +57,8 @@ class Test(unittest.TestCase):
     def test_ring_topology(self):
         def test_ring_connectivity(n):
             G = fnss.ring_topology(n)
-            self.assertEquals(n, G.number_of_nodes())
-            self.assertEquals(n, G.number_of_edges())
+            self.assertEqual(n, G.number_of_nodes())
+            self.assertEqual(n, G.number_of_edges())
             for i in range(n):
                 self.assertTrue(G.has_edge(i, (i + 1) % n))
                 self.assertTrue(G.has_edge(i, (i - 1) % n))
@@ -71,11 +71,11 @@ class Test(unittest.TestCase):
     def test_star_topology(self):
         def test_star_connectivity(n):
             G = fnss.star_topology(n)
-            self.assertEquals(n + 1, G.number_of_nodes())
-            self.assertEquals(n, G.number_of_edges())
-            self.assertEquals('root', G.node[0]['type'])
+            self.assertEqual(n + 1, G.number_of_nodes())
+            self.assertEqual(n, G.number_of_edges())
+            self.assertEqual('root', G.node[0]['type'])
             for i in range(1, n + 1):
-                self.assertEquals('leaf', G.node[i]['type'])
+                self.assertEqual('leaf', G.node[i]['type'])
                 self.assertTrue(G.has_edge(i, 0))
                 self.assertTrue(G.has_edge(0, i))
         self.assertRaises(ValueError, fnss.star_topology, 0)
@@ -87,8 +87,8 @@ class Test(unittest.TestCase):
     def test_full_mesh_topology(self):
         def test_full_mesh_connectivity(n):
             G = fnss.full_mesh_topology(n)
-            self.assertEquals(n, G.number_of_nodes())
-            self.assertEquals((n * (n - 1)) // 2, G.number_of_edges())
+            self.assertEqual(n, G.number_of_nodes())
+            self.assertEqual((n * (n - 1)) // 2, G.number_of_edges())
             for i in range(n):
                 for j in range(n):
                     if i != j:
@@ -102,17 +102,17 @@ class Test(unittest.TestCase):
     def test_dumbbell_topology(self):
         def test_dumbbell_connectivity(m, n):
             G = fnss.dumbbell_topology(m, n)
-            self.assertEquals(2 * m + n, G.number_of_nodes())
-            self.assertEquals(2 * m + n - 1, G.number_of_edges())
+            self.assertEqual(2 * m + n, G.number_of_nodes())
+            self.assertEqual(2 * m + n - 1, G.number_of_edges())
             for i in range(m):
                 self.assertTrue(G.has_edge(i, m))
-                self.assertEquals('left_bell', G.node[i]['type'])
+                self.assertEqual('left_bell', G.node[i]['type'])
             for i in range(m, m + n):
                 self.assertTrue(G.has_edge(i, i + 1))
-                self.assertEquals('core', G.node[i]['type'])
+                self.assertEqual('core', G.node[i]['type'])
             for i in range(m + n, 2 * m + n):
                 self.assertTrue(G.has_edge(m + n - 1, i))
-                self.assertEquals('right_bell', G.node[i]['type'])
+                self.assertEqual('right_bell', G.node[i]['type'])
         self.assertRaises(ValueError, fnss.dumbbell_topology, 0, 0)
         self.assertRaises(ValueError, fnss.dumbbell_topology, -1, 1)
         self.assertRaises(ValueError, fnss.dumbbell_topology, 1, 3)

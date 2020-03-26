@@ -81,7 +81,7 @@ class Test(unittest.TestCase):
         dir_topology.add_edge(8, 9)
         expected_od_pairs = [(0, 1), (0, 2), (1, 0), (1, 2), (3, 2), (8, 9)]
         od_pairs = fnss.od_pairs_from_topology(dir_topology)
-        self.assertEquals(len(expected_od_pairs), len(od_pairs))
+        self.assertEqual(len(expected_od_pairs), len(od_pairs))
         for od in expected_od_pairs:
             self.assertTrue(od in od_pairs)
 
@@ -91,7 +91,7 @@ class Test(unittest.TestCase):
         od_pairs = fnss.od_pairs_from_topology(topology)
         expected_od_pairs = [(0, 1), (0, 2), (1, 0), (1, 2), (2, 0), (2, 1),
                              (7, 8), (7, 9), (8, 7), (8, 9), (9, 7), (9, 8)]
-        self.assertEquals(len(expected_od_pairs), len(od_pairs))
+        self.assertEqual(len(expected_od_pairs), len(od_pairs))
         for od in expected_od_pairs:
             self.assertTrue(od in od_pairs)
 
@@ -103,15 +103,15 @@ class Test(unittest.TestCase):
         dir_topology.add_edge(3, 2)
         fnss.set_capacities_constant(dir_topology, 10, 'Mbps')
         in_cap, out_cap = fnss.fan_in_out_capacities(dir_topology)
-        self.assertEquals({0: 10, 1: 10, 2: 20, 3: 0}, in_cap)
-        self.assertEquals({0: 10, 1: 20, 2: 0, 3: 10}, out_cap)
+        self.assertEqual({0: 10, 1: 10, 2: 20, 3: 0}, in_cap)
+        self.assertEqual({0: 10, 1: 20, 2: 0, 3: 10}, out_cap)
 
     def test_fan_in_out_capacities_undirected(self):
         topology = fnss.star_topology(3)
         fnss.set_capacities_constant(topology, 10, 'Mbps')
         in_cap, out_cap = fnss.fan_in_out_capacities(topology)
-        self.assertEquals({0: 30, 1: 10, 2: 10, 3: 10}, in_cap)
-        self.assertEquals(in_cap, out_cap)
+        self.assertEqual({0: 30, 1: 10, 2: 10, 3: 10}, in_cap)
+        self.assertEqual(in_cap, out_cap)
 
     @unittest.skipIf(TMP_DIR is None, "Temp folder not present")
     def test_read_write_topology(self):
@@ -119,19 +119,19 @@ class Test(unittest.TestCase):
         fnss.write_topology(self.G, tmp_topo_file)
         self.assertTrue(path.exists(tmp_topo_file))
         read_topo = fnss.read_topology(tmp_topo_file)
-        self.assertEquals(len(self.G), len(read_topo))
-        self.assertEquals(self.G.number_of_edges(),
+        self.assertEqual(len(self.G), len(read_topo))
+        self.assertEqual(self.G.number_of_edges(),
                           read_topo.number_of_edges())
-        self.assertEquals('tcp', fnss.get_stack(read_topo, 2)[0])
-        self.assertEquals(1024, fnss.get_stack(read_topo, 2)[1]['rcvwnd'])
-        self.assertEquals('cubic', fnss.get_stack(read_topo, 2)[1]['protocol'])
-        self.assertEquals(len(fnss.get_application_names(self.G, 2)),
+        self.assertEqual('tcp', fnss.get_stack(read_topo, 2)[0])
+        self.assertEqual(1024, fnss.get_stack(read_topo, 2)[1]['rcvwnd'])
+        self.assertEqual('cubic', fnss.get_stack(read_topo, 2)[1]['protocol'])
+        self.assertEqual(len(fnss.get_application_names(self.G, 2)),
                       len(fnss.get_application_names(read_topo, 2)))
-        self.assertEquals('fnss', fnss.get_application_properties(read_topo, 2, 'server')['user-agent'])
-        self.assertEquals([2, 4, 6], [ v for v in read_topo.nodes()
+        self.assertEqual('fnss', fnss.get_application_properties(read_topo, 2, 'server')['user-agent'])
+        self.assertEqual([2, 4, 6], [ v for v in read_topo.nodes()
                                       if fnss.get_stack(read_topo, v) is not None
                                       and fnss.get_stack(read_topo, v)[0] == 'tcp'])
-        self.assertEquals([2, 4], [ v for v in read_topo.nodes()
+        self.assertEqual([2, 4], [ v for v in read_topo.nodes()
                                    if 'client' in fnss.get_application_names(read_topo, v)])
-        self.assertEquals([2], [ v for v in read_topo.nodes()
+        self.assertEqual([2], [ v for v in read_topo.nodes()
                                 if 'server' in fnss.get_application_names(read_topo, v)])
