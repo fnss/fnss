@@ -92,6 +92,7 @@ class BaseTopology(object):
         # used throughout fnss.
         return self.nodes
 
+
 class Topology(nx.Graph, BaseTopology):
     """Base class for undirected topology"""
 
@@ -257,6 +258,25 @@ class Topology(nx.Graph, BaseTopology):
         """
         return Topology(super(Topology, self).to_undirected())
 
+    def add_path(self, nodes, **attr):
+        """Add a path to the topology
+
+        Parameters
+        ----------
+        nodes : iterable container
+            A container of nodes.  A path will be constructed from
+            the nodes (in order) and added to the topology.
+        attr : keyword arguments, optional (default is no attributes)
+            Attributes to add to every edge in path.
+
+        Examples
+        --------
+        >>> topology = Topology()
+        >>> topology.add_path([0, 1, 2, 3])
+        >>> topology.add_path([10, 11, 12], weight=7)
+        """
+        nx.add_path(self, nodes, **attr)
+
 
 class DirectedTopology(nx.DiGraph, BaseTopology):
     """Base class for directed topology"""
@@ -421,6 +441,25 @@ class DirectedTopology(nx.DiGraph, BaseTopology):
         [(0, 1)]
         """
         return Topology(super(DirectedTopology, self).to_undirected())
+
+    def add_path(self, nodes, **attr):
+        """Add a path to the topology
+
+        Parameters
+        ----------
+        nodes : iterable container
+            A container of nodes.  A path will be constructed from
+            the nodes (in order) and added to the topology.
+        attr : keyword arguments, optional (default is no attributes)
+            Attributes to add to every edge in path.
+
+        Examples
+        --------
+        >>> topology = DirectedTopology()
+        >>> topology.add_path([0, 1, 2, 3])
+        >>> topology.add_path([10, 11, 12], weight=7)
+        """
+        nx.add_path(self, nodes, **attr)
 
 
 def od_pairs_from_topology(topology):
