@@ -631,13 +631,13 @@ def parse_topology_zoo(path):
     for tv in topo_zoo_graph.nodes():
         v = try_convert_int(tv)
         topology.add_node(v)
-        if 'label' in topo_zoo_graph.node[tv]:
-            topology.node[v]['label'] = topo_zoo_graph.node[tv]['label']
+        if 'label' in topo_zoo_graph.nodes[tv]:
+            topology.nodes[v]['label'] = topo_zoo_graph.nodes[tv]['label']
         try:
-            longitude = topo_zoo_graph.node[tv]['Longitude']
-            latitude = topo_zoo_graph.node[tv]['Latitude']
-            topology.node[v]['longitude'] = longitude
-            topology.node[v]['latitude'] = latitude
+            longitude = topo_zoo_graph.nodes[tv]['Longitude']
+            latitude = topo_zoo_graph.nodes[tv]['Latitude']
+            topology.nodes[v]['longitude'] = longitude
+            topology.nodes[v]['latitude'] = latitude
         except KeyError:
             pass
     for tv, tu in topo_zoo_graph.edges():
@@ -646,14 +646,14 @@ def parse_topology_zoo(path):
         if u == v:
             continue
         topology.add_edge(v, u)
-        if 'Latitude' in topo_zoo_graph.node[tv] and \
-                'Longitude' in topo_zoo_graph.node[tv] and \
-                'Latitude' in topo_zoo_graph.node[tu] and \
-                'Longitude' in topo_zoo_graph.node[tu]:
-            lat_v = topo_zoo_graph.node[tv]['Latitude']
-            lon_v = topo_zoo_graph.node[tv]['Longitude']
-            lat_u = topo_zoo_graph.node[tu]['Latitude']
-            lon_u = topo_zoo_graph.node[tu]['Longitude']
+        if 'Latitude' in topo_zoo_graph.nodes[tv] and \
+                'Longitude' in topo_zoo_graph.nodes[tv] and \
+                'Latitude' in topo_zoo_graph.nodes[tu] and \
+                'Longitude' in topo_zoo_graph.nodes[tu]:
+            lat_v = topo_zoo_graph.nodes[tv]['Latitude']
+            lon_v = topo_zoo_graph.nodes[tv]['Longitude']
+            lat_u = topo_zoo_graph.nodes[tu]['Latitude']
+            lon_u = topo_zoo_graph.nodes[tu]['Longitude']
             length = geographical_distance(lat_v, lon_v, lat_u, lon_u)
             topology.adj[v][u]['length'] = length
         if topo_zoo_graph.is_multigraph():
