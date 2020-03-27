@@ -86,6 +86,11 @@ class BaseTopology(object):
         """
         return nx.get_node_attributes(self, 'application')
 
+    @property
+    def node(self):
+        # Alias for nodes, since nx.Graph.node was deprecated in 2.3 but is widely
+        # used throughout fnss.
+        return self.nodes
 
 class Topology(nx.Graph, BaseTopology):
     """Base class for undirected topology"""

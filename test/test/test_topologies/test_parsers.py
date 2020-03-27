@@ -13,11 +13,11 @@ class Test(unittest.TestCase):
         abilene_topo_file = path.join(RES_DIR, 'abilene-topo.txt')
         abilene_links_file = path.join(RES_DIR, 'abilene-links.txt')
         topology = fnss.parse_abilene(abilene_topo_file)
-        self.assertEquals(12, topology.number_of_nodes())
-        self.assertEquals(30, topology.number_of_edges())
+        self.assertEqual(12, topology.number_of_nodes())
+        self.assertEqual(30, topology.number_of_edges())
         topology = fnss.parse_abilene(abilene_topo_file, abilene_links_file)
-        self.assertEquals(12, topology.number_of_nodes())
-        self.assertEquals(30, topology.number_of_edges())
+        self.assertEqual(12, topology.number_of_nodes())
+        self.assertEqual(30, topology.number_of_edges())
         self.assertTrue(all('link_index' in topology.adj[u][v]
                             and 'link_type' in topology.adj[u][v])
                         for u, v in topology.edges())
@@ -28,15 +28,15 @@ class Test(unittest.TestCase):
     def test_parse_rockefuel_isp_map(self):
         rocketfuel_file = path.join(RES_DIR, 'rocketfuel-2914.cch')
         topology = fnss.parse_rocketfuel_isp_map(rocketfuel_file)
-        self.assertEquals(10961, topology.number_of_nodes())
-        self.assertEquals(26070, topology.number_of_edges())
+        self.assertEqual(10961, topology.number_of_nodes())
+        self.assertEqual(26070, topology.number_of_edges())
 
     @unittest.skipIf(RES_DIR is None, "Resources folder not present")
     def test_parse_rocketfuel_isp_latency(self):
         rocketfuel_file = path.join(RES_DIR, 'rocketfuel-1221.latencies.intra')
         topology = fnss.parse_rocketfuel_isp_latency(rocketfuel_file)
-        self.assertEquals(108, topology.number_of_nodes())
-        self.assertEquals(306, topology.number_of_edges())
+        self.assertEqual(108, topology.number_of_nodes())
+        self.assertEqual(306, topology.number_of_edges())
         for _, _, data in topology.edges(data=True):
             self.assertTrue('delay' in data)
             self.assertIsInstance(data['delay'], int)
@@ -47,8 +47,8 @@ class Test(unittest.TestCase):
         latencies_file = path.join(RES_DIR, 'rocketfuel-1221.latencies.intra')
         weights_file = path.join(RES_DIR, 'rocketfuel-1221.weights.intra')
         topology = fnss.parse_rocketfuel_isp_latency(latencies_file, weights_file)
-        self.assertEquals(108, topology.number_of_nodes())
-        self.assertEquals(306, topology.number_of_edges())
+        self.assertEqual(108, topology.number_of_nodes())
+        self.assertEqual(306, topology.number_of_edges())
         for _, _, data in topology.edges(data=True):
             self.assertTrue('delay' in data)
             self.assertTrue('weight' in data)
@@ -61,8 +61,8 @@ class Test(unittest.TestCase):
     def test_parse_rocketfuel_isp_latency_overseas_nodes(self):
         rocketfuel_file = path.join(RES_DIR, 'rocketfuel-1239.latencies.intra')
         topology = fnss.parse_rocketfuel_isp_latency(rocketfuel_file)
-        self.assertEquals(315, topology.number_of_nodes())
-        self.assertEquals(1944, topology.number_of_edges())
+        self.assertEqual(315, topology.number_of_nodes())
+        self.assertEqual(1944, topology.number_of_edges())
         for _, _, data in topology.edges(data=True):
             self.assertTrue('delay' in data)
             self.assertIsInstance(data['delay'], int)
@@ -73,8 +73,8 @@ class Test(unittest.TestCase):
         latencies_file = path.join(RES_DIR, 'rocketfuel-1239.latencies.intra')
         weights_file = path.join(RES_DIR, 'rocketfuel-1239.weights.intra')
         topology = fnss.parse_rocketfuel_isp_latency(latencies_file, weights_file)
-        self.assertEquals(315, topology.number_of_nodes())
-        self.assertEquals(1944, topology.number_of_edges())
+        self.assertEqual(315, topology.number_of_nodes())
+        self.assertEqual(1944, topology.number_of_edges())
         for _, _, data in topology.edges(data=True):
             self.assertTrue('delay' in data)
             self.assertTrue('weight' in data)
@@ -121,7 +121,7 @@ class Test(unittest.TestCase):
         self.assertEqual(34, topology.number_of_nodes())
         self.assertEqual(46, topology.number_of_edges())
         self.assertEqual(1000000000.0, topology.adj[4][15]['capacity'])
-        self.assertEquals('bps', topology.graph['capacity_unit'])
+        self.assertEqual('bps', topology.graph['capacity_unit'])
         self.assertTrue(all(topology.adj[u][v]['length'] >= 0
                     for u, v in topology.edges()
                     if 'length' in topology.adj[u][v]))
@@ -135,15 +135,15 @@ class Test(unittest.TestCase):
         self.assertTrue(topology.graph['link_bundling'])
         self.assertEqual(61, topology.number_of_nodes())
         self.assertEqual(75, topology.number_of_edges())
-        self.assertEquals('bps', topology.graph['capacity_unit'])
-        self.assertEquals(2000000000, topology.adj[37][58]['capacity'])
+        self.assertEqual('bps', topology.graph['capacity_unit'])
+        self.assertEqual(2000000000, topology.adj[37][58]['capacity'])
         bundled_links = [(43, 18), (49, 32), (41, 18), (4, 7),
                           (6, 55), (9, 58), (58, 37), (10, 55),
                          (14, 57), (14, 35), (18, 41), (18, 43),
                          (31, 33), (31, 34), (32, 49), (37, 58)]
         for u, v in topology.edges():
             print(u, v)
-            self.assertEquals((u, v) in bundled_links,
+            self.assertEqual((u, v) in bundled_links,
                               topology.adj[u][v]['bundle'])
 
     @unittest.skipIf(RES_DIR is None, "Resources folder not present")
@@ -167,9 +167,9 @@ class Test(unittest.TestCase):
         self.assertEqual(980, topology.node[851]['latitude'])
         self.assertEqual('AS_NODE', topology.node[851]['type'])
         # 1478    716    230    212.11553455605272    0.7075412636166207    0.0011145252848059164    716    230    E_AS    U
-        self.assertEquals(1478, topology.adj[716][230]['id'])
-        self.assertAlmostEquals(212.11553455605272,
-                                topology.adj[716][230]['length'], 0.01)
+        self.assertEqual(1478, topology.adj[716][230]['id'])
+        self.assertAlmostEqual(212.11553455605272,
+                               topology.adj[716][230]['length'], 0.01)
 
     @unittest.skipIf(RES_DIR is None, "Resources folder not present")
     def test_parse_brite_router(self):

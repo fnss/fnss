@@ -72,8 +72,8 @@ class Test(unittest.TestCase):
                                      None, 'us', links=[(1, 2)])
         fnss.set_delays_geo_distance(topology, specific_delay,
                                      3, 's', links=[(2, 3), (3, 4)])
-        self.assertEquals(topology.graph['distance_unit'], 'm')
-        self.assertEquals(topology.graph['delay_unit'], 'us')
+        self.assertEqual(topology.graph['distance_unit'], 'm')
+        self.assertEqual(topology.graph['delay_unit'], 'us')
         self.assertAlmostEqual(topology.adj[1][2]['delay'], 2400)
         self.assertAlmostEqual(topology.adj[2][3]['delay'], 3600)
         self.assertAlmostEqual(topology.adj[3][4]['delay'], 3000000)
@@ -85,8 +85,8 @@ class Test(unittest.TestCase):
         topology.add_edge(3, 4)
         specific_delay = 1.2
         fnss.set_delays_geo_distance(topology, specific_delay, 3, 's', None)
-        self.assertEquals(topology.graph['distance_unit'], 'm')
-        self.assertEquals(topology.graph['delay_unit'], 's')
+        self.assertEqual(topology.graph['distance_unit'], 'm')
+        self.assertEqual(topology.graph['delay_unit'], 's')
         self.assertAlmostEqual(topology.adj[1][2]['delay'], 0.0024)
         self.assertAlmostEqual(topology.adj[2][3]['delay'], 0.0036)
         self.assertAlmostEqual(topology.adj[3][4]['delay'], 3)

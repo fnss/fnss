@@ -7,7 +7,7 @@ from setuptools import setup, find_packages
 
 # Packages required to run FNSS
 requires = [
-    'networkx (>=2.0,<=2.2)',
+    'networkx (>=2.0,<=2.3)',
     'numpy (>=1.4)',
     'mako (>=0.4)'
 ]

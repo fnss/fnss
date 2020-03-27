@@ -15,10 +15,10 @@ class DatacenterTopologiesTest(unittest.TestCase):
             topology.add_node(node, type='host')
         for node in others_list:
             topology.add_node(node, type='other')
-        self.assertEquals(switch_list, topology.switches())
-        self.assertEquals(host_list, topology.hosts())
-        self.assertEquals(len(switch_list), topology.number_of_switches())
-        self.assertEquals(len(host_list), topology.number_of_hosts())
+        self.assertEqual(switch_list, topology.switches())
+        self.assertEqual(host_list, topology.hosts())
+        self.assertEqual(len(switch_list), topology.number_of_switches())
+        self.assertEqual(len(host_list), topology.number_of_hosts())
 
     def test_fat_tree(self):
         topology = fnss.fat_tree_topology(8)
