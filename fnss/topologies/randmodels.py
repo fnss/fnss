@@ -394,7 +394,7 @@ def extended_barabasi_albert_topology(n, m, m0, p, q, seed=None):
             rewired_links = 0
             while rewired_links < m:
                 i = random.choice(list(G.nodes()))  # pick up node randomly (uniform)
-                if len(G.adj[i]) is 0:  # if i has no edges, I cannot rewire
+                if len(G.adj[i]) == 0:  # if i has no edges, I cannot rewire
                     break
                 j = random.choice(list(G.adj[i].keys()))  # node to be disconnected
                 k = random_from_pdf(pi)  # new node to be connected

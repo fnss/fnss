@@ -97,9 +97,9 @@ def parse_rocketfuel_isp_map(path):
                 # Case external node
                 # -euid =externaladdress rn
                 try:
-                    node = int(re.findall("-\d+", line)[0])
-                    address = (re.findall("=\S+", line)[0])[1:]  # .strip("=")
-                    r = int(re.findall("r\d$", line)[0][1:])  # .strip("r"))
+                    node = int(re.findall(r"-\d+", line)[0])
+                    address = (re.findall(r"=\S+", line)[0])[1:]  # .strip("=")
+                    r = int(re.findall(r"r\d$", line)[0][1:])  # .strip("r"))
                 except IndexError:
                     raise ValueError('Invalid input file. Parsing failed '\
                                      'while trying to parse an external node')
@@ -109,17 +109,17 @@ def parse_rocketfuel_isp_map(path):
                 # uid @loc [+] [bb] (num_neigh) [&ext] -> <nuid-1> <nuid-2>
                 # ... {-euid} ... =name[!] rn
                 try:
-                    node = int(re.findall("\d+", line)[0])
-                    node_location = re.findall("@\S*", line)[0]
-                    node_location = re.sub("[\+@]", "", node_location)
-                    r = int(re.findall("r\d$", line)[0][1:])  # .strip("r"))
-                    address = (re.findall("=\S+", line)[0])[1:]  # .strip("=")
+                    node = int(re.findall(r"\d+", line)[0])
+                    node_location = re.findall(r"@\S*", line)[0]
+                    node_location = re.sub(r"[\+@]", "", node_location)
+                    r = int(re.findall(r"r\d$", line)[0][1:])  # .strip("r"))
+                    address = (re.findall(r"=\S+", line)[0])[1:]  # .strip("=")
                 except IndexError:
                     raise ValueError('Invalid input file. Parsing failed '\
                                      'while trying to parse an internal node')
-                internal_links = re.findall("<(\d+)>", line)
-                external_links = re.findall("{(-?\d+)}", line)
-                backbone = (len(re.findall("\sbb\s", line)) > 0)
+                internal_links = re.findall(r"<(\d+)>", line)
+                external_links = re.findall(r"{(-?\d+)}", line)
+                backbone = (len(re.findall(r"\sbb\s", line)) > 0)
                 topology.add_node(node, type='internal',
                                   location=node_location,
                                   address=address, r=r, backbone=backbone)
@@ -353,7 +353,7 @@ def parse_inet(path):
     topology = Topology(type='inet', distance_unit='Km')
     with open(path, "r") as f:
         lines = f.readlines()
-    sep = re.compile('[\s\t]')
+    sep = re.compile(r'[\s\t]')
     first_line = sep.split(lines[0].strip())
     try:
         n_nodes = int(first_line[0])
@@ -441,7 +441,7 @@ def parse_abilene(topology_path, links_path=None):
                     topology.add_node(name, city=city, latitude=latitude,
                                longitude=longitude)
                 elif line_type == 'link':
-                    sep = re.compile('[\s\t]')
+                    sep = re.compile(r'[\s\t]')
                     link_entry = sep.split(line)
                     try:
                         u = link_entry[0]
@@ -469,7 +469,7 @@ def parse_abilene(topology_path, links_path=None):
                     line, _ = line.split(comment_char, 1)
                 line = line.strip()
                 if len(line) > 0:
-                    sep = re.compile('[\s\t]')
+                    sep = re.compile(r'[\s\t]')
                     link_entry = sep.split(line)
                     try:
                         u, v = link_entry[0].split(',', 1)
@@ -694,7 +694,7 @@ def parse_ashiip(path):
             # There is no documented aShiip format but we assume that if the line
             # does not start with a number it is not part of the topology
             if line[0].isdigit():
-                node_ids = re.findall("\d+", line)
+                node_ids = re.findall(r"\d+", line)
                 if len(node_ids) < 3:
                     raise ValueError('Invalid input file. Parsing failed while '\
                                      'trying to parse a line')

@@ -41,7 +41,7 @@ def from_mininet(topology):
             fnss_topo.adj[u][v]['capacity'] = opts['bw']
         if 'delay' in opts:
             delay = opts['delay']
-            val = re.findall("\d+\.?\d*", delay)[0]
+            val = re.findall(r"\d+\.?\d*", delay)[0]
             unit = delay.strip(val).strip(' ')
             set_delays_constant(fnss_topo, val, unit, [(u, v)])
     return fnss_topo

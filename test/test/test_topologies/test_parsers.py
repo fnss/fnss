@@ -90,7 +90,7 @@ class Test(unittest.TestCase):
         with open(ashiip_file, "r") as f:
             for line in f.readlines():
                 if line.startswith(' Size :'):
-                    size = int(findall('\d+', line)[0])
+                    size = int(findall(r'\d+', line)[0])
                     break
         print("Expected number of nodes: ", size)
         print("Actual number of nodes: ", topology.number_of_nodes())

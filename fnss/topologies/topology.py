@@ -700,7 +700,7 @@ def write_topology(topology, path, encoding='utf-8', prettyprint=True):
         node.attrib['id'] = str(v)
         node.attrib['id.type'] = util.xml_type(v)
         for name, value in topology.node[v].items():
-            if name is 'stack':
+            if name == 'stack':
                 stack_name, stack_props = topology.node[v]['stack']
                 stack = ET.SubElement(node, 'stack')
                 stack.attrib['name'] = stack_name
@@ -710,7 +710,7 @@ def write_topology(topology, path, encoding='utf-8', prettyprint=True):
                     prop.attrib['name'] = prop_name
                     prop.attrib['type'] = util.xml_type(prop_value)
                     prop.text = str(prop_value)
-            elif name is 'application':
+            elif name == 'application':
                 for application_name, application_props in \
                             topology.node[v]['application'].items():
                     application = ET.SubElement(node, 'application')
