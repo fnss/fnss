@@ -5,7 +5,7 @@
 # Build:        docker build [--build-arg py=<python-version>] -t fnss .
 # Open shell:   docker run --rm -it fnss
 #
-ARG py=3.6
+ARG py=3.8
 FROM python:${py}
 
 COPY . /fnss
