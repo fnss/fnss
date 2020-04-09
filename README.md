@@ -11,7 +11,7 @@ It allows users to:
 * Deploy network and workload configuration to a number of simulators and emulators
 
 FNSS comprises a core library, written in Python, and a set of adapters.
-This repository contanins the core library, which provides all capabilities
+This repository contains the core library, which provides all capabilities
 for generating experiment scenarios and to export them to
 [ns-2](http://www.isi.edu/nsnam/ns/), [Mininet](http://www.mininet.org),
 [Omnet++](http://www.omnetpp.org/), [Autonetkit](http://www.autonetkit.org)
@@ -56,7 +56,7 @@ If you wish to develop on FNSS run:
 
     make install
 
-This will download all developement requirements and install FNSS in editable mode,
+This will download all development requirements and install FNSS in editable mode,
 which means that any change made to the source code will be immediately available
 by other libraries in the system without needing reinstallation.
 
@@ -64,7 +64,7 @@ You can run tests with:
 
     $ make test
 
-and build documenation with:
+and build documentation with:
 
     $ make doc
 
@@ -72,7 +72,7 @@ It is advisable to use [virtualenv](https://virtualenv.pypa.io/en/stable/)
 to create an isolated environment for working with FNSS before running `make install`.
 
 ## Citing
-If you cite FNSS in your paper, please refer to the following pubblication:
+If you cite FNSS in your paper, please refer to the following publication:
 
 L. Saino, C. Cocora, G. Pavlou, [A Toolchain for Simplifying Network Simulation Setup](http://www.ee.ucl.ac.uk/~lsaino/publications/fnss-simutools13.pdf), in *Proceedings of the 6th International ICST Conference on Simulation Tools and Techniques (SIMUTOOLS '13)*, Cannes, France, March 2013
 
