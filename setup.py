@@ -37,6 +37,10 @@ if __name__ == "__main__":
             'bin/mn-fnss'
         ],
         url=release.url,
+        project_urls = {
+            "Source Code": "https://github.com/fnss/fnss/",
+            "Bug Tracker": "https://github.com/fnss/fnss/issues",
+        },
         download_url=release.download_url,
         license=release.license_long,
         classifiers=[
