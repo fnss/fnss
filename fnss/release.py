@@ -41,5 +41,5 @@ by the FNSS Java, C++ and ns-3 libraries.
 """
 
 # URL
-url = 'http://fnss.github.io/'
+url = 'https://fnss.github.io/'
 download_url = url
