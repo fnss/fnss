@@ -14,4 +14,3 @@ sphinx_rtd_theme
 
 # Packaging
 wheel
-looseversion
