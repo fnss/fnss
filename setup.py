@@ -9,7 +9,8 @@ from setuptools import setup, find_packages
 requires = [
     'networkx (>=2.0)',
     'numpy (>=1.4)',
-    'mako (>=0.4)'
+    'mako (>=0.4)',
+    'looseversion (>=1.3.0)'
 ]
 
 # It imports release module this way because if it tried to import fnss package

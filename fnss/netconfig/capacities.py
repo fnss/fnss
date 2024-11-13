@@ -3,7 +3,7 @@
 Link capacities can be assigned either deterministically or randomly, according
 to various models.
 """
-from distutils.version import LooseVersion
+from looseversion import LooseVersion
 
 import networkx as nx
 
